@@ -1,3 +1,19 @@
+# Implementation of Travis CI & Codecov builds
 language: python
+python:
+    - "3.6"
+# Before install of Travis, install pytest and codecov
+before_install:
+    -  pip install pytest pytest-cov
+    - pip install codecov
+
 install: true
-script: true
+
+# Run pytest across all directories
+script:
+    - pytest --cov=boom-diff tests/
+    - pytest --doctest-modules --cov=boom-diff --cov-append
+
+after_success:
+    - codecov
+
