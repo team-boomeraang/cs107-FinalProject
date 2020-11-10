@@ -12,7 +12,6 @@ install: true
 # Run pytest across all directories
 script:
     - pytest --cov=boom-diff tests/
-    - pytest --doctest-modules --cov=boom-diff --cov-append
 
 after_success:
     - codecov
