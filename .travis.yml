@@ -4,15 +4,15 @@ python:
     - "3.6"
 # Before install of Travis, install pytest and codecov
 before_install:
-    -  pip install pytest pytest-cov
+    - pip install pytest pytest-cov
     - pip install codecov
+    - python setup.py install
 
 install: true
 
 # Run pytest across all directories
 script:
-    - pytest --cov=boom-diff tests/
-    - pytest --doctest-modules --cov=boom-diff --cov-append
+    - pytest --cov=./boomdiff
 
 after_success:
     - codecov
