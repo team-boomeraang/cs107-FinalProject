@@ -1,2 +1,2 @@
 import boomdiff
-import test_unit
+import .test_unit
