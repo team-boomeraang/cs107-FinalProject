@@ -198,7 +198,7 @@ class AD():
 
         Parameters
         ----------
-        other: AD class instance ot float
+        other: AD class instance or float
             Elements to be divided from self. Can be an AD class instance, which
             will update function value and partial derivative dictionary; Or a con-
             -stant, which will only update function value.
@@ -283,7 +283,38 @@ class AD():
 
     @staticmethod
     def cos(x):
-        pass # TODO
+        """A static method to calculate the cosine function of a AD instance, or a float
+
+        Parameters
+        ----------
+        x: AD class instance or float, in radians
+           Elements to be operated a consine operator. Can be an AD class instance, whichi
+           will update function value and partial derivative dictionary; or a constant, whi-
+           -ch will give a constant output
+
+        Returns
+        ------- 
+        A new AD class with updated information
+
+        Examples
+        --------
+        >>> x1 = AD(np.pi/2, {'x1': 1.})
+        >>> f1 = AD.cos(x1)
+        >>> print(f1.func_val.round(1), f1.partial_dict)
+        0.0 {'x1': -1.0}
+        >>> x2 = AD.cos(np.pi)
+        >>> print(x2)
+        -1.0
+        """
+        try:
+            # First try as x is an AD instance
+            new_der_dict = x.partial_dict.copy()
+            for var in new_der_dict.keys():
+                new_der_dict[var] = -np.sin(x.func_val)*new_der_dict[var]
+            return AD(np.cos(x.func_val), new_der_dict)
+        except AttributeError:
+            # if x is not an AD class instance, treat as a constant
+            return np.cos(x)
 
     @staticmethod
     def tan(x):
