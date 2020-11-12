@@ -318,7 +318,38 @@ class AD():
 
     @staticmethod
     def tan(x):
-        pass # TODO
+        """A static method to calculate the tangent function of a AD instance, or a float
+
+        Parameters
+        ----------
+        x: AD class instance or float, in radians
+           Elements to be operated a tangent operator. Can be an AD class instance, which
+           will update function value and partial derivative dictionary; or a constant, whi-
+           -ch will give a constant output
+
+        Returns
+        ------- 
+        A new AD class with updated information
+
+        Examples
+        --------
+        >>> x1 = AD(np.pi, {'x1': 1.})
+        >>> f1 = AD.tan(x1)
+        >>> print(f1.func_val.round(1), f1.partial_dict)
+        -0.0 {'x1': 1.0}
+        >>> x2 = AD.tan(np.pi)
+        >>> print(x2.round(1))
+        -0.0
+        """
+        try:
+            # First try as x is an AD instance
+            new_der_dict = x.partial_dict.copy()
+            for var in new_der_dict.keys():
+                new_der_dict[var] = new_der_dict[var]/(np.cos(x.func_val)**2)
+            return AD(np.tan(x.func_val), new_der_dict)
+        except AttributeError:
+            # if x is not an AD class instance, treat as a constant
+            return np.tan(x)
 
     @staticmethod
     def log(x):
