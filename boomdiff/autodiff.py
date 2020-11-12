@@ -194,10 +194,82 @@ class AD():
             return AD(other*self.func_val, new_der_dict)
 
     def __truediv__(self, other):
-        pass # TODO
+        """Overload division operation '/'
+
+        Parameters
+        ----------
+        other: AD class instance or float
+            Elements to be divided from self. Can be an AD class instance, which
+            will update function value and partial derivative dictionary; Or a con-
+            -stant, which will only update function value.
+
+        Returns
+        -------
+        A new AD class instance with updated information
+
+        Examples
+        --------
+        >>> x1 = AD(1., {'x1':1})
+        >>> f1 = x1/10.
+        >>> print(f1.func_val, f1.partial_dict)
+        0.1 {'x1': 0.1}
+        >>> x2 = 3.4*x1
+        >>> f2 = x2/x1
+        >>> print(f2.func_val, f2.partial_dict)
+        3.4 {'x1': 0.0}
+        """
+        try:
+            # First try as other is an AD class instance
+            # Give the variable list for self object
+            self_var_keys = list(self.partial_dict.keys())
+            # Give the variable list for other object
+            other_var_keys = list(other.partial_dict.keys())
+            # At this moment, we assume all have one variable, need to be fixed, TODO
+            new_der_value = (self.partial_dict[self_var_keys[0]]*other.func_val - other.partial_dict[self_var_keys[0]]*self.func_val)/(other.func_val**2)
+            new_der_dict = {self_var_keys[0]: new_der_value} 
+            return AD(self.func_val/other.func_val, new_der_dict)
+        except AttributeError:
+            # If other is not an AD class instance, treat as a constant
+            self_var_keys = list(self.partial_dict.keys())
+            # At this moment, we assume all have one variable, need to be fixed, TODO
+            new_der_dict = {self_var_keys[0]: self.partial_dict[self_var_keys[0]]/other}
+            return AD(self.func_val/other, new_der_dict)
 
     def __rtruediv__(self, other):
-        pass # TODO 
+        """Overload to make right version of operation '/' works
+
+        Parameters
+        ----------
+        other : AD class instance or float
+            Elements to be multiplied to self. Can be a AD class instance, which 
+            will update function value and partial derivative dictionary; Or a con-
+            -stant, which will only update function value.
+        
+        Returns
+        -------
+        A new AD class instance with updated information
+
+        Examples
+        --------
+        >>> x1 = AD(1., {'x1':1})
+        >>> f1 = 10.0/x1
+        >>> print(f1.func_val, f1.partial_dict)
+        10.0 {'x1': -10.0}
+        >>> x2 = 3.4*x1 - 1.4
+        >>> f2 = x2/x1
+        >>> print(f2.func_val, f2.partial_dict)
+        2.0 {'x1': 1.4}
+        """
+        if isinstance(other, AD):
+            # First try as other is an AD class instance
+            return other.__truediv__(self)
+        else:
+            # if other is not an AD class instance, treat as a constant
+            self_var_keys = list(self.partial_dict.keys())
+            # At this moment, we assume all have one variable, need to be fixed, TODO
+            new_der_value = -other*self.partial_dict[self_var_keys[0]]/(self.func_val**2)
+            new_der_dict = {self_var_keys[0]: new_der_value}
+            return AD(other/self.func_val, new_der_dict)
 
     def __pow__(self, other):
         pass # TODO
@@ -211,17 +283,109 @@ class AD():
 
     @staticmethod
     def cos(x):
-        pass # TODO
+        """A static method to calculate the cosine function of a AD instance, or a float
+
+        Parameters
+        ----------
+        x: AD class instance or float, in radians
+           Elements to be operated a consine operator. Can be an AD class instance, whichi
+           will update function value and partial derivative dictionary; or a constant, whi-
+           -ch will give a constant output
+
+        Returns
+        ------- 
+        A new AD class with updated information
+
+        Examples
+        --------
+        >>> x1 = AD(np.pi/2, {'x1': 1.})
+        >>> f1 = AD.cos(x1)
+        >>> print(f1.func_val.round(1), f1.partial_dict)
+        0.0 {'x1': -1.0}
+        >>> x2 = AD.cos(np.pi)
+        >>> print(x2)
+        -1.0
+        """
+        try:
+            # First try as x is an AD instance
+            new_der_dict = x.partial_dict.copy()
+            for var in new_der_dict.keys():
+                new_der_dict[var] = -np.sin(x.func_val)*new_der_dict[var]
+            return AD(np.cos(x.func_val), new_der_dict)
+        except AttributeError:
+            # if x is not an AD class instance, treat as a constant
+            return np.cos(x)
 
     @staticmethod
     def tan(x):
-        pass # TODO
+        """A static method to calculate the tangent function of a AD instance, or a float
+
+        Parameters
+        ----------
+        x: AD class instance or float, in radians
+           Elements to be operated a tangent operator. Can be an AD class instance, which
+           will update function value and partial derivative dictionary; or a constant, whi-
+           -ch will give a constant output
+
+        Returns
+        ------- 
+        A new AD class with updated information
+
+        Examples
+        --------
+        >>> x1 = AD(np.pi, {'x1': 1.})
+        >>> f1 = AD.tan(x1)
+        >>> print(f1.func_val.round(1), f1.partial_dict)
+        -0.0 {'x1': 1.0}
+        >>> x2 = AD.tan(np.pi)
+        >>> print(x2.round(1))
+        -0.0
+        """
+        try:
+            # First try as x is an AD instance
+            new_der_dict = x.partial_dict.copy()
+            for var in new_der_dict.keys():
+                new_der_dict[var] = new_der_dict[var]/(np.cos(x.func_val)**2)
+            return AD(np.tan(x.func_val), new_der_dict)
+        except AttributeError:
+            # if x is not an AD class instance, treat as a constant
+            return np.tan(x)
 
     @staticmethod
     def log(x):
-        pass # TODO
+        """A static method to calculate the natrual logrithm function of a AD instance, or a float
 
+        Parameters
+        ----------
+        x: AD class instance or float, in radians
+           Elements to be operated a natural logrithm. Can be an AD class instance, which
+           will update function value and partial derivative dictionary; or a constant, whi-
+           -ch will give a constant output
 
+        Returns
+        ------- 
+        A new AD class with updated information
+
+        Examples
+        --------
+        >>> x1 = AD(np.e**2, {'x1': 1.})
+        >>> f1 = AD.log(x1)
+        >>> print(f1.func_val.round(1), f1.partial_dict)
+        2.0 {'x1': 0.1353352832366127}
+        >>> x2 = AD.log(np.e)
+        >>> print(x2)
+        1.0
+        """
+        try:
+            # First try as x is an AD instance
+            new_der_dict = x.partial_dict.copy()
+            for var in new_der_dict.keys():
+                new_der_dict[var] = new_der_dict[var]/x.func_val
+            return AD(np.log(x.func_val), new_der_dict)
+        except AttributeError:
+            # if x is not an AD class instance, treat as a constant
+            return np.log(x)
+        
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
