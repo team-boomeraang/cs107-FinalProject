@@ -353,9 +353,39 @@ class AD():
 
     @staticmethod
     def log(x):
-        pass # TODO
+        """A static method to calculate the natrual logrithm function of a AD instance, or a float
 
+        Parameters
+        ----------
+        x: AD class instance or float, in radians
+           Elements to be operated a natural logrithm. Can be an AD class instance, which
+           will update function value and partial derivative dictionary; or a constant, whi-
+           -ch will give a constant output
 
+        Returns
+        ------- 
+        A new AD class with updated information
+
+        Examples
+        --------
+        >>> x1 = AD(np.e**2, {'x1': 1.})
+        >>> f1 = AD.log(x1)
+        >>> print(f1.func_val.round(1), f1.partial_dict)
+        2.0 {'x1': 0.1353352832366127}
+        >>> x2 = AD.log(np.e)
+        >>> print(x2)
+        1.0
+        """
+        try:
+            # First try as x is an AD instance
+            new_der_dict = x.partial_dict.copy()
+            for var in new_der_dict.keys():
+                new_der_dict[var] = new_der_dict[var]/x.func_val
+            return AD(np.log(x.func_val), new_der_dict)
+        except AttributeError:
+            # if x is not an AD class instance, treat as a constant
+            return np.log(x)
+        
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
