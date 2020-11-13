@@ -288,12 +288,22 @@ class AD():
         --------
         >>> x1 = AD(np.pi/2, {'x1': 1.})
         >>> f1 = AD.sin(x1)
-        >>> print(f1.func_val.round(1), f1.partial_dict.round(1))
-        1.0 {'x1': 0.0}
+        >>> print(f1.func_val, f1.partial_dict)
+        1.0 {'x1': 6.123233995736766e-17}
         >>> x2 = AD.sin(np.pi)
-        >>> print(x2.round(1))
-        0.0
+        >>> print(x2)
+        1.2246467991473532e-16
         """
+        try:
+            # First try as x is an AD instance
+            new_der_dict = x.partial_dict.copy()
+            for var in new_der_dict.keys():
+                new_der_dict[var] = np.cos(x.func_val)*new_der_dict[var]
+            return AD(np.sin(x.func_val), new_der_dict)
+        except AttributeError:
+            # if x is not an AD class instance, treat as a constant
+            return np.sin(x)
+
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
