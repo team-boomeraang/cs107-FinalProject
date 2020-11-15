@@ -343,6 +343,33 @@ class AD():
 
     def __rpow__(self, other):
         pass # TODO
+    
+    def __neg__(self):
+        """Overload '-' to return the negative of an object
+        
+        Parameters
+        ----------
+        self: AD class instance or float
+             Current AD instance
+        
+        Returns
+        -------
+        A new AD class instance with opposite function value and derivative
+        
+        Examples
+        --------
+        >>> x1 = AD(1., {'x1':1})
+        >>> f_x1 = -x1
+        >>> print(f_x1.func_val, f_x1.partial_dict)
+        -1.0 {'x1': -1}
+        >>> x2 = 3*x1
+        >>> f_x2_x1 = -x2 + x1
+        >>> print(f_x2_x1.func_val, f_x2_x1.partial_dict)
+        -2.0 {'x1': -2}
+        """
+        # Pass to __rmul__ via multiply by float
+        return self.__rmul__(-1)
+    
 
     @staticmethod
     def sin(x):
