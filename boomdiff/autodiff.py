@@ -25,16 +25,60 @@ class AD():
         {'x1': 1}
         """
 
-        # Set function string
-        #self.func_string = ''
-        self.func_val = eval_pt
+
+        # Set function value if int or float; else raise error
+        if isinstance(eval_pt, (int, float)):
+            self.func_val = eval_pt
+        else:
+            raise ValueError('Please specify a float or integer value.')
 
         # Set partial derivative dictionary
         # Will assume form of x_1, ..., x_n
-        self.partial_dict = der_dict
+        if not isinstance(der_dict, dict):
+            raise ValueError('der_dict must be type dict')
+        try:  
+            for key, val in der_dict.items():
+                assert isinstance(der_dict[key], (int, float))
+            self.partial_dict = der_dict
+        except:
+            raise ValueError('All derivatives must be type int or float.')
 
-    def set_params(self, params):
-        pass # TODO
+    def set_params(self, att, val):
+        """Set parameters for class; to be used in selective cases only
+        
+        Inputs
+        ------
+        att: string
+            Must be passed as a string. One of func_val or partial_dict.
+        val: float, int, dictionary
+            If att == 'func_val', must be int or float. Else must be dictionary.
+        
+        Examples
+        --------
+        >>> x = AD(1)
+        >>> x.set_params('func_val', 3.4)
+        >>> x.set_params('partial_dict', {'x1': 2})
+        >>> print(x.func_val, x.partial_dict)
+        3.4 {'x1': 2}
+        """
+        if att == 'func_val':
+            # Implement same check as constructor
+            if not isinstance(val, (float, int)):
+                raise ValueError("val must be type float or int")
+            self.func_val = val
+        elif att == 'partial_dict':
+            if not isinstance(val, dict):
+                raise ValueError("If att='partial_dict', val must be type dictionary")
+            # Check that all values of passed dictionary are integers or floats
+            try:
+                for k, v in val.items():
+                    assert isinstance(val[k], (int, float))
+                self.partial_dict = val
+            except:
+                raise ValueError('All values of partial_dict must be int or float')
+        else:
+            raise ValueError("att must be either 'func_val' or 'partial_dict'")
+        
 
     def __repr__(self):
         return f'{self.func_val} ({self.partial_dict})'
@@ -424,6 +468,33 @@ class AD():
             new_der_value = other**self.func_val * np.log(other) * self.partial_dict[self_var_keys[0]]
             new_der_dict = {self_var_keys[0]: new_der_value}
             return AD(other**self.func_val, new_der_dict)
+    
+    def __neg__(self):
+        """Overload '-' to return the negative of an object
+        
+        Parameters
+        ----------
+        self: AD class instance or float
+             Current AD instance
+        
+        Returns
+        -------
+        A new AD class instance with opposite function value and derivative
+        
+        Examples
+        --------
+        >>> x1 = AD(1., {'x1':1})
+        >>> f_x1 = -x1
+        >>> print(f_x1.func_val, f_x1.partial_dict)
+        -1.0 {'x1': -1}
+        >>> x2 = 3*x1
+        >>> f_x2_x1 = -x2 + x1
+        >>> print(f_x2_x1.func_val, f_x2_x1.partial_dict)
+        -2.0 {'x1': -2}
+        """
+        # Pass to __rmul__ via multiply by float
+        return self.__rmul__(-1)
+
 
     @staticmethod
     def sin(x):
