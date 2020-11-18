@@ -62,20 +62,47 @@ def test_log(trig_cls, trig_var):
     assert f1.partial_dict['x1'] == 1/(np.pi/4)
     assert f2 == np.log(np.pi/4)
 
+def test_exp(basic_cls, basic_var):
+    f1 = boomdiff.AD.exp(basic_cls)
+    f2 = boomdiff.AD.exp(basic_var)
+
+    assert f1.func_val == np.e**(2)
+    assert f1.partial_dict['x1'] == np.e**(2)
+    assert f2 == np.exp(0.5)
+
 def test_ops(basic_cls, basic_var):
     assert (basic_cls + basic_var).func_val == 2.5
     assert (basic_var + basic_cls).func_val == 2.5
     assert (basic_cls + basic_cls).func_val == 4
-    #assert (basic_cls + basic_cls).func_val == 2.5
+    assert (basic_cls + basic_var).partial_dict['x1']  == 1
+    assert (basic_var + basic_cls).partial_dict['x1']  == 1
+    assert (basic_cls + basic_cls).partial_dict['x1']  == 2
+
 
     assert (basic_cls - basic_var).func_val == 1.5
     assert (basic_var - basic_cls).func_val == -1.5
     assert (basic_cls - basic_cls).func_val == 0
+    assert (basic_cls - basic_var).partial_dict['x1']  == 1
+    assert (basic_var - basic_cls).partial_dict['x1']  == -1
+    assert (basic_cls - basic_cls).partial_dict['x1']  == 0
 
     assert (basic_cls * basic_var).func_val == 1
     assert (basic_var * basic_cls).func_val == 1
     assert (basic_cls * basic_cls).func_val == 4
+    assert (basic_cls * basic_var).partial_dict['x1']  == 0.5
+    assert (basic_var * basic_cls).partial_dict['x1']  == 0.5
+    assert (basic_cls * basic_cls).partial_dict['x1']  == 4
 
     assert (basic_cls / basic_var).func_val == 4
     assert (basic_var / basic_cls).func_val == 0.25
     assert (basic_cls / basic_cls).func_val == 1
+    assert (basic_cls / basic_var).partial_dict['x1']  == 2
+    assert (basic_var / basic_cls).partial_dict['x1']  == -0.125
+    assert (basic_cls / basic_cls).partial_dict['x1']  == 0
+
+    assert (basic_cls**basic_var).func_val == 1.4142135623730951
+    assert (basic_var**basic_cls).func_val == 0.25
+    assert (basic_cls**basic_cls).func_val == 4
+    assert (basic_cls**basic_var).partial_dict['x1']  == 0.3535533905932738
+    assert (basic_var**basic_cls).partial_dict['x1']  == -0.17328679513998632
+    assert (basic_cls**basic_cls).partial_dict['x1']  == 6.772588722239782
