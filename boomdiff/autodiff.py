@@ -25,6 +25,7 @@ class AD():
         {'x1': 1}
         """
 
+
         # Set function value if int or float; else raise error
         if isinstance(eval_pt, (int, float)):
             self.func_val = eval_pt
@@ -78,6 +79,9 @@ class AD():
         else:
             raise ValueError("att must be either 'func_val' or 'partial_dict'")
         
+
+    def __repr__(self):
+        return f'{self.func_val} ({self.partial_dict})'
 
     def __add__(self, other):
         """Overload addition operation '+'
@@ -258,6 +262,8 @@ class AD():
             other_var_keys = list(other.partial_dict.keys())
             # At this moment, we assume all have one variable, need to be fixed, TODO
             new_der_dict = {self_var_keys[0]: self.partial_dict[self_var_keys[0]]*other.func_val + self.func_val*other.partial_dict[self_var_keys[0]]}
+            #print(new_der_dict)
+            #print(self.partial_dict)
             return AD(self.func_val*other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
@@ -336,7 +342,7 @@ class AD():
             other_var_keys = list(other.partial_dict.keys())
             # At this moment, we assume all have one variable, need to be fixed, TODO
             new_der_value = (self.partial_dict[self_var_keys[0]]*other.func_val - other.partial_dict[self_var_keys[0]]*self.func_val)/(other.func_val**2)
-            new_der_dict = {self_var_keys[0]: new_der_value} 
+            new_der_dict = {self_var_keys[0]: new_der_value}
             return AD(self.func_val/other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
@@ -351,10 +357,10 @@ class AD():
         Parameters
         ----------
         other : AD class instance or float
-            Elements to be multiplied to self. Can be a AD class instance, which 
+            Elements to be multiplied to self. Can be a AD class instance, which
             will update function value and partial derivative dictionary; Or a con-
             -stant, which will only update function value.
-        
+
         Returns
         -------
         A new AD class instance with updated information
@@ -382,10 +388,86 @@ class AD():
             return AD(other/self.func_val, new_der_dict)
 
     def __pow__(self, other):
-        pass # TODO
+        """Overload power operation '*'
+
+        Parameters
+        ----------
+        other : AD class instance or float
+            Elements to be multiplied to self. Can be a AD class instance, which
+            will update function value and partial derivative dictionary; Or a con-
+            -stant, which will only update function value.
+
+        Returns
+        -------
+        A new AD class instance with updated information
+
+        Examples
+        --------
+        >>> x = AD(2, {'x1': 1})
+        >>> print(x**3)
+        8 ({'x1': 12})
+
+        >>> x = AD(2, {'x1': 1.})
+        >>> f1 = AD.sin(x**3)
+        >>> print(f1**3)
+        0.9684132754691923 ({'x1': -5.1271113703104945})
+        """
+        try:
+            # First try as other is an AD class instance
+            # Give the variable list for self object
+            self_var_keys = list(self.partial_dict.keys())
+            # Give the variable list for other object
+            other_var_keys = list(other.partial_dict.keys())
+            # At this moment, we assume all have one variable, need to be fixed, TODO
+            new_der_value = self.func_val**other.func_val * \
+                            (other.func_val * self.partial_dict[self_var_keys[0]] / self.func_val +\
+                            AD.log(self.func_val) * other.partial_dict[other_var_keys[0]])
+            new_der_dict = {self_var_keys[0]: new_der_value}
+            return AD(self.func_val**other.func_val, new_der_dict)
+
+        except AttributeError:
+            # If other is not an AD class instance, treat as a constant
+            self_var_keys = list(self.partial_dict.keys())
+            # At this moment, we assume all have one variable, need to be fixed, TODO
+            new_der_dict = {self_var_keys[0]: other * self.partial_dict[self_var_keys[0]]*self.func_val**(other-1)}
+            return AD(self.func_val**other, new_der_dict)
 
     def __rpow__(self, other):
-        pass # TODO
+        """Overload right power operation '*'
+
+        Parameters
+        ----------
+        other : AD class instance or float
+            Elements to be multiplied to self. Can be a AD class instance, which
+            will update function value and partial derivative dictionary; Or a con-
+            -stant, which will only update function value.
+
+        Returns
+        -------
+        A new AD class instance with updated information
+
+        Examples
+        --------
+        >>> x = AD(2, {'x1': 1})
+        >>> print(3**x)
+        9 ({'x1': 9.887510598012987})
+
+        >>> x = AD(2, {'x1': 1.})
+        >>> f1 = AD.sin(3**x)
+        >>> print(f1**3)
+        0.06999488183019169 ({'x1': -4.5902134148312985})
+        """
+        if isinstance(other, AD):
+            # First try as other is an AD class instance
+            return other.__pow__(self)
+        else:
+            # if other is not an AD class instance, treat as a constant
+            self_var_keys = list(self.partial_dict.keys())
+
+            # At this moment, we assume all have one variable, need to be fixed, TODO
+            new_der_value = other**self.func_val * np.log(other) * self.partial_dict[self_var_keys[0]]
+            new_der_dict = {self_var_keys[0]: new_der_value}
+            return AD(other**self.func_val, new_der_dict)
     
     def __neg__(self):
         """Overload '-' to return the negative of an object
@@ -412,7 +494,7 @@ class AD():
         """
         # Pass to __rmul__ via multiply by float
         return self.__rmul__(-1)
-    
+
 
     @staticmethod
     def sin(x):
@@ -436,15 +518,6 @@ class AD():
         >>> print(x2)
         1.2246467991473532e-16
         """
-        try:
-            # First try as x is an AD instance
-            new_der_dict = x.partial_dict.copy()
-            for var in new_der_dict.keys():
-                new_der_dict[var] = np.cos(x.func_val)*new_der_dict[var]
-            return AD(np.sin(x.func_val), new_der_dict)
-        except AttributeError:
-            # if x is not an AD class instance, treat as a constant
-            return np.sin(x)
 
         try:
             # First try as x is an AD instance
@@ -469,7 +542,7 @@ class AD():
            -ch will give a constant output
 
         Returns
-        ------- 
+        -------
         A new AD class with updated information
 
         Examples
@@ -504,7 +577,7 @@ class AD():
            -ch will give a constant output
 
         Returns
-        ------- 
+        -------
         A new AD class with updated information
 
         Examples
@@ -539,7 +612,7 @@ class AD():
            -ch will give a constant output
 
         Returns
-        ------- 
+        -------
         A new AD class with updated information
 
         Examples
@@ -561,7 +634,33 @@ class AD():
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.log(x)
-        
+
+    @staticmethod
+    def exp(x):
+        """A static method to calculate the natrual an exponent function of a AD instance, or a float
+
+        Parameters
+        ----------
+        x: AD class instance or float, in radians
+           Elements to be operated an exponent. Can be an AD class instance, which
+           will update function value and partial derivative dictionary; or a constant, whi-
+           -ch will give a constant output
+
+        Returns
+        -------
+        A new AD class with updated information
+
+        Examples
+        --------
+        >>> x = AD(2, {'x1': 1.})
+        >>> print(AD.exp(x))
+        7.3890560989306495 ({'x1': 7.3890560989306495})
+        >>> x2 = 2
+        >>> print(AD.exp(x2))
+        7.3890560989306495
+        """
+        return np.e**x
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
