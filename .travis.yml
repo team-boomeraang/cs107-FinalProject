@@ -12,7 +12,7 @@ install: true
 
 # Run pytest across all directories
 script:
-    - pytest --cov=./boomdiff
+        - pytest --cov=./boomdiff --doctest-modules
 
 after_success:
     - codecov
