@@ -34,13 +34,13 @@ class AD():
         # Set partial derivative dictionary
         # Will assume form of x_1, ..., x_n
         if not isinstance(der_dict, dict):
-            raise TypeError('der_dict must be type dict')
+            raise ValueError('der_dict must be type dict')
         try:  
             for key, val in der_dict.items():
                 assert isinstance(der_dict[key], (int, float))
             self.partial_dict = der_dict
         except:
-            raise AssertionError('All derivatives must be type int or float.')
+            raise ValueError('All derivatives must be type int or float.')
 
     def set_params(self, att, val):
         """Set parameters for class; to be used in selective cases only
@@ -56,7 +56,7 @@ class AD():
         --------
         >>> x = AD(1)
         >>> x.set_params('func_val', 3.4)
-        >>> x.set_params('partial_dict', {'x1':2})
+        >>> x.set_params('partial_dict', {'x1': 2})
         >>> print(x.func_val, x.partial_dict)
         3.4 {'x1': 2}
         """
@@ -68,7 +68,13 @@ class AD():
         elif att == 'partial_dict':
             if not isinstance(val, dict):
                 raise ValueError("If att='partial_dict', val must be type dictionary")
-            self.partial_dict = val
+            # Check that all values of passed dictionary are integers or floats
+            try:
+                for k, v in val.items():
+                    assert isinstance(val[k], (int, float))
+                self.partial_dict = val
+            except:
+                raise ValueError('All values of partial_dict must be int or float')
         else:
             raise ValueError("att must be either 'func_val' or 'partial_dict'")
         
