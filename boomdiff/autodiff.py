@@ -36,7 +36,7 @@ class AD():
         # Will assume form of x_1, ..., x_n
         if not isinstance(der_dict, dict):
             raise ValueError('der_dict must be type dict')
-        try:  
+        try:
             for key, val in der_dict.items():
                 assert isinstance(der_dict[key], (int, float))
             self.partial_dict = der_dict
@@ -45,14 +45,14 @@ class AD():
 
     def set_params(self, att, val):
         """Set parameters for class; to be used in selective cases only
-        
+
         Inputs
         ------
         att: string
             Must be passed as a string. One of func_val or partial_dict.
         val: float, int, dictionary
             If att == 'func_val', must be int or float. Else must be dictionary.
-        
+
         Examples
         --------
         >>> x = AD(1)
@@ -78,7 +78,7 @@ class AD():
                 raise ValueError('All values of partial_dict must be int or float')
         else:
             raise ValueError("att must be either 'func_val' or 'partial_dict'")
-        
+
 
     def __repr__(self):
         return f'{self.func_val} ({self.partial_dict})'
@@ -388,7 +388,7 @@ class AD():
             return AD(other/self.func_val, new_der_dict)
 
     def __pow__(self, other):
-        """Overload power operation '*'
+        """Overload power operation '**'
 
         Parameters
         ----------
@@ -468,19 +468,19 @@ class AD():
             new_der_value = other**self.func_val * np.log(other) * self.partial_dict[self_var_keys[0]]
             new_der_dict = {self_var_keys[0]: new_der_value}
             return AD(other**self.func_val, new_der_dict)
-    
+
     def __neg__(self):
         """Overload '-' to return the negative of an object
-        
+
         Parameters
         ----------
         self: AD class instance or float
              Current AD instance
-        
+
         Returns
         -------
         A new AD class instance with opposite function value and derivative
-        
+
         Examples
         --------
         >>> x1 = AD(1., {'x1':1})
@@ -537,7 +537,7 @@ class AD():
         Parameters
         ----------
         x: AD class instance or float, in radians
-           Elements to be operated a consine operator. Can be an AD class instance, whichi
+           Elements to be operated a cosine operator. Can be an AD class instance, which
            will update function value and partial derivative dictionary; or a constant, whi-
            -ch will give a constant output
 
