@@ -25,16 +25,53 @@ class AD():
         {'x1': 1}
         """
 
-        # Set function string
-        self.func_string = ''
-        self.func_val = eval_pt
+        # Set function value if int or float; else raise error
+        if isinstance(eval_pt, (int, float)):
+            self.func_val = eval_pt
+        else:
+            raise ValueError('Please specify a float or integer value.')
 
         # Set partial derivative dictionary
         # Will assume form of x_1, ..., x_n
-        self.partial_dict = der_dict
+        if not isinstance(der_dict, dict):
+            raise TypeError('der_dict must be type dict')
+        try:  
+            for key, val in der_dict.items():
+                assert isinstance(der_dict[key], (int, float))
+            self.partial_dict = der_dict
+        except:
+            raise AssertionError('All derivatives must be type int or float.')
 
-    def set_params(self, params):
-        pass # TODO
+    def set_params(self, att, val):
+        """Set parameters for class; to be used in selective cases only
+        
+        Inputs
+        ------
+        att: string
+            Must be passed as a string. One of func_val or partial_dict.
+        val: float, int, dictionary
+            If att == 'func_val', must be int or float. Else must be dictionary.
+        
+        Examples
+        --------
+        >>> x = AD(1)
+        >>> x.set_params('func_val', 3.4)
+        >>> x.set_params('partial_dict', {'x1':2})
+        >>> print(x.func_val, x.partial_dict)
+        3.4 {'x1': 2}
+        """
+        if att == 'func_val':
+            # Implement same check as constructor
+            if not isinstance(val, (float, int)):
+                raise ValueError("val must be type float or int")
+            self.func_val = val
+        elif att == 'partial_dict':
+            if not isinstance(val, dict):
+                raise ValueError("If att='partial_dict', val must be type dictionary")
+            self.partial_dict = val
+        else:
+            raise ValueError("att must be either 'func_val' or 'partial_dict'")
+        
 
     def __add__(self, other):
         """Overload addition operation '+'
