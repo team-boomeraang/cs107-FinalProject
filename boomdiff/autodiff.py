@@ -148,15 +148,12 @@ class AD():
         >>> print(f1.func_val, f1.partial_dict)
         13.6 {'x1': 1}
         """
-        if isinstance(other, AD):
-            # First try as other is an AD class instance
-            return other.__add__(self)
-        else:
-            # If other is not an AD class instance, treat as a constant
-            self_var_keys = list(self.partial_dict.keys())
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_dict = {self_var_keys[0]: self.partial_dict[self_var_keys[0]]}
-            return AD(other+self.func_val, new_der_dict)
+        assert isinstance(other,(int, float)), "All values should be real float or int values!"
+        # treat as a constant
+        self_var_keys = list(self.partial_dict.keys())
+        # At this moment, we assume all have one variable, need to be fixed, TODO
+        new_der_dict = {self_var_keys[0]: self.partial_dict[self_var_keys[0]]}
+        return AD(other+self.func_val, new_der_dict)
 
 
     def __sub__(self, other):
@@ -220,15 +217,12 @@ class AD():
         >>> print(f1.func_val, f1.partial_dict)
         6.4 {'x1': -1}
         """
-        if isinstance(other, AD):
-            # First try as other is an AD class instance
-            return other.__sub__(self)
-        else:
-            # If other is not an AD class instance, treat as a constant
-            self_var_keys = list(self.partial_dict.keys())
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_dict = {self_var_keys[0]: -self.partial_dict[self_var_keys[0]]}
-            return AD(other-self.func_val, new_der_dict)
+        assert isinstance(other,(int, float)), "All values should be real float or int values!"
+        # If other is not an AD class instance, treat as a constant
+        self_var_keys = list(self.partial_dict.keys())
+        # At this moment, we assume all have one variable, need to be fixed, TODO
+        new_der_dict = {self_var_keys[0]: -self.partial_dict[self_var_keys[0]]}
+        return AD(other-self.func_val, new_der_dict)
 
     def __mul__(self, other):
         """Overload multiplication operation '*'
@@ -302,15 +296,12 @@ class AD():
         >>> print(f2.func_val, f2.partial_dict)
         20.0 {'x1': 54.0}
         """
-        if isinstance(other, AD):
-            # First try as other is an AD class instance
-            return other.__mul__(self)
-        else:
-            # if other is not an AD class instance, treat as a constant
-            self_var_keys = list(self.partial_dict.keys())
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_dict = {self_var_keys[0]: other*self.partial_dict[self_var_keys[0]]}
-            return AD(other*self.func_val, new_der_dict)
+        assert isinstance(other,(int, float)), "All values should be real float or int values!"
+        # if other is not an AD class instance, treat as a constant
+        self_var_keys = list(self.partial_dict.keys())
+        # At this moment, we assume all have one variable, need to be fixed, TODO
+        new_der_dict = {self_var_keys[0]: other*self.partial_dict[self_var_keys[0]]}
+        return AD(other*self.func_val, new_der_dict)
 
     def __truediv__(self, other):
         """Overload division operation '/'
@@ -379,16 +370,13 @@ class AD():
         >>> print(f2.func_val, f2.partial_dict)
         2.0 {'x1': 1.4}
         """
-        if isinstance(other, AD):
-            # First try as other is an AD class instance
-            return other.__truediv__(self)
-        else:
-            # if other is not an AD class instance, treat as a constant
-            self_var_keys = list(self.partial_dict.keys())
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_value = -other*self.partial_dict[self_var_keys[0]]/(self.func_val**2)
-            new_der_dict = {self_var_keys[0]: new_der_value}
-            return AD(other/self.func_val, new_der_dict)
+        assert isinstance(other,(int, float)), "All values should be real float or int values!"
+        # if other is not an AD class instance, treat as a constant
+        self_var_keys = list(self.partial_dict.keys())
+        # At this moment, we assume all have one variable, need to be fixed, TODO
+        new_der_value = -other*self.partial_dict[self_var_keys[0]]/(self.func_val**2)
+        new_der_dict = {self_var_keys[0]: new_der_value}
+        return AD(other/self.func_val, new_der_dict)
 
     def __pow__(self, other):
         """Overload power operation '**'
@@ -460,18 +448,15 @@ class AD():
         >>> print(f1**3)
         0.06999488183019169 ({'x1': -4.5902134148312985})
         """
-        if isinstance(other, AD):
-            # First try as other is an AD class instance
-            return other.__pow__(self)
-        else:
-            # if other is not an AD class instance, treat as a constant
-            self_var_keys = list(self.partial_dict.keys())
+        assert isinstance(other,(int, float)), "All values should be real float or int values!"
+        # if other is not an AD class instance, treat as a constant
+        self_var_keys = list(self.partial_dict.keys())
 
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_value = other**self.func_val * np.log(other) * self.partial_dict[self_var_keys[0]]
-            new_der_dict = {self_var_keys[0]: new_der_value}
-            return AD(other**self.func_val, new_der_dict)
-    
+        # At this moment, we assume all have one variable, need to be fixed, TODO
+        new_der_value = other**self.func_val * np.log(other) * self.partial_dict[self_var_keys[0]]
+        new_der_dict = {self_var_keys[0]: new_der_value}
+        return AD(other**self.func_val, new_der_dict)
+
     def __neg__(self):
         """Overload '-' to return the negative of an object
         
