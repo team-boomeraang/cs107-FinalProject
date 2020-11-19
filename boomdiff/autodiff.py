@@ -30,18 +30,18 @@ class AD():
         if isinstance(eval_pt, (int, float)):
             self.func_val = eval_pt
         else:
-            raise ValueError('Please specify a float or integer value.')
+            raise ValueError('All valuess should be real float or integer numbers!')
 
         # Set partial derivative dictionary
         # Will assume form of x_1, ..., x_n
         if not isinstance(der_dict, dict):
-            raise ValueError('der_dict must be type dict')
+            raise ValueError('der_dict must be type dict!')
         try:
             for key, val in der_dict.items():
                 assert isinstance(der_dict[key], (int, float))
             self.partial_dict = der_dict
         except:
-            raise ValueError('All derivatives must be type int or float.')
+            raise ValueError('All derivatives must be type int or float, to make the expression real and valid!')
 
     def set_params(self, att, val):
         """Set parameters for class; to be used in selective cases only
