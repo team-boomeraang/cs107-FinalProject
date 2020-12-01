@@ -168,24 +168,20 @@ class AD():
         Examples
         --------
         >>> x1 = AD(3.6, {'x1': 1})
-        >>> print(x1.func_val, x1.partial_dict)
-        3.6 {'x1': 1}
         >>> f1 = x1 - 10
         >>> print(f1.func_val, f1.partial_dict)
         -6.4 {'x1': 1}
-        >>> x2 = AD(2.0, {'x1': 3.4})
+        >>> x2 = AD(2.0, {'x2': 3.4})
         >>> f2 = x1 - x2
         >>> print(f2.func_val, f2.partial_dict)
-        1.6 {'x1': -2.4}
+        1.6 {'x1': 1, 'x2': -3.4}
         """
         try:
             # First try as other is an AD class instance
-            # Give the variable list for self object
-            self_var_keys = list(self.partial_dict.keys())
-            # Give the variable list for other object
-            other_var_keys = list(other.partial_dict.keys())
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_dict = {self_var_keys[0]: self.partial_dict[self_var_keys[0]] - other.partial_dict[self_var_keys[0]]}
+            # Combine the partial_dict of self and other, for common keys, add the value; else, append the dictionary
+            new_der_dict = {}
+            for k in itertools.chain(self.partial_dict.keys(), other.partial_dict.keys()):
+                new_der_dict[k] = self.partial_dict.get(k,0) - other.partial_dict.get(k,0)
             return AD(self.func_val-other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
@@ -207,16 +203,16 @@ class AD():
 
         Examples
         --------
-        >>> x1 = AD(3.6, {'x1': 1})
-        >>> f1 = 10 - x1
+        >>> f0 = AD(3.6, {'x1': 1, 'x2': 3})
+        >>> f1 = 10 - f0
         >>> print(f1.func_val, f1.partial_dict)
-        6.4 {'x1': -1}
+        6.4 {'x1': -1, 'x2': -3}
         """
         assert isinstance(other,(int, float)), "All values should be real float or int values!"
         # If other is not an AD class instance, treat as a constant
-        self_var_keys = list(self.partial_dict.keys())
-        # At this moment, we assume all have one variable, need to be fixed, TODO
-        new_der_dict = {self_var_keys[0]: -self.partial_dict[self_var_keys[0]]}
+        new_der_dict = {}
+        for key, value in self.partial_dict.items():
+            new_der_dict[key] = -value
         return AD(other-self.func_val, new_der_dict)
 
     def __mul__(self, other):
