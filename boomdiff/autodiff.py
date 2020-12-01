@@ -139,6 +139,10 @@ class AD():
 
         Examples
         --------
+        >>> x1 = AD(3.6, {'x1': 1})
+        >>> f1 = 10 + x1
+        >>> print(f1.func_val, f1.partial_dict)
+        13.6 {'x1': 1}
         >>> f0 = AD(3.6, {'x1': 1, 'x2': 4})
         >>> f1 = 10 + f0
         >>> print(f1.func_val, f1.partial_dict)
@@ -203,6 +207,10 @@ class AD():
 
         Examples
         --------
+        >>> x1 = AD(3.6, {'x1': 1})
+        >>> f1 = 10 - x1
+        >>> print(f1.func_val, f1.partial_dict) 
+        6.4 {'x1': -1}
         >>> f0 = AD(3.6, {'x1': 1, 'x2': 3})
         >>> f1 = 10 - f0
         >>> print(f1.func_val, f1.partial_dict)
