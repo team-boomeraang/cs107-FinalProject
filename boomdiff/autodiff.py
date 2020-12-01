@@ -182,7 +182,7 @@ class AD():
         """
         try:
             # First try as other is an AD class instance
-            # Combine the partial_dict of self and other, for common keys, add the value; else, append the dictionary
+            # Combine the partial_dict of self and other, for common keys, subtract the value; else, append the dictionary
             new_der_dict = {}
             for k in itertools.chain(self.partial_dict.keys(), other.partial_dict.keys()):
                 new_der_dict[k] = self.partial_dict.get(k,0) - other.partial_dict.get(k,0)
@@ -249,23 +249,28 @@ class AD():
         >>> f2 = f1 * x2
         >>> print(f2.func_val, f2.partial_dict)
         20.0 {'x1': 54.0}
+        >>> a = AD(2, {'a': 1})
+        >>> b = AD(4, {'b': 1})
+        >>> f3 = a*b
+        >>> print(f3.func_val, f3.partial_dict)
+        8 {'a': 4, 'b': 2}
+        >>> f4 = f3*b
+        >>> print(f4.func_val, f4.partial_dict)
+        32 {'a': 16, 'b': 16}
         """
         try:
             # First try as other is an AD class instance
-            # Give the variable list for self object
-            self_var_keys = list(self.partial_dict.keys())
-            # Give the variable list for other object
-            other_var_keys = list(other.partial_dict.keys())
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_dict = {self_var_keys[0]: self.partial_dict[self_var_keys[0]]*other.func_val + self.func_val*other.partial_dict[self_var_keys[0]]}
+            new_der_dict = {}
+            for k in itertools.chain(self.partial_dict.keys(), other.partial_dict.keys()):
+                new_der_dict[k] = self.partial_dict.get(k,0)*other.func_val + other.partial_dict.get(k,0)*self.func_val
             #print(new_der_dict)
             #print(self.partial_dict)
             return AD(self.func_val*other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
-            self_var_keys = list(self.partial_dict.keys())
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_dict = {self_var_keys[0]: self.partial_dict[self_var_keys[0]]*other}
+            new_der_dict = {}
+            for key, value in self.partial_dict.items():
+                new_der_dict[key] = value*other
             return AD(self.func_val*other, new_der_dict)
 
     def __rmul__(self, other):
@@ -294,12 +299,17 @@ class AD():
         >>> f2 = f1 * x2
         >>> print(f2.func_val, f2.partial_dict)
         20.0 {'x1': 54.0}
+        >>> a = AD(2, {'a': 1})
+        >>> b = AD(4, {'b': 1})
+        >>> f3 = (4*a + 6*b)*a
+        >>> print(f3.func_val, f3.partial_dict)
+        64 {'a': 40, 'b': 12}
         """
         assert isinstance(other,(int, float)), "All values should be real float or int values!"
         # if other is not an AD class instance, treat as a constant
-        self_var_keys = list(self.partial_dict.keys())
-        # At this moment, we assume all have one variable, need to be fixed, TODO
-        new_der_dict = {self_var_keys[0]: other*self.partial_dict[self_var_keys[0]]}
+        new_der_dict = {}
+        for key, value in self.partial_dict.items():
+            new_der_dict[key] = value*other
         return AD(other*self.func_val, new_der_dict)
 
     def __truediv__(self, other):
