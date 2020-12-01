@@ -499,6 +499,9 @@ class AD():
         >>> f_x2_x1 = -x2 + x1
         >>> print(f_x2_x1.func_val, f_x2_x1.partial_dict)
         -2.0 {'x1': -2}
+        >>> f2 = AD(2, {'a': 1}) + AD(4, {'b': 1})
+        >>> print(-f2)
+        -6 ({'a': -1, 'b': -1})
         """
         # Pass to __rmul__ via multiply by float
         return self.__rmul__(-1)
