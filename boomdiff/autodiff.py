@@ -336,22 +336,23 @@ class AD():
         >>> f2 = x2/x1
         >>> print(f2.func_val, f2.partial_dict)
         3.4 {'x1': 0.0}
+        >>> a = AD(2, {'a': 1})
+        >>> b = AD(4, {'b': 1})
+        >>> f3 = a/b
+        >>> print(f3.func_val, f3.partial_dict)
+        0.5 {'a': 0.25, 'b': -0.125}
         """
         try:
-            # First try as other is an AD class instance
-            # Give the variable list for self object
-            self_var_keys = list(self.partial_dict.keys())
-            # Give the variable list for other object
-            other_var_keys = list(other.partial_dict.keys())
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_value = (self.partial_dict[self_var_keys[0]]*other.func_val - other.partial_dict[self_var_keys[0]]*self.func_val)/(other.func_val**2)
-            new_der_dict = {self_var_keys[0]: new_der_value}
+            # first try as other is an ad class instance
+            new_der_dict = {}
+            for k in itertools.chain(self.partial_dict.keys(), other.partial_dict.keys()):
+                new_der_dict[k] = (self.partial_dict.get(k,0)*other.func_val - other.partial_dict.get(k,0)*self.func_val)/(other.func_val**2)
             return AD(self.func_val/other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
-            self_var_keys = list(self.partial_dict.keys())
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_dict = {self_var_keys[0]: self.partial_dict[self_var_keys[0]]/other}
+            new_der_dict = {}
+            for key, value in self.partial_dict.items():
+                new_der_dict[key] = value/other
             return AD(self.func_val/other, new_der_dict)
 
     def __rtruediv__(self, other):
@@ -378,13 +379,17 @@ class AD():
         >>> f2 = x2/x1
         >>> print(f2.func_val, f2.partial_dict)
         2.0 {'x1': 1.4}
+        >>> a = AD(2, {'a': 1})
+        >>> b = AD(4, {'b': 1})
+        >>> f3 = 16./(a*b)
+        >>> print(f3.func_val, f3.partial_dict)
+        2.0 {'a': -1.0, 'b': -0.5}
         """
         assert isinstance(other,(int, float)), "All values should be real float or int values!"
         # if other is not an AD class instance, treat as a constant
-        self_var_keys = list(self.partial_dict.keys())
-        # At this moment, we assume all have one variable, need to be fixed, TODO
-        new_der_value = -other*self.partial_dict[self_var_keys[0]]/(self.func_val**2)
-        new_der_dict = {self_var_keys[0]: new_der_value}
+        new_der_dict = {}
+        for key, value in self.partial_dict.items():
+            new_der_dict[key] = -other*value/(self.func_val**2)
         return AD(other/self.func_val, new_der_dict)
 
     def __pow__(self, other):
