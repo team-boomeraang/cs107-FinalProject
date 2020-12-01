@@ -26,23 +26,23 @@ In terms of tasks remaining, we have the following:
 
 | Task                                                         | Team member | Status |
 | ------------------------------------------------------------ | ----------- | ------ |
-| Update existing functions for multiple inputs, where applicable |             |        |
-| `__eq__`, `__neq__`, other comparison operators              |             |        |
-| inverse trig functions (arcsine, arctan, arccos)             |             |        |
-| hyperbolic functions (sinh, tanh, cosh)                      |             |        |
-| logistic function                                            |             |        |
-| logarithm - expand to any base with default of e             |             |        |
-| square root                                                  |             |        |
+| Update existing functions for multiple inputs, where applicable | Minhuan     |        |
+| `__eq__`, `__neq__`, other comparison operators              | Kevin       |        |
+| inverse trig functions (arcsine, arctan, arccos)             | Oksana      |        |
+| hyperbolic functions (sinh, tanh, cosh)                      | Timothy     |        |
+| logistic function                                            | Kevin       |        |
+| logarithm - expand to any base with default of e             | Timothy     |        |
+| square root                                                  | Timothy     |        |
 
 ##### Documentation, software organization, deliverables
 
 | Task                                                         | Team member | Status      |
 | ------------------------------------------------------------ | ----------- | ----------- |
 | Discuss reorganization suggested by David                    | All         |             |
-| (TBD) Reorganize software package for optimization           |             |             |
+| (TBD) Reorganize software package for optimization           | Kevin       |             |
 | Add extension documentation to reflect implementation details |             |             |
 | Revise background & how-to-use sections                      |             |             |
-| Broader impact statement                                     |             |             |
+| Broader impact statement                                     | Timothy     |             |
 | Plan video & record                                          | All         |             |
 | Make package pip-installable                                 | Kevin       | In progress |
 
@@ -50,7 +50,10 @@ In terms of tasks remaining, we have the following:
 
 | Task                                                         | Team member | Status |
 | ------------------------------------------------------------ | ----------- | ------ |
-| Base objective function class                                |             |        |
-| Implement gradient descent optimization                      |             |        |
-| Implement random coordinate descent (or other opt. algorithm) |             |        |
+| Base objective function class                                | Minhuan     |        |
+| 'set_params' method                                          | Minhuan     |        |
+| 'optimize' method                                            | Oksana      |        |
+| Implement gradient descent optimization                      | Oksana      |        |
+| Implement random coordinate descent (or other opt. algorithm) | TBD         |        |
+| Implement BFGS optimization                                  | Minhuan     |        |
 
