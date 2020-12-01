@@ -529,7 +529,6 @@ class AD():
         >>> print(x2)
         1.2246467991473532e-16
         """
-
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
