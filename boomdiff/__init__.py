@@ -1,2 +1,2 @@
-from . import ad
+from .autodiff import AD
 from . import optimize

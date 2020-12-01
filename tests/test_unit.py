@@ -1,5 +1,5 @@
 import boomdiff
-from boomdiff.ad import AD
+from boomdiff import AD
 import doctest
 import pytest
 

@@ -1,12 +1,13 @@
 # check out https://docs.pytest.org/en/stable/getting-started.html#getstarted
-import boomdiff.ad as ad
+import boomdiff
+from boomdiff import AD
 import pytest
 import numpy as np
 
 #creating templates that will be used to test the functions
 @pytest.fixture
 def trig_cls():
-    x = ad.AD(np.pi/4, {'x1': 1.})
+    x = AD(np.pi/4, {'x1': 1.})
     return x
 
 @pytest.fixture
@@ -16,7 +17,7 @@ def trig_var():
 
 @pytest.fixture
 def basic_cls():
-    x = ad.AD(2, {'x1': 1.})
+    x = AD(2, {'x1': 1.})
     return x
 
 @pytest.fixture
@@ -31,40 +32,40 @@ def test_init(trig_cls):
     assert len(trig_cls.partial_dict.keys()) == 1
 
 def test_sin(trig_cls, trig_var):
-    f1 = ad.AD.sin(trig_cls)
-    f2 = ad.AD.sin(trig_var)
+    f1 = AD.sin(trig_cls)
+    f2 = AD.sin(trig_var)
 
     assert f1.func_val == np.sin(np.pi/4)
     assert f1.partial_dict['x1'] == np.cos(np.pi/4)
     assert f2 == np.sin(np.pi/4)
 
 def test_cos(trig_cls, trig_var):
-    f1 = ad.AD.cos(trig_cls)
-    f2 = ad.AD.cos(trig_var)
+    f1 = AD.cos(trig_cls)
+    f2 = AD.cos(trig_var)
 
     assert f1.func_val == np.cos(np.pi/4)
     assert f1.partial_dict['x1'] == -np.sin(np.pi/4)
     assert f2 == np.cos(np.pi/4)
 
 def test_tan(trig_cls, trig_var):
-    f1 = ad.AD.tan(trig_cls)
-    f2 = ad.AD.tan(trig_var)
+    f1 = AD.tan(trig_cls)
+    f2 = AD.tan(trig_var)
 
     assert f1.func_val == np.tan(np.pi/4)
     assert f1.partial_dict['x1'] == 1/(np.cos(np.pi/4)**2)
     assert f2 == np.tan(np.pi/4)
 
 def test_log(trig_cls, trig_var):
-    f1 = ad.AD.log(trig_cls)
-    f2 = ad.AD.log(trig_var)
+    f1 = AD.log(trig_cls)
+    f2 = AD.log(trig_var)
 
     assert f1.func_val == np.log(np.pi/4)
     assert f1.partial_dict['x1'] == 1/(np.pi/4)
     assert f2 == np.log(np.pi/4)
 
 def test_exp(basic_cls, basic_var):
-    f1 = ad.AD.exp(basic_cls)
-    f2 = ad.AD.exp(basic_var)
+    f1 = AD.exp(basic_cls)
+    f2 = AD.exp(basic_var)
 
     assert f1.func_val == np.e**(2)
     assert f1.partial_dict['x1'] == np.e**(2)
