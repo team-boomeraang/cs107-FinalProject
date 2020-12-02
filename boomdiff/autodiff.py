@@ -1,4 +1,5 @@
 import numpy as np
+import itertools
 
 class AD():
 
@@ -21,8 +22,6 @@ class AD():
         >>> x1.partial_dict
         {'x1': 1}
         """
-
-
         # Set function value if int or float; else raise error
         if isinstance(eval_pt, (int, float)):
             self.func_val = eval_pt
@@ -95,25 +94,20 @@ class AD():
         Examples
         --------
         >>> x1 = AD(3.6, {'x1': 1})
-        >>> print(x1.func_val, x1.partial_dict)
-        3.6 {'x1': 1}
-        >>> f1 = x1 + 10
+        >>> x2 = AD(5.2, {'x2': 1.5})
+        >>> f1 = x1 + x2
         >>> print(f1.func_val, f1.partial_dict)
-        13.6 {'x1': 1}
-        >>> x2 = AD(2.0, {'x1': 3.4})
-        >>> f2 = x1 + x2
+        8.8 {'x1': 1, 'x2': 1.5}
+        >>> f2 = f1 + x1
         >>> print(f2.func_val, f2.partial_dict)
-        5.6 {'x1': 4.4}
+        12.4 {'x1': 2, 'x2': 1.5}
         """
-
         try:
             # First try as other is an AD class instance
-            # Give the variable list for self object
-            self_var_keys = list(self.partial_dict.keys())
-            # Give the variable list for other object
-            other_var_keys = list(other.partial_dict.keys())
-            # At this moment, we assume all have one variable, need to be fixed, TODO
-            new_der_dict = {self_var_keys[0]: self.partial_dict[self_var_keys[0]] + other.partial_dict[self_var_keys[0]]}
+            # Combine the partial_dict of self and other, for common keys, add the value; else, append the dictionary
+            new_der_dict = {}
+            for k in itertools.chain(self.partial_dict.keys(), other.partial_dict.keys()):
+                new_der_dict[k] = self.partial_dict.get(k,0) + other.partial_dict.get(k,0)
             return AD(self.func_val+other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
@@ -132,18 +126,16 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x1 = AD(3.6, {'x1': 1})
-        >>> f1 = 10 + x1
+        >>> f0 = AD(3.6, {'x1': 1, 'x2': 4})
+        >>> f1 = 10 + f0
         >>> print(f1.func_val, f1.partial_dict)
-        13.6 {'x1': 1}
+        13.6 {'x1': 1, 'x2': 4}
         """
         assert isinstance(other,(int, float)), "All values should be real float or int values!"
         # treat as a constant
-        self_var_keys = list(self.partial_dict.keys())
-        # At this moment, we assume all have one variable, need to be fixed, TODO
-        new_der_dict = {self_var_keys[0]: self.partial_dict[self_var_keys[0]]}
+        # just return the partial dictionary of the self instance 
+        new_der_dict = dict(self.partial_dict)
         return AD(other+self.func_val, new_der_dict)
-
 
     def __sub__(self, other):
         """Overload subtraction operation '-'
@@ -420,8 +412,7 @@ class AD():
         new_der_value = other**self.func_val * np.log(other) * self.partial_dict[self_var_keys[0]]
         new_der_dict = {self_var_keys[0]: new_der_value}
         return AD(other**self.func_val, new_der_dict)
-    
-    
+
     def __neg__(self):
         """Overload '-' to return the negative of an object
         
@@ -681,7 +672,6 @@ class AD():
             # if x is not an AD class instance, treat as a constant
             return np.cosh(x)
 
-    
     @staticmethod
     def tanh(x):
         """A static method to calculate the hyperbolic tangent function of a AD instance, or a float
@@ -713,10 +703,7 @@ class AD():
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.tanh(x)
-
-    
-    
-    
+          
     @staticmethod
     def exp(x):
         """A static method to calculate the natrual an exponent function of a AD instance, or a float
