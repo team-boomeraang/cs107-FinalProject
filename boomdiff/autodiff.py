@@ -50,7 +50,7 @@ class AD():
         Returns
         -------
         None
-        
+
         Examples
         --------
         >>> x = AD(1)
@@ -137,7 +137,7 @@ class AD():
         """
         assert isinstance(other,(int, float)), "All values should be real float or int values!"
         # treat as a constant
-        # just return the partial dictionary of the self instance 
+        # just return the partial dictionary of the self instance
         new_der_dict = dict(self.partial_dict)
         return AD(other+self.func_val, new_der_dict)
 
@@ -189,7 +189,7 @@ class AD():
         --------
         >>> x1 = AD(3.6, {'x1': 1})
         >>> f1 = 10 - x1
-        >>> print(f1.func_val, f1.partial_dict) 
+        >>> print(f1.func_val, f1.partial_dict)
         6.4 {'x1': -1}
         >>> f0 = AD(3.6, {'x1': 1, 'x2': 3})
         >>> f1 = 10 - f0
@@ -404,8 +404,8 @@ class AD():
             for key, value in self.partial_dict.items():
                 new_der_dict[key] = other * self.func_val**(other-1) * value
             return AD(self.func_val**other, new_der_dict)
-        
-        
+
+
     def __rpow__(self, other):
         """Overload right power operation '**'
         Parameters
@@ -441,7 +441,7 @@ class AD():
 
     def __neg__(self):
         """Overload '-' to return the negative of an object
-        
+
         Parameters
         ----------
         self: AD class instance or float
@@ -449,7 +449,7 @@ class AD():
         Returns
         -------
         A new AD class instance with opposite function value and derivative
-        
+
         Examples
         --------
         >>> x1 = AD(1., {'x1':1})
@@ -564,7 +564,97 @@ class AD():
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.tan(x)
-        
+
+    @staticmethod
+    def arcsin(x):
+        """A static method to calculate the arcsine function of a AD instance, or a float
+        Parameters
+        ----------
+        x: AD class instance or float, in radians
+           Elements to be operated an arcsin operator. Can be an AD class instance, whichi
+           will update function value and partial derivative dictionary; or a constant, whi-
+           -ch will give a constant output
+        Returns
+        -------
+        A new AD class with updated information
+        Examples
+        --------
+        >>> x = AD(0.25, {'x1': 1.})
+        >>> print(AD.arcsin(x))
+        0.25268025514207865 ({'x1': 1.0327955589886444})
+        >>> print(AD.arcsin(0.25))
+        0.25268025514207865
+        """
+        try:
+            # First try as x is an AD instance
+            new_der_dict = x.partial_dict.copy()
+            for var in new_der_dict.keys():
+                new_der_dict[var] = 1 / np.sqrt(1 - x.func_val**2)*new_der_dict[var]
+            return AD(np.arcsin(x.func_val), new_der_dict)
+        except AttributeError:
+            # if x is not an AD class instance, treat as a constant
+            return np.arcsin(x)
+
+    @staticmethod
+    def arccos(x):
+        """A static method to calculate the arccos function of a AD instance, or a float
+        Parameters
+        ----------
+        x: AD class instance or float, in radians
+           Elements to be operated an arccos operator. Can be an AD class instance, which
+           will update function value and partial derivative dictionary; or a constant, whi-
+           -ch will give a constant output
+        Returns
+        -------
+        A new AD class with updated information
+        Examples
+        --------
+        >>> x = AD(0.25, {'x1': 1.})
+        >>> print(AD.arccos(x))
+        1.318116071652818 ({'x1': -1.0327955589886444})
+        >>> print(AD.arccos(0.25))
+        1.318116071652818
+        """
+        try:
+            # First try as x is an AD instance
+            new_der_dict = x.partial_dict.copy()
+            for var in new_der_dict.keys():
+                new_der_dict[var] = - 1 / np.sqrt(1 - x.func_val**2)*new_der_dict[var]
+            return AD(np.arccos(x.func_val), new_der_dict)
+        except AttributeError:
+            # if x is not an AD class instance, treat as a constant
+            return np.arccos(x)
+
+    @staticmethod
+    def arctan(x):
+        """A static method to calculate the arctan function of a AD instance, or a float
+        Parameters
+        ----------
+        x: AD class instance or float, in radians
+           Elements to be operated an arctan operator. Can be an AD class instance, whichi
+           will update function value and partial derivative dictionary; or a constant, whi-
+           -ch will give a constant output
+        Returns
+        -------
+        A new AD class with updated information
+        Examples
+        --------
+        >>> x = AD(0.25, {'x1': 1.})
+        >>> print(AD.arctan(x))
+        0.24497866312686414 ({'x1': 0.9411764705882353})
+        >>> print(AD.arctan(0.25))
+        0.24497866312686414
+        """
+        try:
+            # First try as x is an AD instance
+            new_der_dict = x.partial_dict.copy()
+            for var in new_der_dict.keys():
+                new_der_dict[var] = 1 / (1 + x.func_val**2)*new_der_dict[var]
+            return AD(np.arctan(x.func_val), new_der_dict)
+        except AttributeError:
+            # if x is not an AD class instance, treat as a constant
+            return np.arctan(x)
+
     @staticmethod
     def sqrt(x):
         """Overload power operation 'sqrt'
@@ -577,7 +667,7 @@ class AD():
         Returns
         -------
         A new AD class instance with updated information
-        
+
         Examples
         --------
         >>> x1 = AD(1.0, {'x1': 1.0})
@@ -601,7 +691,7 @@ class AD():
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.sqrt(x)
-        
+
     @staticmethod
     def log(x):
         """A static method to calculate the natrual logrithm function of a AD instance, or a float
@@ -633,7 +723,7 @@ class AD():
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.log(x)
-        
+
     @staticmethod
     def sinh(x):
         """A static method to calculate the hyperbolic sine function of a AD instance, or a float
@@ -731,7 +821,7 @@ class AD():
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.tanh(x)
-          
+
     @staticmethod
     def exp(x):
         """A static method to calculate the natrual an exponent function of a AD instance, or a float

@@ -25,6 +25,16 @@ def basic_var():
     x = 0.5
     return x
 
+@pytest.fixture
+def less1_cls(): #less than 1 variables for inverse trig functions
+    x = AD(0.25, {'x1': 1.})
+    return x
+
+@pytest.fixture
+def less1_var():
+    x = 0.25
+    return x
+
 #testing basic functions
 def test_init(trig_cls):
     assert trig_cls.func_val == np.pi/4
@@ -54,6 +64,30 @@ def test_tan(trig_cls, trig_var):
     assert f1.func_val == np.tan(np.pi/4)
     assert f1.partial_dict['x1'] == 1/(np.cos(np.pi/4)**2)
     assert f2 == np.tan(np.pi/4)
+
+def test_arcsin(less1_cls, less1_var):
+    f1 = AD.arcsin(less1_cls)
+    f2 = AD.arcsin(less1_var)
+
+    assert f1.func_val == np.arcsin(0.25)
+    assert f1.partial_dict['x1'] == 1 / np.sqrt(1 - 0.25**2)
+    assert f2 == np.arcsin(0.25)
+
+def test_arccos(less1_cls, less1_var):
+    f1 = AD.arccos(less1_cls)
+    f2 = AD.arccos(less1_var)
+
+    assert f1.func_val == np.arccos(0.25)
+    assert f1.partial_dict['x1'] == - 1 / np.sqrt(1 - 0.25**2)
+    assert f2 == np.arccos(0.25)
+
+def test_arctan(less1_cls, less1_var):
+    f1 = AD.arctan(less1_cls)
+    f2 = AD.arctan(less1_var)
+
+    assert f1.func_val == np.arctan(0.25)
+    assert f1.partial_dict['x1'] == 1 / (1 + 0.25**2)
+    assert f2 == np.arctan(0.25)
 
 def test_log(trig_cls, trig_var):
     f1 = AD.log(trig_cls)
