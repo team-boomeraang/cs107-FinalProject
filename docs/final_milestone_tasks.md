@@ -24,22 +24,23 @@ In terms of tasks remaining, we have the following:
 
 ##### Forward mode implementation
 
-| Task                                                         | Team member | Status |
-| ------------------------------------------------------------ | ----------- | ------ |
-| Update existing functions for multiple inputs, where applicable | Minhuan     |        |
-| `__eq__`, `__neq__`, other comparison operators              | Kevin       |        |
-| inverse trig functions (arcsine, arctan, arccos)             | Oksana      |        |
-| hyperbolic functions (sinh, tanh, cosh)                      | Timothy     |        |
-| logistic function                                            | Kevin       |        |
-| logarithm - expand to any base with default of e             | Timothy     |        |
-| square root                                                  | Timothy     |        |
+| Task                                                         | Team member | Status      |
+| ------------------------------------------------------------ | ----------- | ----------- |
+| Update existing functions for multiple inputs, where applicable | Minhuan     | Complete    |
+| `__eq__`, `__neq__`, other comparison operators              | Kevin       |             |
+| inverse trig functions (arcsine, arctan, arccos)             | Oksana      | In progress |
+| hyperbolic functions (sinh, tanh, cosh)                      | Timothy     | Complete    |
+| logistic function                                            | Kevin       | Complete    |
+| logarithm - expand to any base with default of e             | Timothy     | In progress |
+| square root                                                  | Timothy     | Complete    |
+| Update base class to support default seed vector             | Kevin       | In progress |
 
 ##### Documentation, software organization, deliverables
 
 | Task                                                         | Team member | Status      |
 | ------------------------------------------------------------ | ----------- | ----------- |
-| Discuss reorganization suggested by David                    | All         |             |
-| (TBD) Reorganize software package for optimization           | Kevin       |             |
+| Discuss reorganization suggested by David                    | All         | Complete    |
+| (TBD) Reorganize software package for optimization           | Kevin       | Complete    |
 | Add extension documentation to reflect implementation details |             |             |
 | Revise background & how-to-use sections                      |             |             |
 | Broader impact statement                                     | Timothy     |             |
@@ -48,12 +49,12 @@ In terms of tasks remaining, we have the following:
 
 ##### Optimization library
 
-| Task                                                         | Team member | Status |
-| ------------------------------------------------------------ | ----------- | ------ |
-| Base objective function class                                | Minhuan     |        |
-| 'set_params' method                                          | Minhuan     |        |
-| 'optimize' method                                            | Oksana      |        |
-| Implement gradient descent optimization                      | Oksana      |        |
-| Implement random coordinate descent (or other opt. algorithm) | TBD         |        |
-| Implement BFGS optimization                                  | Minhuan     |        |
+| Task                                                         | Team member | Status      |
+| ------------------------------------------------------------ | ----------- | ----------- |
+| Base objective function class                                | Minhuan     | In progress |
+| 'set_params' method                                          | Minhuan     |             |
+| 'optimize' method                                            | Oksana      |             |
+| Implement gradient descent optimization                      | Oksana      |             |
+| Implement random coordinate descent (or other opt. algorithm) | TBD         |             |
+| Implement BFGS optimization                                  | Minhuan     |             |
 
