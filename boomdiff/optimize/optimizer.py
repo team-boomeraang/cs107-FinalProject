@@ -145,10 +145,11 @@ class Optimizer():
 
   	def _apply_gradient(self, loss, var_list, grad_dict):
   		"""
+  		Apply the gradient to update variables.
   		This method should be implemeneted in each algorithm subclass
   		"""
   		raise NotImplementedError("Please use subclass with specific algorithms, like boomdiff.optimize.SGD")
-  		
+
 
 
 
