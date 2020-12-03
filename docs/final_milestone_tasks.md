@@ -50,10 +50,10 @@ In terms of tasks remaining, we have the following:
 
 | Task                                                         | Team member | Status |
 | ------------------------------------------------------------ | ----------- | ------ |
-| Base objective function class                                | Minhuan     |        |
-| 'set_params' method                                          | Minhuan     |        |
-| 'optimize' method                                            | Oksana      |        |
-| Implement gradient descent optimization                      | Oksana      |        |
-| Implement random coordinate descent (or other opt. algorithm) | TBD         |        |
-| Implement BFGS optimization                                  | Minhuan     |        |
+| Base objective function class, optimizer.py, Optimizer Main class | Minhuan     | Done   |
+| Gradient_Descent.py, SGD Subclass                            |             |        |
+| BFGS.py, BFGS Subclass                                       |             |        |
+|                                                              |             |        |
+|                                                              |             |        |
+|                                                              |             |        |
 
