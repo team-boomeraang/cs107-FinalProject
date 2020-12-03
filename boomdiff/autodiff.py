@@ -605,13 +605,16 @@ class AD():
     @staticmethod
     def log(x,base = np.e):
         """A static method to calculate the logrithmic function of a AD instance, 
-            or a float for multiple bases, with the default being e
+            or a float for multiple bases, with the default being e. 
         Parameters
         ----------
         x: AD class instance or float, in radians
-           Elements to be operated on a natural logrithm. Can be an AD class instance, which
+           Elements to be operated on a logrithm. Can be an AD class instance, which
            will update function value and partial derivative dictionary; or a constant, whi-
-           -ch will give a constant output. The base 
+           -ch will give a constant output. 
+        Base : Constant integer or float to be used as base in logarithm. 
+            Base is a default of e, but can be changed by entering in after x in log
+            method.
         Returns
         -------
         A new AD class with updated information
