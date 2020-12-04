@@ -3,23 +3,20 @@ import itertools
 
 class AD():
 
-    def __init__(self, eval_pt, name=None, der_dict=None):
+    def __init__(self, eval_pt, der_dict={'x1':1}):
         """Initializes class structure
         Parameters
         ----------
         eval_pt : float
             Value of the current function/variable
-        name: str
-            Name of variable to be included; will automatically
-            set this to a seed value of 1.
         der_dict : dict
-            derivative value dictionary of all variables; default value set to None
+            derivative value dictionary of all variables
         Returns
         -------
         None.
         Examples
         --------
-        >>> x1 = AD(3.6, der_dict = {'x1':1})
+        >>> x1 = AD(3.6, {'x1':1})
         >>> x1.func_val
         3.6
         >>> x1.partial_dict
@@ -30,38 +27,17 @@ class AD():
             self.func_val = eval_pt
         else:
             raise ValueError('All valuess should be real float or integer numbers!')
-            
-        # Set up base functionality - convert all string names to be lowercase
-        # If name and der_dict both not none, ensure that names match
-        if name is not None and der_dict is not None:
-            if [name] != list(der_dict.keys()):
-                raise Exception('name entered must match name of der_dict')            
-        
-        try:
-            name_l = name.lower()
-            self.partial_dict = {}
-            self.partial_dict[name_l] = 1
-            
-        except(AttributeError):
-            if name is None and der_dict is None:
-                self.partial_dict = {'x1': 1}
-            
-            elif name is not None and der_dict is None:
-                if not isinstance(name, str):
-                    raise AttributeError('name must be str')
- 
-            elif name is None and der_dict is not None:
-                # If Set partial derivative dictionary
-                # Will assume form of x_1, ..., x_n
-                if not isinstance(der_dict, dict):
-                    raise ValueError('der_dict must be type dict!')
-                try:
-                    for key, val in der_dict.items():
-                        assert isinstance(der_dict[key], (int, float))
-                    self.partial_dict = der_dict
-                except:
-                    raise ValueError('All derivatives must be type int or float, to make the expression real and valid!')
 
+        # Set partial derivative dictionary
+        # Will assume form of x_1, ..., x_n
+        if not isinstance(der_dict, dict):
+            raise ValueError('der_dict must be type dict!')
+        try:
+            for key, val in der_dict.items():
+                assert isinstance(der_dict[key], (int, float))
+            self.partial_dict = der_dict
+        except:
+            raise ValueError('All derivatives must be type int or float, to make the expression real and valid!')
 
     def set_params(self, att, val):
         """Set parameters for class; to be used in selective cases only
@@ -103,26 +79,6 @@ class AD():
 
     def __repr__(self):
         return f'{self.func_val} ({self.partial_dict})'
-    
-    # Define equality and inequality messages
-    def __eq__(self, other):
-        """AD objects must have same function value and partial derivative
-        dictionary to be considered equal
-        """
-        if isinstance(other, AD):
-            return (self.func_val == other.func_val) and (self.partial_dict == other.partial_dict)
-        else:   
-            return False
-    
-    def __ne__(self, other):
-        """AD objects are never equal to non-AD objects; if other AD object, 
-        will not be equal if either function value or partial derivatives are not equal
-        """
-        if isinstance(other, AD):
-            return (self.func_val != other.func_val) or (self.partial_dict != other.partial_dict)
-        else:
-            return True
-    
 
     def __add__(self, other):
         """Overload addition operation '+'
@@ -137,8 +93,8 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x1 = AD(3.6, der_dict={'x1': 1})
-        >>> x2 = AD(5.2, der_dict={'x2': 1.5})
+        >>> x1 = AD(3.6, {'x1': 1})
+        >>> x2 = AD(5.2, {'x2': 1.5})
         >>> f1 = x1 + x2
         >>> print(f1.func_val, f1.partial_dict)
         8.8 {'x1': 1, 'x2': 1.5}
@@ -152,10 +108,10 @@ class AD():
             new_der_dict = {}
             for k in itertools.chain(self.partial_dict.keys(), other.partial_dict.keys()):
                 new_der_dict[k] = self.partial_dict.get(k,0) + other.partial_dict.get(k,0)
-            return AD(self.func_val+other.func_val, der_dict=new_der_dict)
+            return AD(self.func_val+other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
-            return AD(self.func_val+other, der_dict=self.partial_dict)
+            return AD(self.func_val+other, self.partial_dict)
 
     def __radd__(self, other):
         """Overload to make sure commutativity of addition '+'
@@ -170,11 +126,11 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x1 = AD(3.6, der_dict={'x1': 1})
+        >>> x1 = AD(3.6, {'x1': 1})
         >>> f1 = 10 + x1
         >>> print(f1.func_val, f1.partial_dict)
         13.6 {'x1': 1}
-        >>> f0 = AD(3.6, der_dict={'x1': 1, 'x2': 4})
+        >>> f0 = AD(3.6, {'x1': 1, 'x2': 4})
         >>> f1 = 10 + f0
         >>> print(f1.func_val, f1.partial_dict)
         13.6 {'x1': 1, 'x2': 4}
@@ -183,7 +139,7 @@ class AD():
         # treat as a constant
         # just return the partial dictionary of the self instance 
         new_der_dict = dict(self.partial_dict)
-        return AD(other+self.func_val, der_dict=new_der_dict)
+        return AD(other+self.func_val, new_der_dict)
 
     def __sub__(self, other):
         """Overload subtraction operation '-'
@@ -198,11 +154,11 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x1 = AD(3.6, der_dict={'x1': 1})
+        >>> x1 = AD(3.6, {'x1': 1})
         >>> f1 = x1 - 10
         >>> print(f1.func_val, f1.partial_dict)
         -6.4 {'x1': 1}
-        >>> x2 = AD(2.0, der_dict={'x2': 3.4})
+        >>> x2 = AD(2.0, {'x2': 3.4})
         >>> f2 = x1 - x2
         >>> print(f2.func_val, f2.partial_dict)
         1.6 {'x1': 1, 'x2': -3.4}
@@ -213,10 +169,10 @@ class AD():
             new_der_dict = {}
             for k in itertools.chain(self.partial_dict.keys(), other.partial_dict.keys()):
                 new_der_dict[k] = self.partial_dict.get(k,0) - other.partial_dict.get(k,0)
-            return AD(self.func_val-other.func_val, der_dict=new_der_dict)
+            return AD(self.func_val-other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
-            return AD(self.func_val-other, der_dict=self.partial_dict)
+            return AD(self.func_val-other, self.partial_dict)
 
     def __rsub__(self, other):
         """Overload to make sure commutativity of subtraction '-'
@@ -231,11 +187,11 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x1 = AD(3.6, der_dict={'x1': 1})
+        >>> x1 = AD(3.6, {'x1': 1})
         >>> f1 = 10 - x1
         >>> print(f1.func_val, f1.partial_dict) 
         6.4 {'x1': -1}
-        >>> f0 = AD(3.6, der_dict={'x1': 1, 'x2': 3})
+        >>> f0 = AD(3.6, {'x1': 1, 'x2': 3})
         >>> f1 = 10 - f0
         >>> print(f1.func_val, f1.partial_dict)
         6.4 {'x1': -1, 'x2': -3}
@@ -245,7 +201,7 @@ class AD():
         new_der_dict = {}
         for key, value in self.partial_dict.items():
             new_der_dict[key] = -value
-        return AD(other-self.func_val, der_dict=new_der_dict)
+        return AD(other-self.func_val, new_der_dict)
 
     def __mul__(self, other):
         """Overload multiplication operation '*'
@@ -260,7 +216,7 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x1 = AD(1, der_dict={'x1': 1})
+        >>> x1 = AD(1, {'x1': 1})
         >>> f1 = x1*10.0
         >>> print(f1.func_val, f1.partial_dict)
         10.0 {'x1': 10.0}
@@ -270,8 +226,8 @@ class AD():
         >>> f2 = f1 * x2
         >>> print(f2.func_val, f2.partial_dict)
         20.0 {'x1': 54.0}
-        >>> a = AD(2, der_dict={'a': 1})
-        >>> b = AD(4, der_dict={'b': 1})
+        >>> a = AD(2, {'a': 1})
+        >>> b = AD(4, {'b': 1})
         >>> f3 = a*b
         >>> print(f3.func_val, f3.partial_dict)
         8 {'a': 4, 'b': 2}
@@ -286,13 +242,13 @@ class AD():
                 new_der_dict[k] = self.partial_dict.get(k,0)*other.func_val + other.partial_dict.get(k,0)*self.func_val
             #print(new_der_dict)
             #print(self.partial_dict)
-            return AD(self.func_val*other.func_val, der_dict=new_der_dict)
+            return AD(self.func_val*other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
             new_der_dict = {}
             for key, value in self.partial_dict.items():
                 new_der_dict[key] = value*other
-            return AD(self.func_val*other, der_dict=new_der_dict)
+            return AD(self.func_val*other, new_der_dict)
 
     def __rmul__(self, other):
         """Overload to make sure commutativity of operation '*'
@@ -307,7 +263,7 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x1 = AD(1, der_dict={'x1': 1})
+        >>> x1 = AD(1, {'x1': 1})
         >>> f1 = 10.0*x1
         >>> print(f1.func_val, f1.partial_dict)
         10.0 {'x1': 10.0}
@@ -317,8 +273,8 @@ class AD():
         >>> f2 = f1 * x2
         >>> print(f2.func_val, f2.partial_dict)
         20.0 {'x1': 54.0}
-        >>> a = AD(2, der_dict={'a': 1})
-        >>> b = AD(4, der_dict={'b': 1})
+        >>> a = AD(2, {'a': 1})
+        >>> b = AD(4, {'b': 1})
         >>> f3 = (4*a + 6*b)*a
         >>> print(f3.func_val, f3.partial_dict)
         64 {'a': 40, 'b': 12}
@@ -328,7 +284,7 @@ class AD():
         new_der_dict = {}
         for key, value in self.partial_dict.items():
             new_der_dict[key] = value*other
-        return AD(other*self.func_val, der_dict=new_der_dict)
+        return AD(other*self.func_val, new_der_dict)
 
     def __truediv__(self, other):
         """Overload division operation '/'
@@ -343,7 +299,7 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x1 = AD(1., der_dict={'x1':1})
+        >>> x1 = AD(1., {'x1':1})
         >>> f1 = x1/10.
         >>> print(f1.func_val, f1.partial_dict)
         0.1 {'x1': 0.1}
@@ -351,8 +307,8 @@ class AD():
         >>> f2 = x2/x1
         >>> print(f2.func_val, f2.partial_dict)
         3.4 {'x1': 0.0}
-        >>> a = AD(2, der_dict={'a': 1})
-        >>> b = AD(4, der_dict={'b': 1})
+        >>> a = AD(2, {'a': 1})
+        >>> b = AD(4, {'b': 1})
         >>> f3 = a/b
         >>> print(f3.func_val, f3.partial_dict)
         0.5 {'a': 0.25, 'b': -0.125}
@@ -362,13 +318,13 @@ class AD():
             new_der_dict = {}
             for k in itertools.chain(self.partial_dict.keys(), other.partial_dict.keys()):
                 new_der_dict[k] = (self.partial_dict.get(k,0)*other.func_val - other.partial_dict.get(k,0)*self.func_val)/(other.func_val**2)
-            return AD(self.func_val/other.func_val, der_dict=new_der_dict)
+            return AD(self.func_val/other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
             new_der_dict = {}
             for key, value in self.partial_dict.items():
                 new_der_dict[key] = value/other
-            return AD(self.func_val/other, der_dict=new_der_dict)
+            return AD(self.func_val/other, new_der_dict)
 
     def __rtruediv__(self, other):
         """Overload to make right version of operation '/' works
@@ -383,7 +339,7 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x1 = AD(1., der_dict={'x1':1})
+        >>> x1 = AD(1., {'x1':1})
         >>> f1 = 10.0/x1
         >>> print(f1.func_val, f1.partial_dict)
         10.0 {'x1': -10.0}
@@ -391,8 +347,8 @@ class AD():
         >>> f2 = x2/x1
         >>> print(f2.func_val, f2.partial_dict)
         2.0 {'x1': 1.4}
-        >>> a = AD(2, der_dict={'a': 1})
-        >>> b = AD(4, der_dict={'b': 1})
+        >>> a = AD(2, {'a': 1})
+        >>> b = AD(4, {'b': 1})
         >>> f3 = 16./(a*b)
         >>> print(f3.func_val, f3.partial_dict)
         2.0 {'a': -1.0, 'b': -0.5}
@@ -402,7 +358,7 @@ class AD():
         new_der_dict = {}
         for key, value in self.partial_dict.items():
             new_der_dict[key] = -other*value/(self.func_val**2)
-        return AD(other/self.func_val, der_dict=new_der_dict)
+        return AD(other/self.func_val, new_der_dict)
 
     def __pow__(self, other):
         """Overload power operation '**'
@@ -417,19 +373,19 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x = AD(2, der_dict={'x1': 1})
+        >>> x = AD(2, {'x1': 1})
         >>> print(x**3)
         8 ({'x1': 12})
-        >>> x = AD(2, der_dict={'x1': 1.})
+        >>> x = AD(2, {'x1': 1.})
         >>> f1 = AD.sin(x**3)
         >>> print(f1**3)
         0.9684132754691923 ({'x1': -5.127111370310495})
-        >>> x = AD(2, der_dict={'x': 1})
+        >>> x = AD(2, {'x': 1})
         >>> f2 = x**x
         >>> print(f2.func_val, f2.partial_dict)
         4 {'x': 6.772588722239782}
-        >>> a = AD(2, der_dict={'a': 1})
-        >>> b = AD(4, der_dict={'b': 1})
+        >>> a = AD(2, {'a': 1})
+        >>> b = AD(4, {'b': 1})
         >>> f3 = a**b
         >>> print(f3.func_val, f3.partial_dict)
         16 {'a': 32.0, 'b': 11.090354888959125}
@@ -441,13 +397,13 @@ class AD():
                 new_der_dict[k] = self.func_val**other.func_val *\
                                     (self.partial_dict.get(k,0)*other.func_val/self.func_val +\
                                      other.partial_dict.get(k,0)*np.log(self.func_val))
-            return AD(self.func_val**other.func_val, der_dict=new_der_dict)
+            return AD(self.func_val**other.func_val, new_der_dict)
         except AttributeError:
             # If other is not an AD class instance, treat as a constant
             new_der_dict = {}
             for key, value in self.partial_dict.items():
                 new_der_dict[key] = other * self.func_val**(other-1) * value
-            return AD(self.func_val**other, der_dict=new_der_dict)
+            return AD(self.func_val**other, new_der_dict)
         
         
     def __rpow__(self, other):
@@ -463,15 +419,15 @@ class AD():
         A new AD class instance with updated information
         Examples
         --------
-        >>> x = AD(2, der_dict={'x1': 1})
+        >>> x = AD(2, {'x1': 1})
         >>> print(3**x)
         9 ({'x1': 9.887510598012987})
-        >>> x = AD(2, der_dict={'x1': 1.})
+        >>> x = AD(2, {'x1': 1.})
         >>> f1 = AD.sin(3**x)
         >>> print(f1**3)
         0.06999488183019169 ({'x1': -4.5902134148312985})
-        >>> a = AD(2, der_dict={'a': 1})
-        >>> b = AD(3, der_dict={'b': 1})
+        >>> a = AD(2, {'a': 1})
+        >>> b = AD(3, {'b': 1})
         >>> f2 = 2**(a+b)
         >>> print(f2.func_val, f2.partial_dict)
         32 {'a': 22.18070977791825, 'b': 22.18070977791825}
@@ -481,7 +437,7 @@ class AD():
         new_der_dict = {}
         for key, value in self.partial_dict.items():
             new_der_dict[key] = other**self.func_val * np.log(other) * value
-        return AD(other**self.func_val, der_dict=new_der_dict)
+        return AD(other**self.func_val, new_der_dict)
 
     def __neg__(self):
         """Overload '-' to return the negative of an object
@@ -496,7 +452,7 @@ class AD():
         
         Examples
         --------
-        >>> x1 = AD(1., der_dict={'x1':1})
+        >>> x1 = AD(1., {'x1':1})
         >>> f_x1 = -x1
         >>> print(f_x1.func_val, f_x1.partial_dict)
         -1.0 {'x1': -1}
@@ -504,7 +460,7 @@ class AD():
         >>> f_x2_x1 = -x2 + x1
         >>> print(f_x2_x1.func_val, f_x2_x1.partial_dict)
         -2.0 {'x1': -2}
-        >>> f2 = AD(2, 'a') + AD(4, 'b')
+        >>> f2 = AD(2, {'a': 1}) + AD(4, {'b': 1})
         >>> print(-f2)
         -6 ({'a': -1, 'b': -1})
         """
@@ -526,7 +482,7 @@ class AD():
         A new AD class with updated information
         Examples
         --------
-        >>> x1 = AD(np.pi/2, 'x1')
+        >>> x1 = AD(np.pi/2, {'x1': 1.})
         >>> f1 = AD.sin(x1)
         >>> print(f1.func_val, f1.partial_dict)
         1.0 {'x1': 6.123233995736766e-17}
@@ -539,7 +495,7 @@ class AD():
             new_der_dict = x.partial_dict.copy()
             for var in new_der_dict.keys():
                 new_der_dict[var] = np.cos(x.func_val)*new_der_dict[var]
-            return AD(np.sin(x.func_val), der_dict=new_der_dict)
+            return AD(np.sin(x.func_val), new_der_dict)
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.sin(x)
@@ -559,7 +515,7 @@ class AD():
         A new AD class with updated information
         Examples
         --------
-        >>> x1 = AD(np.pi/2, 'x1')
+        >>> x1 = AD(np.pi/2, {'x1': 1.})
         >>> f1 = AD.cos(x1)
         >>> print(f1.func_val.round(1), f1.partial_dict)
         0.0 {'x1': -1.0}
@@ -572,7 +528,7 @@ class AD():
             new_der_dict = x.partial_dict.copy()
             for var in new_der_dict.keys():
                 new_der_dict[var] = -np.sin(x.func_val)*new_der_dict[var]
-            return AD(np.cos(x.func_val), der_dict=new_der_dict)
+            return AD(np.cos(x.func_val), new_der_dict)
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.cos(x)
@@ -591,7 +547,7 @@ class AD():
         A new AD class with updated information
         Examples
         --------
-        >>> x1 = AD(np.pi,'x1')
+        >>> x1 = AD(np.pi, {'x1': 1.})
         >>> f1 = AD.tan(x1)
         >>> print(f1.func_val.round(1), f1.partial_dict)
         -0.0 {'x1': 1.0}
@@ -604,7 +560,7 @@ class AD():
             new_der_dict = x.partial_dict.copy()
             for var in new_der_dict.keys():
                 new_der_dict[var] = new_der_dict[var]/(np.cos(x.func_val)**2)
-            return AD(np.tan(x.func_val), der_dict=new_der_dict)
+            return AD(np.tan(x.func_val), new_der_dict)
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.tan(x)
@@ -624,14 +580,14 @@ class AD():
         
         Examples
         --------
-        >>> x1 = AD(1.0, 'x1')
+        >>> x1 = AD(1.0, {'x1': 1.0})
         >>> f1 = AD.sqrt(x1)
         >>> print(f1.func_val, f1.partial_dict)
         1.0 {'x1': 0.5}
         >>> f2 = AD.sqrt(1.0)
         >>> print(f2)
         1.0
-        >>> x2 = AD(0, 'x2')
+        >>> x2 = AD(0, {'x2': 1})
         >>> f3 = AD.sqrt(AD.cos(x2))
         >>> print(f3.func_val, f3.partial_dict)
         1.0 {'x2': -0.0}
@@ -641,7 +597,7 @@ class AD():
             new_der_dict = x.partial_dict.copy()
             for var in new_der_dict.keys():
                 new_der_dict[var] = new_der_dict[var]/(2 * (x.func_val**(1/2)))
-            return AD(np.sqrt(x.func_val), der_dict=new_der_dict)
+            return AD(np.sqrt(x.func_val), new_der_dict)
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.sqrt(x)
@@ -664,7 +620,7 @@ class AD():
         A new AD class with updated information
         Examples
         --------
-        >>> x1 = AD(np.e**2, 'x1')
+        >>> x1 = AD(np.e**2, {'x1': 1.})
         >>> f0 = AD.log(x1)
         >>> print(f0.func_val.round(1), f0.partial_dict)
         2.0 {'x1': 0.1353352832366127}
@@ -688,7 +644,7 @@ class AD():
             new_der_dict = x.partial_dict.copy()
             for var in new_der_dict.keys():
                 new_der_dict[var] = new_der_dict[var]/(x.func_val * np.log(base))
-            return AD(np.log(x.func_val), der_dict=new_der_dict)
+            return AD(np.log(x.func_val), new_der_dict)
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.log(x) / np.log(base)
@@ -707,7 +663,7 @@ class AD():
         A new AD class with updated information
         Examples
         --------
-        >>> x1 = AD(0.0, 'x1')
+        >>> x1 = AD(0.0, {'x1': 1.0})
         >>> f1 = AD.sinh(x1)
         >>> print(f1.func_val, f1.partial_dict)
         0.0 {'x1': 1.0}
@@ -721,7 +677,7 @@ class AD():
             new_der_dict = x.partial_dict.copy()
             for var in new_der_dict.keys():
                 new_der_dict[var] = np.cosh(x.func_val)*new_der_dict[var]
-            return AD(np.sinh(x.func_val), der_dict=new_der_dict)
+            return AD(np.sinh(x.func_val), new_der_dict)
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.sinh(x)
@@ -741,7 +697,7 @@ class AD():
         A new AD class with updated information
         Examples
         --------
-        >>> x1 = AD(0.0, 'x1')
+        >>> x1 = AD(0.0, {'x1': 1.0})
         >>> f1 = AD.cosh(x1)
         >>> print(f1.func_val.round(1), f1.partial_dict)
         1.0 {'x1': -0.0}
@@ -754,7 +710,7 @@ class AD():
             new_der_dict = x.partial_dict.copy()
             for var in new_der_dict.keys():
                 new_der_dict[var] = -np.sinh(x.func_val)*new_der_dict[var]
-            return AD(np.cosh(x.func_val), der_dict=new_der_dict)
+            return AD(np.cosh(x.func_val), new_der_dict)
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.cosh(x)
@@ -773,7 +729,7 @@ class AD():
         A new AD class with updated information
         Examples
         --------
-        >>> x1 = AD(0.0)
+        >>> x1 = AD(0.0, {'x1': 1.0})
         >>> f1 = AD.tanh(x1)
         >>> print(f1.func_val.round(1), f1.partial_dict)
         0.0 {'x1': 1.0}
@@ -786,7 +742,7 @@ class AD():
             new_der_dict = x.partial_dict.copy()
             for var in new_der_dict.keys():
                 new_der_dict[var] = new_der_dict[var]/(np.cosh(x.func_val)**2)
-            return AD(np.tanh(x.func_val), der_dict=new_der_dict)
+            return AD(np.tanh(x.func_val), new_der_dict)
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.tanh(x)
@@ -805,7 +761,7 @@ class AD():
         A new AD class with updated information
         Examples
         --------
-        >>> x = AD(2, 'x1')
+        >>> x = AD(2, {'x1': 1.})
         >>> print(AD.exp(x))
         7.3890560989306495 ({'x1': 7.3890560989306495})
         >>> x2 = 2
@@ -823,7 +779,9 @@ class AD():
         Parameters
         ----------
         x: AD class instance of float
-            Elements to be used as base of logistic function. Can be an AD class instance/constant
+            Elements to be used as base of logistic function. Can be an AD class instance,
+            which will update both the function value and partial derivative dictionary; or
+            a constant, which will return a constant output
         x_0: int or float 
             This represents the center of logistic function; default set to zero, i.e.
             logistic function centered at zero 0.
@@ -841,12 +799,12 @@ class AD():
         >>> x = AD(1.5)
         >>> print(AD.logistic(x))
         0.8175744761936437 ({'x1': 0.14914645207033284})
-        >>> f = x + AD(-0.5, 'x2')
+        >>> f = x + AD(-0.5, {'x2': 1})
         >>> print(AD.logistic(f))
         0.7310585786300049 ({'x1': 0.19661193324148188, 'x2': 0.19661193324148188})
         """
         return L/(1 + AD.exp(-k * (x - x_0)))
 
-#if __name__ == '__main__':
-#    import doctest
-#    doctest.testmod()
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
