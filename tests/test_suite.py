@@ -7,7 +7,7 @@ import numpy as np
 #creating templates that will be used to test the functions
 @pytest.fixture
 def trig_cls():
-    x = AD(np.pi/4, {'x1': 1.})
+    x = AD(np.pi/4, 'x1')
     return x
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def trig_var():
 
 @pytest.fixture
 def basic_cls():
-    x = AD(2, {'x1': 1.})
+    x = AD(2, 'x1')
     return x
 
 @pytest.fixture

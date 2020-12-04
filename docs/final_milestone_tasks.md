@@ -27,13 +27,13 @@ In terms of tasks remaining, we have the following:
 | Task                                                         | Team member | Status      |
 | ------------------------------------------------------------ | ----------- | ----------- |
 | Update existing functions for multiple inputs, where applicable | Minhuan     | Complete    |
-| `__eq__`, `__neq__`, other comparison operators              | Kevin       |             |
+| `__eq__`, `__neq__`, other comparison operators              | Kevin       | Complete    |
 | inverse trig functions (arcsine, arctan, arccos)             | Oksana      | In progress |
 | hyperbolic functions (sinh, tanh, cosh)                      | Timothy     | Complete    |
 | logistic function                                            | Kevin       | Complete    |
-| logarithm - expand to any base with default of e             | Timothy     | In progress |
+| logarithm - expand to any base with default of e             | Timothy     | Complete    |
 | square root                                                  | Timothy     | Complete    |
-| Update base class to support default seed vector             | Kevin       | In progress |
+| Update base class to support default seed vector             | Kevin       | Complete    |
 
 ##### Documentation, software organization, deliverables
 
