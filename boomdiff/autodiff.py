@@ -30,12 +30,16 @@ class AD():
 
         # Set partial derivative dictionary
         # Will assume form of x_1, ..., x_n
-        if not isinstance(der_dict, dict):
-            raise ValueError('der_dict must be type dict!')
+        if not isinstance(der_dict, (dict, str)):
+            raise ValueError('der_dict must be type dict or str!')
         try:
             for key, val in der_dict.items():
                 assert isinstance(der_dict[key], (int, float))
             self.partial_dict = der_dict
+        except(AttributeError):
+            # If string, set name and default seed vector (non-str example
+            # already handled above)
+            self.partial_dict = {der_dict: 1.}
         except:
             raise ValueError('All derivatives must be type int or float, to make the expression real and valid!')
 
@@ -84,6 +88,25 @@ class AD():
 
     def __repr__(self):
         return f'{self.func_val} ({self.partial_dict})'
+
+    # Define equality and inequality messages
+    def __eq__(self, other):
+        """AD objects must have same function value and partial derivative
+        dictionary to be considered equal
+        """
+        if isinstance(other, AD):
+            return (self.func_val == other.func_val) and (self.partial_dict == other.partial_dict)
+        else:   
+            return False
+    
+    def __ne__(self, other):
+        """AD objects are never equal to non-AD objects; if other AD object, 
+        will not be equal if either function value or partial derivatives are not equal
+        """
+        if isinstance(other, AD):
+            return (self.func_val != other.func_val) or (self.partial_dict != other.partial_dict)
+        else:
+            return True
 
     def __add__(self, other):
         """Overload addition operation '+'
@@ -864,6 +887,41 @@ class AD():
         7.3890560989306495
         """
         return np.e**x
+    
+    
+    
+    @staticmethod
+    def logistic(x, x_0=0, k=1, L=1):
+        """A static method to calculate the logistic function of an AD instance or
+        float. Logistic function L/(1+e^(-k(x-x_0))). More commonly used as 1/(1+e^(-x))
+        Parameters
+        ----------
+        x: AD class instance of float
+            Elements to be used as base of logistic function. Can be an AD class instance,
+            which will update both the function value and partial derivative dictionary; or
+            a constant, which will return a constant output
+        x_0: int or float 
+            This represents the center of logistic function; default set to zero, i.e.
+            logistic function centered at zero 0.
+        k: int or float
+            Logistic growth rate of function; default set to 1. Larger values of k imply
+            steeper logistic growth rate
+        L: int or float
+            Maximum value of logistic function; default set to 1.
+        Returns
+        -------
+        A new AD class with updated information; otherwise a float value.
+        
+        Examples
+        --------
+        >>> x = AD(1.5)
+        >>> print(AD.logistic(x))
+        0.8175744761936437 ({'x1': 0.14914645207033284})
+        >>> f = x + AD(-0.5, {'x2': 1})
+        >>> print(AD.logistic(f))
+        0.7310585786300049 ({'x1': 0.19661193324148188, 'x2': 0.19661193324148188})
+        """
+        return L/(1 + AD.exp(-k * (x - x_0)))
 
 if __name__ == '__main__':
     import doctest

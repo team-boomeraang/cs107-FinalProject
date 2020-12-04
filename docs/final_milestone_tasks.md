@@ -24,34 +24,36 @@ In terms of tasks remaining, we have the following:
 
 ##### Forward mode implementation
 
-| Task                                                         | Team member | Status |
-| ------------------------------------------------------------ | ----------- | ------ |
-| Update existing functions for multiple inputs, where applicable | Minhuan     | Done   |
-| `__eq__`, `__neq__`, other comparison operators              | Kevin       |        |
-| inverse trig functions (arcsine, arctan, arccos)             | Oksana      |        |
-| hyperbolic functions (sinh, tanh, cosh)                      | Timothy     | Done   |
-| logistic function                                            | Kevin       |        |
-| logarithm - expand to any base with default of e             | Timothy     |        |
-| square root                                                  | Timothy     | Done   |
+| Task                                                         | Team member | Status   |
+| ------------------------------------------------------------ | ----------- | -------- |
+| Update existing functions for multiple inputs, where applicable | Minhuan     | Complete |
+| `__eq__`, `__neq__`, other comparison operators              | Kevin       | Complete |
+| inverse trig functions (arcsine, arctan, arccos)             | Oksana      | Complete |
+| hyperbolic functions (sinh, tanh, cosh)                      | Timothy     | Complete |
+| logistic function                                            | Kevin       | Complete |
+| logarithm - expand to any base with default of e             | Timothy     | Complete |
+| square root                                                  | Timothy     | Complete |
+| Update base class to support default seed vector             | Kevin       | Complete |
 
 ##### Documentation, software organization, deliverables
 
 | Task                                                         | Team member | Status      |
 | ------------------------------------------------------------ | ----------- | ----------- |
-| Discuss reorganization suggested by David                    | All         |             |
-| (TBD) Reorganize software package for optimization           | Kevin       |             |
+| Discuss reorganization suggested by David                    | All         | Complete    |
+| (TBD) Reorganize software package for optimization           | Kevin       | Complete    |
 | Add extension documentation to reflect implementation details |             |             |
-| Revise background & how-to-use sections                      |             |             |
+| Revise background & how-to-use sections                      | Minhuan     |             |
 | Broader impact statement                                     | Timothy     |             |
 | Plan video & record                                          | All         |             |
 | Make package pip-installable                                 | Kevin       | In progress |
+
 
 ##### Optimization library
 
 | Task                                                         | Team member | Status |
 | ------------------------------------------------------------ | ----------- | ------ |
-| Base objective function class, optimizer.py, Optimizer Main class | Minhuan     | Done   |
-| Gradient_Descent.py, SGD Subclass                            |             |        |
+| Base objective function class, optimizer.py, Optimizer Main class | Minhuan     | Complete   |
+| Gradient_Descent.py, SGD Subclass                            |  TBD        |        |
 | BFGS.py, BFGS Subclass                                       |             |        |
 |                                                              |             |        |
 |                                                              |             |        |

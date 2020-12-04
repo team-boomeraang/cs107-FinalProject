@@ -12,6 +12,14 @@ def test_base():
     print(x.func_val)
     assert x.partial_dict['x1'] == 1
     assert len(x.partial_dict.keys()) == 1
+
+def test_base_setstr():
+    x = AD(1.0, 'x2')
+    assert x == AD(1.0, {'x2': 1.})
+
+def test_bast_nonstringname():
+    with pytest.raises(ValueError):
+        x = AD(3.0, 3)
     
 def test_badbaseval():
     # Test initialize base class without float or integer type
@@ -51,6 +59,61 @@ def test_setparam_dictvals():
     with pytest.raises(ValueError):
         x = AD(12)
         x.set_params('partial_dict', {'x1': '3'})
+        
+
+        
+# Test equality/inequality operators
+def test_equality():
+    # Test equality of operations
+    x = AD(12, 'x1')
+    y = AD(12)
+    assert x == y
+
+def test_equality_fval():
+    # Test equality of func_val
+    x = AD(12, 'x1')
+    z = AD(13)
+    assert (x == z) == False
+
+def test_equality_partial():
+    # Test equality of partial dictionary
+    x = AD(12, 'x1')
+    y = AD(12, 'x2')
+    assert (x == y) == False
+
+def test_equality_obj():
+    # test equality with non AD object
+    x = AD(12, 'x1')
+    assert (x == 12) == False
+    
+def test_inequality():
+    # Test basic inequality
+    x = AD(12, 'x1')
+    y = AD(9)
+    assert x != y
+
+def test_inequality_rev():
+    # Test reverse of inequality
+    x = AD(12, 'x1')
+    y = AD(12, 'x1')
+    assert (x != y) == False    
+
+def test_inequality_partial():
+    # Testinequality of partial dictionary
+    x = AD(12, 'x1')
+    y = AD(12, 'x2')
+    assert x != y
+
+def test_inequality_obj():
+    # test inequality compared to non-object
+    x = AD(12, 'x1')
+    assert x != 3
+    
+#### MISC TESTS
+def test_improper_logbase():
+    x = AD(3)
+    with pytest.raises(Exception):
+        AD.log(x, base = AD(4))
 
 def doctesting():
     doctest.testmod()
