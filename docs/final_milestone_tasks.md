@@ -26,13 +26,13 @@ In terms of tasks remaining, we have the following:
 
 | Task                                                         | Team member | Status |
 | ------------------------------------------------------------ | ----------- | ------ |
-| Update existing functions for multiple inputs, where applicable | Minhuan     |        |
+| Update existing functions for multiple inputs, where applicable | Minhuan     | Done   |
 | `__eq__`, `__neq__`, other comparison operators              | Kevin       |        |
 | inverse trig functions (arcsine, arctan, arccos)             | Oksana      |        |
-| hyperbolic functions (sinh, tanh, cosh)                      | Timothy     |        |
+| hyperbolic functions (sinh, tanh, cosh)                      | Timothy     | Done   |
 | logistic function                                            | Kevin       |        |
 | logarithm - expand to any base with default of e             | Timothy     |        |
-| square root                                                  | Timothy     |        |
+| square root                                                  | Timothy     | Done   |
 
 ##### Documentation, software organization, deliverables
 
@@ -50,10 +50,10 @@ In terms of tasks remaining, we have the following:
 
 | Task                                                         | Team member | Status |
 | ------------------------------------------------------------ | ----------- | ------ |
-| Base objective function class                                | Minhuan     |        |
-| 'set_params' method                                          | Minhuan     |        |
-| 'optimize' method                                            | Oksana      |        |
-| Implement gradient descent optimization                      | Oksana      |        |
-| Implement random coordinate descent (or other opt. algorithm) | TBD         |        |
-| Implement BFGS optimization                                  | Minhuan     |        |
+| Base objective function class, optimizer.py, Optimizer Main class | Minhuan     | Done   |
+| Gradient_Descent.py, SGD Subclass                            |             |        |
+| BFGS.py, BFGS Subclass                                       |             |        |
+|                                                              |             |        |
+|                                                              |             |        |
+|                                                              |             |        |
 
