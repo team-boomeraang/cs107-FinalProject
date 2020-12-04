@@ -42,19 +42,20 @@ In terms of tasks remaining, we have the following:
 | Discuss reorganization suggested by David                    | All         | Complete    |
 | (TBD) Reorganize software package for optimization           | Kevin       | Complete    |
 | Add extension documentation to reflect implementation details |             |             |
-| Revise background & how-to-use sections                      |             |             |
+| Revise background & how-to-use sections                      | Minhuan     |             |
 | Broader impact statement                                     | Timothy     |             |
 | Plan video & record                                          | All         |             |
 | Make package pip-installable                                 | Kevin       | In progress |
 
+
 ##### Optimization library
 
-| Task                                                         | Team member | Status      |
-| ------------------------------------------------------------ | ----------- | ----------- |
-| Base objective function class                                | Minhuan     | In progress |
-| 'set_params' method                                          | Minhuan     |             |
-| 'optimize' method                                            | Oksana      |             |
-| Implement gradient descent optimization                      | Oksana      |             |
-| Implement random coordinate descent (or other opt. algorithm) | TBD         |             |
-| Implement BFGS optimization                                  | Minhuan     |             |
+| Task                                                         | Team member | Status |
+| ------------------------------------------------------------ | ----------- | ------ |
+| Base objective function class, optimizer.py, Optimizer Main class | Minhuan     | Complete   |
+| Gradient_Descent.py, SGD Subclass                            |  TBD        |        |
+| BFGS.py, BFGS Subclass                                       |             |        |
+|                                                              |             |        |
+|                                                              |             |        |
+|                                                              |             |        |
 

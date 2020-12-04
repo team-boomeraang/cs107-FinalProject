@@ -43,6 +43,11 @@ class AD():
         except:
             raise ValueError('All derivatives must be type int or float, to make the expression real and valid!')
 
+    def name(self):
+        """Return the varaiable name string list of the instance
+        Convinient for optimize use"""
+        return list(self.partial_dict.keys())
+
     def set_params(self, att, val):
         """Set parameters for class; to be used in selective cases only
         Parameters
