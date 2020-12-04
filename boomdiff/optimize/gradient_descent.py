@@ -66,7 +66,7 @@ class SGD(Optimizer):
         # TODO, use SGD algorithms, update the variables in the var_list
         # Simple demo codes are:
         # >>> for var in var_list:
-        # >>> 		var.func_val -= self.lr * grad_dict[var.name()[0]]
+        # >>>       var.func_val -= self.lr * grad_dict[var.name()[0]]
         # self.lr is learning rate
         # var.name() is a new method added to AD class, return the keys list in the partial_dict, which is the variable name
         # The simple demo codes should already work to gradient descent the loss fucntion, by updating the vars
