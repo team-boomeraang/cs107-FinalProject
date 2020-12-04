@@ -30,12 +30,16 @@ class AD():
 
         # Set partial derivative dictionary
         # Will assume form of x_1, ..., x_n
-        if not isinstance(der_dict, dict):
-            raise ValueError('der_dict must be type dict!')
+        if not isinstance(der_dict, (dict, str)):
+            raise ValueError('der_dict must be type dict or str!')
         try:
             for key, val in der_dict.items():
                 assert isinstance(der_dict[key], (int, float))
             self.partial_dict = der_dict
+        except(AttributeError):
+            # If string, set name and default seed vector (non-str example
+            # already handled above)
+            self.partial_dict = {der_dict: 1.}
         except:
             raise ValueError('All derivatives must be type int or float, to make the expression real and valid!')
 
@@ -79,6 +83,25 @@ class AD():
 
     def __repr__(self):
         return f'{self.func_val} ({self.partial_dict})'
+
+    # Define equality and inequality messages
+    def __eq__(self, other):
+        """AD objects must have same function value and partial derivative
+        dictionary to be considered equal
+        """
+        if isinstance(other, AD):
+            return (self.func_val == other.func_val) and (self.partial_dict == other.partial_dict)
+        else:   
+            return False
+    
+    def __ne__(self, other):
+        """AD objects are never equal to non-AD objects; if other AD object, 
+        will not be equal if either function value or partial derivatives are not equal
+        """
+        if isinstance(other, AD):
+            return (self.func_val != other.func_val) or (self.partial_dict != other.partial_dict)
+        else:
+            return True
 
     def __add__(self, other):
         """Overload addition operation '+'
