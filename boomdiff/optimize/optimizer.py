@@ -60,13 +60,13 @@ class Optimizer():
         Parameters
         ----------
         loss: callable
-        	objective function, takes no arguments and output an AD instance
+            objective function, takes no arguments and output an AD instance
 
         var_list: list of AD instances (variables)
-        	the variable lists that you want to update. It can be part of the variables in loss callable.
+            the variable lists that you want to update. It can be part of the variables in loss callable.
 
         learning_rate: int or float
-        	You can also specify the learning rate here
+            You can also specify the learning rate here
 
         Returns
         -------
@@ -99,7 +99,7 @@ class Optimizer():
         # Record the iteration number
         self.iterations += 1
 
-  	def minimize(self, loss, var_list, steps=100, learning_rates=None):
+    def minimize(self, loss, var_list, steps=100, learning_rates=None):
         """update multiple steps with user-specified learning_rate series
 
         Parameters
