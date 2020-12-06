@@ -109,11 +109,36 @@ def test_inequality_obj():
     x = AD(12, 'x1')
     assert x != 3
     
+# Test evaluation methods
+def test_name():
+    x = AD(2.5, 'y')
+    assert x.name() == 'y'
+
+def test_funcval():
+    x = AD(3.0)
+    assert x.value() == 3.0
+
+def test_ders():
+    x = AD(3.0, 'x')
+    y = AD(4.0, 'y')
+    f = x + y
+    assert f.ders() == {'x': 1.0, 'y': 1.0}
+
+def test_evaluate():
+    x = AD(4.0, 'x')
+    y = AD(5., 'y')
+    f = 2*x + 2*y
+    assert f.evaluate() == (18.0, {'x': 2.0, 'y': 2.0})
+
+
 #### MISC TESTS
 def test_improper_logbase():
     x = AD(3)
     with pytest.raises(Exception):
         AD.log(x, base = AD(4))
-
+        
 def doctesting():
     doctest.testmod()
+
+if __name__ == '__main__':
+    test_evaluate()
