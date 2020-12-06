@@ -47,6 +47,20 @@ class AD():
         """Return the varaiable name string list of the instance
         Convinient for optimize use"""
         return list(self.partial_dict.keys())
+    
+    def value(self):
+        """Return the function value of the AD object"""
+        return self.func_val
+    
+    def ders(self):
+        """Return the partial derivative dictionary; equivalent to 
+        x.partial_dict"""
+        return self.partial_dict
+    
+    def evaluate(self):
+        """Returns function value and partial derivative dictionary
+        as separate objects. Returned in order func_val, partial_dict"""
+        return self.func_val, self.partial_dict
 
     def set_params(self, att, val):
         """Set parameters for class; to be used in selective cases only
