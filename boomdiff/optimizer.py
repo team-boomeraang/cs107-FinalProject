@@ -1,6 +1,6 @@
 import numpy as np
-from boomdiff.autodiff import AD
 
+from autodiff import AD
 
 class Optimizer():
     """Base class for all optimizers.
@@ -14,6 +14,7 @@ class Optimizer():
     >>> # Instantiate an SGD optimizer
     >>> opt = boomdiff.optimize.SGD(learning_rate=0.1)
 
+    >>> # loss is the objective function that we want to minimize
     >>> # 'loss' should be a callable that takes no arguments and output an AD instance
     >>> # should only use operations supported by AD class
     >>> loss = lambda: var1**2 + var2**2
@@ -48,10 +49,10 @@ class Optimizer():
     """
 
     def __init__(self, learning_rate=0.1):
-        assert isinstance(learning_rate, (float,int)), "learning_rate should be int or float!"
+        #assert isinstance(learning_rate, (float,int)), "learning_rate should be int or float!"
         self.lr = learning_rate
-        # Record iteration number 
-        self.iterations = 0 
+        # Record iteration number
+        self.iterations = 0
 
 
     def step(self, loss, var_list, learning_rate=None):
@@ -70,12 +71,13 @@ class Optimizer():
 
         Returns
         -------
-        None. It will directly update variables in var_list 
+        None. It will directly update variables in var_list
 
         Examples
         --------
         None
         """
+        print("self.lr in step above: ", self.lr)
         if isinstance(learning_rate, (int, float)):
             self.lr = learning_rate
         elif learning_rate is None:
@@ -84,16 +86,18 @@ class Optimizer():
             raise Exception("learning_rate should be int or float!")
 
         assert callable(loss), "loss should be a callable function!"
-        assert isinstance(var_list), "var_list should be a variable list!"
+        assert isinstance(var_list, list), "var_list should be a variable list!"
         for var in var_list:
+            print("var", var)
             assert isinstance(var, AD), "Elements in var_list should be AD variables!"
 
         current_loss = loss()
         assert isinstance(current_loss, AD), "The output of loss callable should be an AD instance!"
 
-        # Apply the gradient to update variables. 
+        # Apply the gradient to update variables.
         # This method should be implemeneted in each algorithm subclass
         grad_dict = current_loss.partial_dict
+        print("self.lr in step: ", self.lr)
         self._apply_gradient(loss, var_list, grad_dict)
 
         # Record the iteration number
@@ -149,21 +153,3 @@ class Optimizer():
         This method should be implemeneted in each algorithm subclass
         """
         raise NotImplementedError("Please use subclass with specific algorithms, like boomdiff.optimize.SGD")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
