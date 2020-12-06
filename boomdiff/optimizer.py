@@ -77,7 +77,7 @@ class Optimizer():
         --------
         None
         """
-        print("self.lr in step above: ", self.lr)
+
         if isinstance(learning_rate, (int, float)):
             self.lr = learning_rate
         elif learning_rate is None:
@@ -88,7 +88,6 @@ class Optimizer():
         assert callable(loss), "loss should be a callable function!"
         assert isinstance(var_list, list), "var_list should be a variable list!"
         for var in var_list:
-            print("var", var)
             assert isinstance(var, AD), "Elements in var_list should be AD variables!"
 
         current_loss = loss()
@@ -97,7 +96,7 @@ class Optimizer():
         # Apply the gradient to update variables.
         # This method should be implemeneted in each algorithm subclass
         grad_dict = current_loss.partial_dict
-        print("self.lr in step: ", self.lr)
+
         self._apply_gradient(loss, var_list, grad_dict)
 
         # Record the iteration number
