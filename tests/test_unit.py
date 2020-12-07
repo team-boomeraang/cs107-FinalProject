@@ -112,7 +112,7 @@ def test_inequality_obj():
 # Test evaluation methods
 def test_name():
     x = AD(2.5, 'y')
-    assert x.name() == 'y'
+    assert x.name() == ['y']
 
 def test_funcval():
     x = AD(3.0)
