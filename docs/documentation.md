@@ -197,17 +197,42 @@ We will evaluate this function and its derivative at the value 3. Analytically, 
 ### Optimization of objective functions
 From these objects, users may instantiate more complex and arbitrary functions. Using the *boomdiff.optimize* framework, those functions can be efficiently minimzied to machine precision. In terms of structure, *boomdiff* relies on an `Optimizer()` superclass structure, with each gradient descent method taking being a subclass. More details regarding implementation and use can be found in the Implementation section below. In this section, we demonstrate the optimization of two functions: first, an arbirary function, $-x$, and second, an objective function given some data.
 
-#### Example 1: Minimize $f(x) = -x^2$
-We will minimize this function via Batch Gradient Descent
+#### Example 1: Minimize $f(x_1, x_2) = x_1^2 + x_2^2$
+Example:
 ```python
->>> from boomdiff import AD, BGD
->>> import numpy as np
->>> x = AD(10, 'x')
->>> f = lambda: -(x **2)
->>> opt = BGD(learning_rate=0.1)
->>> opt.minimize(f, [x], steps=100)
->>> x.evaluate()
-0.0 ({'x': 0.0})
+>>> # Instantiate an SGD optimizer
+>>> opt = boomdiff.optimize.SGD(learning_rate=0.1)
+```
+In this case, `loss` should be a callable that takes no arguments and output an AD instance that only uses operations supported by AD class
+```python
+>>> loss = lambda: var1**2 + var2**2
+```
+Initialize the variables for the objective function. Make sure the name string in the dict is corresponds to the variable names instantiated in the lamda function.
+```python
+>>> var1 = AD(1, {'var1': 1})
+>>> var2 = AD(2, {'var2': 1})
+```
+Call step method, update the variables for one step, to minimize the loss value. `var_list` are the variable lists to update, which can be part of the variables in the callable loss function defined above. This step method will update the underlying variables previously defined.
+```python
+>>> opt.step(loss, var_list=[var1, var2])
+```
+For each step, `var1` and `var2` will be updated. the magnitude of the update will be `learning_rate * grad` where `grad` corresponds to the multi-dimensional gradient (i.e. the partial derivative of `var1` and `var2` found in the `partial_dict` attribute of `loss`).
+```python
+>>> var1
+0.8 ({'var1': 1})
+>>> var2
+1.6 ({'var2': 1})
+```
+Alternatively, a user can call the `minimize()` method to update multiple steps. As specified in the documentation for `minimize()`, the user may specify a series of learning rates to vary with each step.
+```python
+>>> opt.miminize(loss, var_list[var1, var2], learning_rates=np.linspace(0.1,0.01,100), steps=100)
+```
+If converged after `steps` steps, this will yield the optimziation results. If this has not converged, a warning will be raised to the user.
+```python
+>>> var1
+0.0 ({'var1': 1})
+>>> var2
+0.0 ({'var2': 1})
 ```
 
 #### Example 2: Optimization for regression
@@ -247,10 +272,35 @@ As described above, our package is distributed through two separate avenues. Fir
 #### optimize
 *Summary*: The *optimize* subpackage of *boomdiff* performs optimization of arbitrary objective functions, according to the user's specifications. This section reviews the superclass, `Optimizer`, as well as the important methods. Following that, we review the subclasses, which inherit from this `Optimizer` superclass. Unless users wish to implement additional optimization methods not included at this time in *boomdiff*, these subclasses will provide full functionality to optimize the objective function. Developers who wish to create additional methods should inherit from the superclass. Please contact Team Boomeraang if you wish to contibute additional optimizations or have suggestions for additional methodologies! The landscape of optimization algorithms is ever-changing, and we would love your feedback and contributions.
 
-class `Optimizer(learning_rate=0.1)`
+
+
+
+class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers. *This class should only be called by developers who wish to implement optimization algorithms not included in boomdiff*. Instead of instantiating this class directly, users should call specific subclasses, e.g. `boomdiff.optimize.SGD` or `boomdiff.optimize.BGD`.
+
 | Arguments | Type        | Status              | Description                                                  |
 | --------- | ----------- | ------------------- | ------------------------------------------------------------ |
-| `learning_rate`     | float, int  | optional, default 0.1| Value of the midpoint of the logistic function, which will be set to zero by default. In the case of regression tasks, this is commonly set to be the center of the distribution for a certain set of predictors. |
+| `learning_rate`     | float, int  | optional, default 0.1| Learning rate of the optimizer, controlling the step size. Smaller learning rates imply smaller steps in each direction |
+
+| Attribute      | Type  | Description                                                  |
+| -------------- | ----- | ------------------------------------------------------------ |
+| `lr`     | float | Learning rate at current step; comes from constructor method              |
+| `iterations` | dict  | Number of iterations of the optimization algorithm. Please note that this attribute has been left public, but is not intended to be widely used. The primary intended use is developers who encounter issues with the package and wish to debug the specific algorithm |
+
+- `step(loss, var_list, learning_rate=None)`: Implements a single step of the optimization algorithm. Since each methodology included here is an iterative method, this will be called within the application of the gradient. *Developer note: this function may be used for debugging purposes, especially as it relates to application of a pre-specified gradient. Second, if the gradient is calculated outside of the optimization library, this step method may be useful for singular updates*.
+| Arguments | Type        | Status              | Description                                                  |
+| --------- | ----------- | ------------------- | ------------------------------------------------------------ |
+| `loss` | callable   | required | Objective function to be optimized, takes no arguments and must output an AD object. |
+| `var_list` | list       | required | List of variables to be updated. Each element in list must be a pre-instantiated AD instance. Prevents accidental, nonsensical calls as non-AD objects cannot be optimized. |
+| `learning_rate` | int; float | optional | Learning rate can be re-specified here; alternatively, advanced users can specify a learning rate schedule as a sequence structure. |
+
+- `minimize(loss, var_list, steps=100, learning_rates=None)`: Minimizes the supplied loss function relative to the user-designated `var_list`. At default, optimization will be performed over a maximum of 100 steps. This can be changed by the user, but is set relatively low to avoid unintentional computational time without specific direction from the user.
+
+| Arguments | Type        | Status              | Description                                                  |
+| --------- | ----------- | ------------------- | ------------------------------------------------------------ |
+| `loss` | callable   | required | Objective function to be optimized, takes no arguments and must output an AD object. |
+| `var_list` | list       | required | List of variables to be updated. Each element in list must be a pre-instantiated AD instance. Prevents accidental, nonsensical calls as non-AD objects cannot be optimized. |
+| `steps` | int | optional; default 100 | Number of gradient steps to apply within optimization algorithm |
+|`learning_rate` | int; float | optional | Learning rate can be re-specified here; alternatively, advanced users can specify a learning rate schedule as a sequence structure. |
 
 #### autodiff
 *Summary*: The automatic differentiation module for *boomdiff* is implemented through an object oriented class, AD. This class represents the object to be differentiated, and can be combined in functions. While the actual object must be called separately, e.g. AD(2.0), this can be wrapped into a single line characterized by either a function or lambda function in Python. The remainder of this section reviews the attributes and methods associated with this class. Please note, while we have added all operations that work for this class via operator overloading, those methods have not been entirely enumerated here. For more information, please see the [Python Data Model](https://docs.python.org/3/reference/datamodel.html), which describes the desired function of each of these operations.
@@ -415,7 +465,11 @@ The methods for this class can be broadly grouped into three subsets: helper met
 >>> print(AD.logistic(x))
 0.8175744761936437 ({'x1': 0.14914645207033284})
 ```
-
 - External dependencies:
     - [NumPy](https://numpy.org/)
     - [itertools](https://docs.python.org/3/library/itertools.html)
+
+## Future
+We see two primary directions for continued development on this project: implementing a user-friendly approach and/or targeting a specific scientific community.  While these directions are not necessarily mutually exclusive (both could be built on the same optimization package), the next steps and direction of the development process are likely fairly separate. In terms of usability, we believe that one promising direction would be to include a class or set of functions meant to parse string versions of common functions, which would likely significantly increase the accessibility of our package. We believe this could be a particular comaprative advantage of our package to currently existing optimization libraries, namely the general functionality of major libraries such as PyTorch and TensorFlow. As a small team without any specialists in either automatic differentiation or optimization, our package will likely not compete with the performance of a PyTorch or TensorFlow. That being said, one particular weakness of those packages is that the optimized performance and object-oriented structure may be confusing to users less familiar with Python. Less familiarity with Python should not stop users from efficiently performing optimization, though -- these tasks are too central to too much reasearch for that.
+
+A second direction our package could plausibly go would be to adapt the first proposal into a subfield-specific optimization library. This may go hand-in-hand with the user-friendly nature of the package, but would likely be more targeted in terms of application and functionality. For example, there may be less utility in adapting the package to address the needs of machine learning practitioners, as most are likely comfortable with an existing optimization library. For social and physical sciences less traditionally connected to computing, however, we believe that this could be a promising direction. One example of a feature that we might add if, for example, our package was targeted at  statiscians is the ability to perform importance sampling within the application of a gradient. For mode-finding algorithms that feature intractable integrals which cannot be discarded. To optimize complex likelihood and posterior distributions, this functionality may facilitate ease of use for that particular 'client'. As noted, one advantage of our object-oriented structure is modularity, which may allow us to pursue both of these avenues. In the interest of limited resources, though, they may not both be feasible over the medium-term.
