@@ -21,16 +21,6 @@ def _rowsums(data, var_list):
     Returns
     -------
     length n array representing rows of data matrix as AD objects
-    
-    Examples
-    -------
-    >>> x = np.array([[1, 2, 3], [4, 5, 6]])
-    >>> v1 = AD(0.0, 'v1')
-    >>> v2 = AD(0.0, 'v2')
-    >>> v3 = AD(0.0, 'v3')
-    >>> print(_rowsums(x, [v1, v2, v3]))
-    [0.0 ({'v1': 1.0, 'v2': 2.0, 'v3': 3.0})
-     0.0 ({'v1': 4.0, 'v2': 5.0, 'v3': 6.0})]
     """
     return np.sum(data * np.array(var_list).reshape(1,-1), axis=1)
 
@@ -122,9 +112,7 @@ def cross_entropy(data, var_list, outcome_ind):
     
     except ValueError:
         return ValueError('outcome_ind is not a valid column index in data')
-    
-def mae():
-    pass
+
 """
 if __name__ == '__main__':
     import doctest
@@ -139,4 +127,5 @@ if __name__ == '__main__':
     v1 = AD(0.0, 'v1')
     v2 = AD(0.0, 'v2')    
     m = lambda: mse(x, [v1, v2], 0)
-"""    
+    m2 = m()
+"""
