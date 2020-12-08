@@ -16,7 +16,6 @@ class GD(Optimizer):
     Gradient descent (GD) optimizer subclass
 
     Usage:
-    ```python
     >>> # Instantiate a GD optimizer
     >>> opt = GD(learning_rate=0.1)
 
@@ -38,16 +37,17 @@ class GD(Optimizer):
 
     >>> # The var1 and var2 will be updated by -learning_rate * grad(loss)
     >>> print(var1, var2)
-    >>> 80.0 ({'var1': 1}) 0.8 ({'var2': 1})
+    80.0 ({'var1': 1}) 0.8 ({'var2': 1})
 
     >>> # Or you can call minimize method, to update multiple steps
     >>> # With user-specified learning_rate series
     >>> opt.minimize(loss, [var1, var2], steps=100)
 
     >>> # This will give some final optimization results if converged
-    >>> print(var1, var2)
-    1.6296287810675902e-08 ({'var1': 1}) 1.6296287810675902e-10 ({'var2': 1})
-    ```
+    >>> var1.func_val < 10**-6
+    True
+    >>> var2.func_val < 10**-6
+    True
     """
 
     def __init__(self, learning_rate=0.1, **kwargs):
