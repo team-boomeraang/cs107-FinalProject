@@ -1,7 +1,9 @@
 import numpy as np
+
 import matplotlib.pyplot as plt
 
-from autodiff import AD
+from boomdiff.autodiff import AD
+
 
 class Optimizer():
     """Base class for all optimizers.
@@ -23,9 +25,9 @@ class Optimizer():
         self.lr = learning_rate
 
         self.iterations = 0 # Record iteration number
-        self.loss_val_for_step = [] #loss function value for each iteration
+        self.loss_track = [] #loss function value for each iteration
 
-    def step(self, loss, var_list, learning_rate=None):
+    def step(self, loss, var_list, learning_rate=None, record=False):
         """update the variables for one step, to minimize the loss value
 
         Parameters
@@ -39,9 +41,12 @@ class Optimizer():
         learning_rate: int or float
             You can also specify the learning rate here
 
+        record: Bool, default False
+            Whether you want to append the current loss to class attribute loss_track. 
+
         Returns
         -------
-        None. It will directly update variables in var_list
+        Self, optimizer instance. It will directly update variables in var_list
 
         """
 
@@ -61,24 +66,25 @@ class Optimizer():
         assert isinstance(current_loss, AD), "The output of loss callable should be an AD instance!"
 
         #add loss function value before optimization
-        if self.iterations == 0:
-            self.loss_val_for_step.append(loss().func_val)
+        if (self.iterations == 0) and (record == True):
+            self.loss_track.append(loss().func_val)
 
         # Apply the gradient to update variables.
         # This method should be implemeneted in each algorithm subclass
         grad_dict = current_loss.partial_dict
-        print("grad_dict: ", grad_dict)
+        #print("grad_dict: ", grad_dict)
         self._apply_gradient(loss, var_list, grad_dict)
 
-        print("current loss: ", loss())
-        print("current loss().func_val: ", loss().func_val)
+        #print("current loss: ", loss())
+        #print("current loss().func_val: ", loss().func_val)
         # Record the iteration number
         self.iterations += 1
 
         #record loss function value for this iteration
-        self.loss_val_for_step.append(loss().func_val)
+        if record == True:
+            self.loss_track.append(loss().func_val)
 
-    def minimize(self, loss, var_list, steps=100, learning_rates=None):
+    def minimize(self, loss, var_list, steps=100, learning_rates=None, record=False):
         """update multiple steps with user-specified learning_rate series
 
         Parameters
@@ -95,31 +101,28 @@ class Optimizer():
         learning_rates: int, float, list of values, 1D numpy array of values
             use-specifed learning_rates, can be a list with length equal to step numbers
 
+        record: Bool, default False
+            Whether you want to append the current loss to class attribute loss_track. 
+
         Returns
         -------
-        None. It will directly update variables in var_list
-
-        Examples
-        --------
-        ```python
-        >>> opt.miminize(loss, var_list[var1, var2], learning_rates=np.linspace(0.1,0.01,100), steps=100)
-        ```
+        Self, Optimizer instance. It will directly update variables in var_list
         """
         assert (isinstance(steps, int)) & (steps > 0), "Steps should be positive int!"
 
         if isinstance(learning_rates, np.ndarray):
             assert (learning_rates.ndim == 1) & (len(learning_rates) == steps), "learning_rates should be 1D list/array with length equal to steps, or single value!"
             for i in range(steps):
-               self.step(loss, var_list, learning_rates[i])
+               self.step(loss, var_list, learning_rates[i], record)
 
         elif isinstance(learning_rates, list):
             assert (len(learning_rates) == steps), "learning_rates should be 1D list/array with length equal to steps, or single value!"
             for i in range(steps):
-               self.step(loss, var_list, learning_rates[i])
+               self.step(loss, var_list, learning_rates[i], record)
 
         else:
             for i in range(steps):
-               self.step(loss, var_list, learning_rates)
+               self.step(loss, var_list, learning_rates, record)
 
 
     def _apply_gradient(self, loss, var_list, grad_dict):
@@ -127,13 +130,13 @@ class Optimizer():
         Apply the gradient to update variables.
         This method should be implemeneted in each algorithm subclass
         """
-        raise NotImplementedError("Please use subclass with specific algorithms, like boomdiff.GD")
+        raise NotImplementedError("Please use subclass with specific algorithms, like boomdiff.optimize.GD")
 
     def plot_loss_func(self):
         '''
-        Plots the loss function value vs iteration step #
+        Helper method, quickily plot the loss function value vs iteration step #
         '''
-        plt.plot(np.arange(self.iterations + 1), self.loss_val_for_step)
+        plt.plot(np.arange(self.iterations + 1), self.loss_track)
         plt.xlabel("itertion #")
         plt.ylabel("loss function value")
         plt.show()

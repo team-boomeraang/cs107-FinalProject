@@ -4,10 +4,12 @@ Interface for Gradient Descent (GD)
 
 __all__ = ['GD']
 
+import warnings 
+
 import numpy as np
 
-from autodiff import AD
-from optimizer import Optimizer
+from boomdiff.autodiff import AD
+from .optimizer import Optimizer
 
 class GD(Optimizer):
     """
@@ -60,30 +62,9 @@ class GD(Optimizer):
         """
         for var in var_list:
             grad = grad_dict[var.name()[0]]
-            print("grad: ", grad)
+            #print("grad: ", grad)
             if grad > var.func_val * 10**6:
-                raise ValueError("Gradient is too large: potential numerical instability")
+                warnings.warn("Gradient is too large: potential numerical instability")
             var.func_val -= self.lr * grad
-            print("var.func_val: ", var.func_val)
+            #print("var.func_val: ", var.func_val)
 
-
-
-
-# opt = GD(learning_rate=0.1)
-# var1 = AD(9, {'var1': 1})
-# var2 = AD(4, {'var2': 1})
-# loss = lambda: var1**2 +var2**2
-# opt.step(loss, var_list=[var1, var2])
-# print(var1, var2)
-#
-# opt.minimize(loss, [var1, var2], steps=100)
-# # #
-# # # # opt.step(loss, [var1])
-# # # # print(var1, var2)
-# # # # opt.step(loss, [var1])
-# # # # print(var1, var2)
-# # # # opt.step(loss, [var1])
-# print(var1, var2)
-# print(opt.loss_val_for_step)
-# print(opt.iterations)
-# opt.plot_loss_func()
