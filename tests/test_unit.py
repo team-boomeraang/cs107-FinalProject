@@ -59,9 +59,7 @@ def test_setparam_dictvals():
     with pytest.raises(ValueError):
         x = AD(12)
         x.set_params('partial_dict', {'x1': '3'})
-        
-
-        
+  
 # Test equality/inequality operators
 def test_equality():
     # Test equality of operations
