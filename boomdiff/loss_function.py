@@ -61,8 +61,8 @@ def mse(data, var_list, outcome_ind):
         sse = np.sum((outcome_data - _rowsums(data_arr[:,feat_list], var_list)) ** 2)
         return (1/len(outcome_data))*sse
     
-    except ValueError:
-        return ValueError('outcome_ind is not a valid column index in data')
+    except:
+        raise IndexError('outcome_ind is not a valid column index in data')
 
 def cross_entropy(data, var_list, outcome_ind):
     """Calculates the binary cross-entropy between true_label and predictions
@@ -110,8 +110,8 @@ def cross_entropy(data, var_list, outcome_ind):
         mf = -(1/len(outcome_data))
         return mf*np.sum((outcome_data*log_probs) + (1 - outcome_data)*log_1_probs)
     
-    except ValueError:
-        return ValueError('outcome_ind is not a valid column index in data')
+    except:
+        raise IndexError('outcome_ind is not a valid column index in data')
 
 """
 if __name__ == '__main__':

@@ -31,15 +31,18 @@ def test_rowsum():
     assert f[1] == AD(0.0, {'v1': 4.0, 'v2': 5.0, 'v3': 6.0})
 
 # MSE
-def test_mse_nonint(data, v1, v2):
+def test_mse_nonint():
     varlist = [v1, v2]
     with pytest.raises(TypeError):
         boomdiff.loss_function.mse(data, varlist, '1')
     
-def test_mse_outind(data, v1, v2):
+def test_mse_outind():
+    x = np.array([[1, 2, 3], [4, 5, 6]])
+    v1 = AD(0.0, 'v1')
+    v2 = AD(0.0, 'v2')
     varlist = [v1, v2]
-    with pytest.raises(ValueError):
-        boomdiff.loss_function.mse(data, varlist, 5)
+    with pytest.raises(IndexError):
+        boomdiff.loss_function.mse(x, varlist, 5)
 
 # CROSS ENTROPY
 def test_ce_nonint():
@@ -47,7 +50,7 @@ def test_ce_nonint():
     with pytest.raises(TypeError):
         boomdiff.loss_function.cross_entropy(data, varlist, '1')   
 
-def test_ce_outind(data, v1, v2):
+def test_ce_outind():
     varlist = [v1, v2]
-    with pytest.raises(ValueError):
+    with pytest.raises(IndexError):
         boomdiff.loss_function.cross_entropy(data, varlist, 5)
