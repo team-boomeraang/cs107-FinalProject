@@ -1,3 +1,3 @@
-from .gradient_descent import *
-from .momentum import *
-from .adam import *
+from ._gradient_descent import *
+from ._momentum import *
+from ._adam import *
