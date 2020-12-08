@@ -16,6 +16,19 @@ class Adam(Optimizer):
     Adaptive Moment Estimation (Adam) optimization algorithm, computes adaptive learning rates for each parameter.
 
     Usage:
+    >>> a = AD(2, 'a')
+    >>> loss = lambda: a**2
+    >>> opt_adam = Adam(learning_rate=0.1)
+    >>> opt_adam.minimize(loss, [a], steps=10)
+    >>> print(a.round(2))
+    0.35 ({'a': 1.0})
+    >>> x1 = AD(5, 'x1')
+    >>> x2 = AD(7, 'x2')
+    >>> loss2 = lambda: x1**2 + x2**2 + (x1-x2)**2
+    >>> opt_adam.init(learning_rate=0.1)
+    >>> opt_adam.minimize(loss2, [x1, x2], steps=300)
+    >>> print(x1.round(3), x2.round(3))
+    0.0 ({'x1': 1.0}) 0.0 ({'x2': 1.0})
     """
 
     def __init__(self, learning_rate=0.001, betas=(0.9, 0.999), eps=1e-08):
@@ -46,11 +59,11 @@ class Adam(Optimizer):
         initialize the optimizer, if u want to drop the history track and use eleswhere
         """
         # Delete the history track attribute
-        delattr(self, '_mt')
-        delattr(self, '_vt')
+        if hasattr(self,'_mt'): delattr(self, '_mt') 
+        if hasattr(self,'_vt'): delattr(self, '_vt') 
 
         # Reinitialize the hyperparameters if set
-        self.__init__(learning_rate=0.001, betas=(0.9, 0.999), eps=1e-08)
+        self.__init__(learning_rate, betas, eps)
 
     def _apply_gradient(self, loss, var_list, grad_dict):
         """

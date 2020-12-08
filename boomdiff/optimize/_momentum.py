@@ -26,6 +26,13 @@ class Momentum(Optimizer):
     >>> opt_mom.minimize(loss, [a])
     >>> print(a.round(2))
     -0.01 ({'a': 1.0})
+    >>> x1 = AD(5, 'x1')
+    >>> x2 = AD(7, 'x2')
+    >>> loss2 = lambda: x1**2 + x2**2 + (x1-x2)**2
+    >>> opt_mom.init(learning_rate=0.1)
+    >>> opt_mom.minimize(loss2, [x1, x2], steps=300)
+    >>> print(x1.round(3), x2.round(3))
+    0.0 ({'x1': 1.0}) 0.0 ({'x2': 1.0})
     """
 
     def __init__(self, learning_rate=0.1, gamma=0.9):
@@ -45,10 +52,10 @@ class Momentum(Optimizer):
         initialize the optimizer, if u want to drop the history track and use eleswhere
         """
         # Delete the history track attribute
-        delattr(self, 'last_update')
+        if hasattr(self, 'last_update'): delattr(self, 'last_update') 
 
         # Reinitialize the hyperparameters if set
-        self.__init__(learning_rate=0.1, gamma=0.9)
+        self.__init__(learning_rate, gamma)
 
 
     def _apply_gradient(self, loss, var_list, grad_dict):
