@@ -9,7 +9,7 @@ import warnings
 import numpy as np
 
 from boomdiff.autodiff import AD
-from .optimizer import Optimizer
+from ._optimizer import Optimizer
 
 class GD(Optimizer):
     """
@@ -52,7 +52,7 @@ class GD(Optimizer):
 
     def __init__(self, learning_rate=0.1, **kwargs):
 
-        super().__init__(learning_rate)
+        super(GD, self).__init__(learning_rate)
 
     def _apply_gradient(self, loss, var_list, grad_dict):
         """
@@ -63,7 +63,7 @@ class GD(Optimizer):
         for var in var_list:
             grad = grad_dict[var.name()[0]]
             #print("grad: ", grad)
-            if grad > var.func_val * 10**6:
+            if abs(grad) > abs(var.func_val) * 10**6:
                 warnings.warn("Gradient is too large: potential numerical instability")
             var.func_val -= self.lr * grad
             #print("var.func_val: ", var.func_val)
