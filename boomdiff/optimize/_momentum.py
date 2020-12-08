@@ -40,6 +40,12 @@ class Momentum(Optimizer):
         super(Momentum, self).__init__(learning_rate)
         self.gamma = 0.9
 
+    def init(self, learning_rate=0.1, gamma=0.9):
+        """
+        initialize the optimizer, if u want to drop the history track and use eleswhere
+        """
+        self.__init__(learning_rate=0.1, gamma=0.9)
+
     def _apply_gradient(self, loss, var_list, grad_dict):
         """
         Apply the gradient to update variables, with Momentum algorithm
