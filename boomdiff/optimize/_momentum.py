@@ -9,7 +9,7 @@ import warnings
 import numpy as np
 
 from boomdiff.autodiff import AD
-from .optimizer import Optimizer
+from ._optimizer import Optimizer
 
 class Momentum(Optimizer):
     """
