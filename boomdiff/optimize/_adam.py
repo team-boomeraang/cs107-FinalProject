@@ -45,6 +45,11 @@ class Adam(Optimizer):
         """
         initialize the optimizer, if u want to drop the history track and use eleswhere
         """
+        # Delete the history track attribute
+        delattr(self, '_mt')
+        delattr(self, '_vt')
+
+        # Reinitialize the hyperparameters if set
         self.__init__(learning_rate=0.001, betas=(0.9, 0.999), eps=1e-08)
 
     def _apply_gradient(self, loss, var_list, grad_dict):
@@ -64,7 +69,7 @@ class Adam(Optimizer):
         """
         if not hasattr(self,'_mt'):
             # If no first moment history before, initialize one
-            new_update_dict = {}
+            new_mt_dict = {}
             for var in var_list:
                 new_mt_dict[var.name()[0]] = 0.
             self._mt = new_mt_dict

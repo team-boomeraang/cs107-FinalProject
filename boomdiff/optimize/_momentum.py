@@ -44,7 +44,12 @@ class Momentum(Optimizer):
         """
         initialize the optimizer, if u want to drop the history track and use eleswhere
         """
+        # Delete the history track attribute
+        delattr(self, 'last_update')
+
+        # Reinitialize the hyperparameters if set
         self.__init__(learning_rate=0.1, gamma=0.9)
+
 
     def _apply_gradient(self, loss, var_list, grad_dict):
         """
