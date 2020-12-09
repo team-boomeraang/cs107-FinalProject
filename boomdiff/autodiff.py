@@ -43,6 +43,54 @@ class AD():
         except:
             raise ValueError('All derivatives must be type int or float, to make the expression real and valid!')
 
+    @staticmethod
+    def from_array(array, prefix='x'):
+        """
+        Convert all elements in a numpy array to AD instances, after that we got an numpy array whose elements are all AD instances
+
+        Parameters
+        ----------
+        array: numpy array or list, only support 1D or 2D at these moment. But this can be easily reshaped afterwise
+            All elements should be float or int value. Those value will be kept as func_val in new AD instances
+
+        prefix: string
+            Used for name in the AD instances' partial_dict. Elements on ith row, jth column will have the name prefix_i_j
+
+        Examples
+        --------
+        >>> x_array = np.array([1.5,8.4])
+        >>> AD_x_array = AD.from_array(x_array,'x')
+        >>> print(AD_x_array)
+        [1.5 ({'x_0': 1.0}) 8.4 ({'x_1': 1.0})]
+        >>> w_array = np.array([[3.0,2.4],[1.5,3.3]])
+        >>> AD_w_array = AD.from_array(w_array, 'w')
+        print(AD_w_array)
+        >>> X = np.random.normal(size=[10,2])
+        >>> print(np.dot(X, AD_w_array).shape)
+        (10, 2)
+
+        """
+        assert isinstance(array, (list, np.ndarray)), "array should be a numpy array or list!"
+        assert isinstance(prefix, str), "prefix should be a string!"
+        array_arr = np.array(array)
+
+        assert array_arr.ndim <= 2, "array should not be more than 2D!"
+
+
+        AD_array = np.zeros(array_arr.shape, dtype=AD)
+        
+        if array_arr.ndim == 1:
+            for i in range(array_arr.shape[0]):
+                AD_array[i] = AD(array_arr[i], prefix+f"_{i}")
+
+        if array_arr.ndim == 2:
+            for i in range(array_arr.shape[0]):
+                for j in range(array_arr.shape[1]):
+                    AD_array[i,j] = AD(array_arr[i,j], prefix+f"_{i}_{j}")
+
+        return AD_array
+
+
     def name(self):
         """Return the varaiable name string list of the instance
         Convinient for optimize use"""
