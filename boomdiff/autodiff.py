@@ -1118,6 +1118,27 @@ class AD():
         """
         return L/(1 + AD.exp(-k * (x - x_0)))
 
+    @staticmethod
+    def sum(a, axis=None):
+        """
+        A summation operation for AD instances array, it is the same as numpy.sum
+        """
+        return np.sum(np.array(a),axis=axis)
+
+    @staticmethod
+    def mean(a, axis=None):
+        """
+        An average operation for AD instances array, it is the same as numpy.mean
+        """
+        return np.mean(np.array(a), axis=axis)
+
+    @staticmethod
+    def dot(a, b):
+        """
+        An array(matrix) multiplication operation for AD instances array, it is the same as numpy.dot
+        """
+        return np.dot(np.array(a), np.array(b))
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
