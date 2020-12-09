@@ -50,11 +50,14 @@ class AD():
 
         Parameters
         ----------
-        array: numpy array or list, only support 1D or 2D at these moment. But this can be easily reshaped afterwise
-            All elements should be float or int value. Those value will be kept as func_val in new AD instances
+        array: numpy array or list, only support 1D or 2D at these moment. 
+            But this can be easily reshaped afterwise
+            All elements should be float or int value. 
+            Those value will be kept as func_val in new AD instances
 
         prefix: string
-            Used for name in the AD instances' partial_dict. Elements on ith row, jth column will have the name prefix_i_j
+            Used for name in the AD instances' partial_dict. 
+            Elements on ith row, jth column will have the name prefix_i_j
 
         Examples
         --------
@@ -141,12 +144,15 @@ class AD():
         Parameters
         ----------
         decimal_number: Int, non-negative, default to be 2
-            Number of decimals you want to round to. If decimal_number_optional is not given,
-            It will apply to both func_val and value in partial_dict; Or it will only apply to func_val
+            Number of decimals you want to round to. 
+            If decimal_number_optional is not given,
+            It will apply to both func_val and value in partial_dict; 
+            Or it will only apply to func_val
 
         decimal_number_optional: None, Non-negative int
-            Number of decimals you want to round value in partial_dict to. If not given, 
-            decimal_number will apply to both func_val and value in partial_dict.
+            Number of decimals you want to round value in partial_dict to. 
+            If not given, decimal_number will apply to both 
+            func_val and value in partial_dict.
 
         Returns
         -------
@@ -274,9 +280,10 @@ class AD():
         Parameters
         ----------
         other : AD class instance or float
-            Elements to be subtracted on the left, from self. Can be a AD class instance, which
-            will update function value and partial derivative dictionary; Or a con-
-            -stant, which will only update function value.
+            Elements to be subtracted on the left, from self. 
+            Can be a AD class instance, which will update function value 
+            and partial derivative dictionary; Or a constant, 
+            which will only update function value.
         Returns
         -------
         A new AD class instance with updated information
@@ -930,6 +937,13 @@ class AD():
         """
         if base == 0 or not (isinstance(base, int) or isinstance(base,float)):
             raise Exception("Base Must be a constant integer or a float not equal to 0")
+
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.log(ele, base)
+            return new_x
+
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -962,7 +976,11 @@ class AD():
         >>> print(x2)
         0.0
         """
-
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.sinh(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -995,6 +1013,11 @@ class AD():
         >>> print(x2)
         1.0
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.cosh(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -1027,6 +1050,11 @@ class AD():
         >>> print(x2.round(1))
         1.0
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.tanh(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
