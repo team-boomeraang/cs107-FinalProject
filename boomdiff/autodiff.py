@@ -64,7 +64,9 @@ class AD():
         [1.5 ({'x_0': 1.0}) 8.4 ({'x_1': 1.0})]
         >>> w_array = np.array([[3.0,2.4],[1.5,3.3]])
         >>> AD_w_array = AD.from_array(w_array, 'w')
-        print(AD_w_array)
+        >>> print(AD_w_array)
+        [[3.0 ({'w_0_0': 1.0}) 2.4 ({'w_0_1': 1.0})]
+         [1.5 ({'w_1_0': 1.0}) 3.3 ({'w_1_1': 1.0})]]
         >>> X = np.random.normal(size=[10,2])
         >>> print(np.dot(X, AD_w_array).shape)
         (10, 2)
