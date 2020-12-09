@@ -279,13 +279,13 @@ As described above, our package is distributed through two separate avenues. Fir
 
 
 ## Implementation
-#### optimize
+### optimize
 *Summary*: The *optimize* subpackage of *boomdiff* performs optimization of arbitrary objective functions, according to the user's specifications. This section reviews the superclass, `Optimizer`, as well as the important methods. Following that, we review the subclasses, which inherit from this `Optimizer` superclass. Unless users wish to implement additional optimization methods not included at this time in *boomdiff*, these subclasses will provide full functionality to optimize the objective function. Developers who wish to create additional methods should inherit from the superclass. Please contact Team Boomeraang if you wish to contibute additional optimizations or have suggestions for additional methodologies! The landscape of optimization algorithms is ever-changing, and we would love your feedback and contributions.
 
 ---
 
-
-class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers. *This class should only be called by developers who wish to implement optimization algorithms not included in boomdiff*. Instead of instantiating this class directly, users should call specific subclasses, e.g. `boomdiff.optimize.SGD` or `boomdiff.optimize.BGD`:
+#### Base Optimizer class
+class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers. *This class should only be called by developers who wish to implement optimization algorithms not included in boomdiff*. Instead of instantiating this class directly, users should call specific subclasses, e.g. `boomdiff.optimize.GD` or `boomdiff.optimize.Adam`.
 | Arguments |Type|Status|Description|
 |-|-|-|-|
 |`learning_rate`| float, int  | optional, default 0.1| Learning rate of the optimizer, controlling the step size. Smaller learning rates imply smaller steps in each direction |
@@ -301,17 +301,61 @@ class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers.
     | `loss` | callable   | required | Objective function to be optimized, takes no arguments and must output an AD object. |
     | `var_list` | list       | required | List of variables to be updated. Each element in list must be a pre-instantiated AD instance. Prevents accidental, nonsensical calls as non-AD objects cannot be optimized. |
     | `learning_rate` | int; float | optional | Learning rate can be re-specified here; alternatively, advanced users can specify a learning rate schedule as a sequence structure. |
+    | `record` | Bool| Optional| Notes whether to track the function value at each step of the optimization. Useful if desiring to plot results of optimization and/or path. Default is False.|
 
-- `minimize(loss, var_list, steps=100, learning_rates=None)`: Minimizes the supplied loss function relative to the user-designated `var_list`. At default, optimization will be performed over a maximum of 100 steps. This can be changed by the user, but is set relatively low to avoid unintentional computational time without specific direction from the user.
+- `minimize(loss, var_list, steps=100, learning_rates=None, record=False)`: Minimizes the supplied loss function relative to the user-designated `var_list`. At default, optimization will be performed over a maximum of 100 steps. This can be changed by the user, but is set relatively low to avoid unintentional computational time without specific direction from the user.
 
     | Arguments | Type        | Status              | Description                                                  |
     | --------- | ----------- | ------------------- | ------------------------------------------------------------ |
     | `loss` | callable   | required | Objective function to be optimized, takes no arguments and must output an AD object. |
     | `var_list` | list       | required | List of variables to be updated. Each element in list must be a pre-instantiated AD instance. Prevents accidental, nonsensical calls as non-AD objects cannot be optimized. |
     | `steps` | int | optional; default 100 | Number of gradient steps to apply within optimization algorithm |
-    |`learning_rate` | int; float | optional | Learning rate can be re-specified here; alternatively, advanced users can specify a learning rate schedule as a sequence structure. |
+    |`learning_rates` | int; float | optional | Learning rate can be re-specified here; alternatively, advanced users can specify a learning rate schedule as a sequence structure. |
+    | `record` | Bool| Optional| Notes whether to track the function value at each step of the optimization. Useful if desiring to plot results of optimization and/or path. Default is False.|
 
-#### autodiff
+- `_apply_gradient(loss, var_list, grad_dict)`: Function implemented by each optimization subclass to apply the gradient. Called in each step (thus called iteratively in `minimize()`). Raises Error if superclass instantiated directly.
+	
+	- *Developer's note: If you are interested in developing or implementing additional optimization methods, this is done via subclassing the `Optimizer` class and implementing `_apply_gradient()` in the subclass. If you implement a method not included in the package at this time, please let us know! We would love to incorporate it into the next release of boomdiff!*
+	
+- `plot_loss_func()`: If `loss_track` has been stored by `record = True`, then this will quickly plot the loss function over each iteration taken.
+
+---
+### Optimization methods (Optimizer subclasses)
+class `GD`: Implements gradient descent optimization. Because the base case assumed here does not necesarily have a 'data' element, this is not inherently stochastic gradient descent. This would need to be separately implemented separately. For each variable in `var_list`, will be minimized according to the following equation:
+$$x_i^{t+1} = x_i^{t} - \alpha*\frac{\partial f(x)}{\partial x_i}(x_i^{t})$$
+where $f(x)$ is the loss function to be minimized, and $x_i^t$ represents the current value of the variable. Note that in in this case, each $x_i$ must be instantiated as a separate `AD` object.
+| Arguments | Type        | Status              | Description                                                  |
+| --------- | ----------- | ------------------- | ------------------------------------------------------------ |
+| `learning_rate` | float   | optional | Learning rate for optimization, i.e. $\alpha$. Default value is 0.1. |
+
+---
+class `Momentum`: Implements momentum-accelerated gradient descent. Once again, because the Optimizer class lacks a notion of data at the moment, this class does not implement a stochastic gradient descent. Momentum may help the typical gradient descent escape certain saddle points. To accomplish that, the algorithm keeps a moving average of the gradient and makes moves in the direction of the moving average. To keep track of momentum, algorithm updates the two following equations for each $x_i$ to optimize:
+$$v_i^{t+1} = \gamma v_i^{t} + \alpha \frac{\partial f(x)}{\partial x_i}(x_i^{t})$$
+$$x_i^{t+1} = x_i^{t} - v_i^{t-1}$$
+| Arguments | Type        | Status              | Description                                                  |
+| --------- | ----------- | ------------------- | ------------------------------------------------------------ |
+| `learning_rate` | float   | optional | Learning rate for optimization, i.e. $\alpha$. Default value is 0.1. |
+| `gamma` | float   | optional | Second parameter controlling moving average, i.e. $\gamma$ in above equations. Default to 0.9. Higher values of $\gamma$ result in the previous values of the gradient being weighted more heavily. When $\gamma = 0$, this is simply gradient descent. |
+
+---
+class `Adam`: Implements [Adam](https://arxiv.org/abs/1412.6980) optimization algorithm. This algorithm combines the momentum element from the `Momentum` class above and tracks an exponentially decaying average of past gradient squared, which is similar to algorithms such as RMSProp. In that way, `Adam` combines the state-of-the-art in terms of both momentum and exponetial decay. The parameters are updated according to the following set of equations, for each variable in the `var_list` supplied:
+$$m_i^{t+1}  = \beta_1 m_i^{t} + (1-\beta_1) \frac{\partial f(x)}{\partial x_i}(x_i^{t})$$
+$$v_i^{t+1}  = \beta_2 v_i^{t} + (1-\beta_2) (\frac{\partial f(x)}{\partial x_i}(x_i^{t}))^2$$
+
+where $m_i$ tracks the moving average of the gradient and $v_i$ tracks the moving average of the gradient squared. These terms are subsequently bias-corrected in the following manner:
+$$\hat{m_i^{t+1}}  = \frac{m_i^{t+1}}{1-\beta_1^{(t+1)}}$$
+$$\hat{v_i^{t+1}}  = \frac{v_i^{t+1}}{1-\beta_2^{(t+1)}}$$
+Finally, the variable of interest, $x_i$, is updated in the following way:
+$$x_i^{t+1} = x_i^{t} - \frac{\alpha}{\sqrt{\hat{v_i^{t+1}}} + \epsilon}\hat{m_i^{t+1}} $$
+where $\alpha$ is the learning rate and $\epsilon$ is some small constant, by default $1e^{-8}$
+| Arguments | Type        | Status              | Description                                                  |
+| --------- | ----------- | ------------------- | ------------------------------------------------------------ |
+| `learning_rate` | float   | optional | Learning rate for optimization, i.e. $\alpha$. Default value is 0.001. |
+| `betas` | tuple | optional | Beta values described in above equations to control moving averages. Default values set to 0.9 and 0.999, respectively. Beta values must not be zero. |
+| `eps` | float   | optional | Epsilon value for calculation of update step above. |
+
+---
+### autodiff
 *Summary*: The automatic differentiation module for *boomdiff* is implemented through an object oriented class, AD. This class represents the object to be differentiated, and can be combined in functions. While the actual object must be called separately, e.g. AD(2.0), this can be wrapped into a single line characterized by either a function or lambda function in Python. The remainder of this section reviews the attributes and methods associated with this class. Please note, while we have added all operations that work for this class via operator overloading, those methods have not been entirely enumerated here. For more information, please see the [Python Data Model](https://docs.python.org/3/reference/datamodel.html), which describes the desired function of each of these operations.
 
 ---
