@@ -68,6 +68,6 @@ class GD(Optimizer):
                     warnings.warn("Gradient is too large: potential numerical instability")
                 var.func_val -= self.lr * grad
             except:
-                raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
+                raise AttributeError("Var_list should be 1D, with AD instances as elements, which are variables in loss!")
             #print("var.func_val: ", var.func_val)
 

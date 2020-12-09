@@ -83,38 +83,44 @@ class Adam(Optimizer):
         if not hasattr(self,'_mt'):
             # If no first moment history before, initialize one
             new_mt_dict = {}
-            for var in var_list:
-                try:
-                    new_mt_dict[var.name()[0]] = 0.
-                except:
-                    raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
+            # for var in var_list:
+            #     try:
+            #         new_mt_dict[var.name()[0]] = 0.
+            #     except:
+            #         raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
             self._mt = new_mt_dict
 
         if not hasattr(self,'_vt'):
             # If no second moment history before, initialize one
             new_vt_dict = {}
-            for var in var_list:
-                try:
-                    new_vt_dict[var.name()[0]] = 0.
-                except:
-                    raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
+            # for var in var_list:
+            #     try:
+            #         new_vt_dict[var.name()[0]] = 0.
+            #     except:
+            #         raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
             self._vt = new_vt_dict
 
         assert isinstance(self._mt, dict), "_mt attribute should be a dictionary!"
         assert isinstance(self._vt, dict), "_vt attribute should be a dictionary!"
 
-        new_mt_dict = {}
-        new_vt_dict = {}
+        # new_mt_dict = {}
+        # new_vt_dict = {}
         for var in var_list:
             try:
                 grad = grad_dict[var.name()[0]]
-                
+                # Trivial numerical instability check
                 if abs(grad) > 10**8:
                     warnings.warn("Gradient is too large: potential numerical instability")
 
-                # Step1: compute the decaying averages of past and past squared gradients
-                new_mt = self.beta1 * self._mt[var.name()[0]] + (1-self.beta1) * grad
-                new_vt = self.beta2 * self._vt[var.name()[0]] + (1-self.beta2) * grad**2
+                try:
+                    # Step1: compute the decaying averages of past and past squared gradients
+                    new_mt = self.beta1 * self._mt[var.name()[0]] + (1-self.beta1) * grad
+                    new_vt = self.beta2 * self._vt[var.name()[0]] + (1-self.beta2) * grad**2
+                except KeyError:
+                    self._mt[var.name()[0]] = 0.
+                    self._vt[var.name()[0]] = 0.
+                    new_mt = self.beta1 * self._mt[var.name()[0]] + (1-self.beta1) * grad
+                    new_vt = self.beta2 * self._vt[var.name()[0]] + (1-self.beta2) * grad**2
 
                 # Step2: compute bias-corrected first and second moment estimates
                 new_m_hat = new_mt / (1-self.beta1)
@@ -124,14 +130,13 @@ class Adam(Optimizer):
                 var.func_val -= self.lr * new_m_hat / (np.sqrt(new_v_hat) + self.eps)
 
                 # Store the new mt, vt
-                new_mt_dict[var.name()[0]] = new_mt
-                new_vt_dict[var.name()[0]] = new_vt
+                self._mt[var.name()[0]] = new_mt
+                self._vt[var.name()[0]] = new_vt
             except:
-                raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
-
-        self._mt = new_mt_dict
-        self._vt = new_vt_dict
-
+                raise AttributeError("Var_list should be 1D, with AD instances as elements, which are variables in loss!")
+                
+        # self._mt = new_mt_dict
+        # self._vt = new_vt_dict
 
 
 
