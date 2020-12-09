@@ -90,6 +90,29 @@ class AD():
 
         return AD_array
 
+    @staticmethod
+    def to_array(AD_array):
+        """
+        Convert all AD instance elementd in an AD numpy array into its function values
+
+        Examples:
+        >>> x_array = np.array([1.5,8.4])
+        >>> AD_x_array = AD.from_array(x_array,'x')
+        >>> print(AD_x_array)
+        [1.5 ({'x_0': 1.0}) 8.4 ({'x_1': 1.0})]
+        >>> print(AD.to_array(AD_x_array))
+        [1.5 8.4]
+        """
+        assert isinstance(AD_array, (list, np.ndarray)), "array should be a numpy array or list!"
+        AD_array_arr = np.array(AD_array)
+
+        value_array = np.zeros(AD_array_arr.shape, dtype=float)
+        try:
+            for idx, x in np.ndenumerate(AD_array_arr):
+                value_array[idx] = x.func_val
+            return value_array
+        except:
+            raise AttributeError("All elements in AD_array should be AD instances!")
 
     def name(self):
         """Return the varaiable name string list of the instance
@@ -900,7 +923,6 @@ class AD():
             # if x is not an AD class instance, treat as a constant
             return np.sinh(x)
 
-
     @staticmethod
     def cosh(x):
         """A static method to calculate the hyperbolic cosine function of a AD instance, or a float
@@ -987,7 +1009,6 @@ class AD():
         7.3890560989306495
         """
         return np.e**x
-    
     
     
     @staticmethod
