@@ -43,6 +43,82 @@ class AD():
         except:
             raise ValueError('All derivatives must be type int or float, to make the expression real and valid!')
 
+    @staticmethod
+    def from_array(array, prefix='x'):
+        """
+        Convert all elements in a numpy array to AD instances, after that we got an numpy array whose elements are all AD instances
+
+        Parameters
+        ----------
+        array: numpy array or list, only support 1D or 2D at these moment. 
+            But this can be easily reshaped afterwise
+            All elements should be float or int value. 
+            Those value will be kept as func_val in new AD instances
+
+        prefix: string
+            Used for name in the AD instances' partial_dict. 
+            Elements on ith row, jth column will have the name prefix_i_j
+
+        Examples
+        --------
+        >>> x_array = np.array([1.5,8.4])
+        >>> AD_x_array = AD.from_array(x_array,'x')
+        >>> print(AD_x_array)
+        [1.5 ({'x_0': 1.0}) 8.4 ({'x_1': 1.0})]
+        >>> w_array = np.array([[3.0,2.4],[1.5,3.3]])
+        >>> AD_w_array = AD.from_array(w_array, 'w')
+        >>> print(AD_w_array)
+        [[3.0 ({'w_0_0': 1.0}) 2.4 ({'w_0_1': 1.0})]
+         [1.5 ({'w_1_0': 1.0}) 3.3 ({'w_1_1': 1.0})]]
+        >>> X = np.random.normal(size=[10,2])
+        >>> print(np.dot(X, AD_w_array).shape)
+        (10, 2)
+
+        """
+        assert isinstance(array, (list, np.ndarray)), "array should be a numpy array or list!"
+        assert isinstance(prefix, str), "prefix should be a string!"
+        array_arr = np.array(array)
+
+        assert array_arr.ndim <= 2, "array should not be more than 2D!"
+
+
+        AD_array = np.zeros(array_arr.shape, dtype=AD)
+        
+        if array_arr.ndim == 1:
+            for i in range(array_arr.shape[0]):
+                AD_array[i] = AD(array_arr[i], prefix+f"_{i}")
+
+        if array_arr.ndim == 2:
+            for i in range(array_arr.shape[0]):
+                for j in range(array_arr.shape[1]):
+                    AD_array[i,j] = AD(array_arr[i,j], prefix+f"_{i}_{j}")
+
+        return AD_array
+
+    @staticmethod
+    def to_array(AD_array):
+        """
+        Convert all AD instance elementd in an AD numpy array into its function values
+
+        Examples:
+        >>> x_array = np.array([1.5,8.4])
+        >>> AD_x_array = AD.from_array(x_array,'x')
+        >>> print(AD_x_array)
+        [1.5 ({'x_0': 1.0}) 8.4 ({'x_1': 1.0})]
+        >>> print(AD.to_array(AD_x_array))
+        [1.5 8.4]
+        """
+        assert isinstance(AD_array, (list, np.ndarray)), "array should be a numpy array or list!"
+        AD_array_arr = np.array(AD_array)
+
+        value_array = np.zeros(AD_array_arr.shape, dtype=float)
+        try:
+            for idx, x in np.ndenumerate(AD_array_arr):
+                value_array[idx] = x.func_val
+            return value_array
+        except:
+            raise AttributeError("All elements in AD_array should be AD instances!")
+
     def name(self):
         """Return the varaiable name string list of the instance
         Convinient for optimize use"""
@@ -68,12 +144,15 @@ class AD():
         Parameters
         ----------
         decimal_number: Int, non-negative, default to be 2
-            Number of decimals you want to round to. If decimal_number_optional is not given,
-            It will apply to both func_val and value in partial_dict; Or it will only apply to func_val
+            Number of decimals you want to round to. 
+            If decimal_number_optional is not given,
+            It will apply to both func_val and value in partial_dict; 
+            Or it will only apply to func_val
 
         decimal_number_optional: None, Non-negative int
-            Number of decimals you want to round value in partial_dict to. If not given, 
-            decimal_number will apply to both func_val and value in partial_dict.
+            Number of decimals you want to round value in partial_dict to. 
+            If not given, decimal_number will apply to both 
+            func_val and value in partial_dict.
 
         Returns
         -------
@@ -182,6 +261,9 @@ class AD():
         >>> print(f2.func_val, f2.partial_dict)
         12.4 {'x1': 2, 'x2': 1.5}
         """
+        if isinstance(other, (np.ndarray,list)):
+            return np.array(self) + np.array(other)
+
         try:
             # First try as other is an AD class instance
             # Combine the partial_dict of self and other, for common keys, add the value; else, append the dictionary
@@ -198,9 +280,10 @@ class AD():
         Parameters
         ----------
         other : AD class instance or float
-            Elements to be subtracted on the left, from self. Can be a AD class instance, which
-            will update function value and partial derivative dictionary; Or a con-
-            -stant, which will only update function value.
+            Elements to be subtracted on the left, from self. 
+            Can be a AD class instance, which will update function value 
+            and partial derivative dictionary; Or a constant, 
+            which will only update function value.
         Returns
         -------
         A new AD class instance with updated information
@@ -243,6 +326,8 @@ class AD():
         >>> print(f2.func_val, f2.partial_dict)
         1.6 {'x1': 1, 'x2': -3.4}
         """
+        if isinstance(other, (np.ndarray,list)):
+            return np.array(self) - np.array(other)
         try:
             # First try as other is an AD class instance
             # Combine the partial_dict of self and other, for common keys, subtract the value; else, append the dictionary
@@ -315,6 +400,9 @@ class AD():
         >>> print(f4.func_val, f4.partial_dict)
         32 {'a': 16, 'b': 16}
         """
+        if isinstance(other, (np.ndarray, list)):
+            return np.array(self) * np.array(other)
+
         try:
             # First try as other is an AD class instance
             new_der_dict = {}
@@ -393,6 +481,8 @@ class AD():
         >>> print(f3.func_val, f3.partial_dict)
         0.5 {'a': 0.25, 'b': -0.125}
         """
+        if isinstance(other, (np.ndarray,list)):
+            return np.array(self)/np.array(other) 
         try:
             # first try as other is an ad class instance
             new_der_dict = {}
@@ -470,6 +560,9 @@ class AD():
         >>> print(f3.func_val, f3.partial_dict)
         16 {'a': 32.0, 'b': 11.090354888959125}
         """
+        if isinstance(other, (np.ndarray,list)):
+            return np.array(self) ** np.array(other)
+
         try:
             # First try as other is an AD class instance
             new_der_dict = {}
@@ -570,6 +663,11 @@ class AD():
         >>> print(x2)
         1.2246467991473532e-16
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.sin(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -603,6 +701,11 @@ class AD():
         >>> print(x2)
         -1.0
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.cos(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -635,6 +738,11 @@ class AD():
         >>> print(x2.round(1))
         -0.0
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.tan(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -665,6 +773,11 @@ class AD():
         >>> print(AD.arcsin(0.25))
         0.25268025514207865
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.arcsin(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -695,6 +808,11 @@ class AD():
         >>> print(AD.arccos(0.25))
         1.318116071652818
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.arccos(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -725,6 +843,11 @@ class AD():
         >>> print(AD.arctan(0.25))
         0.24497866312686414
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.arctan(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -762,6 +885,11 @@ class AD():
         >>> print(f3.func_val, f3.partial_dict)
         1.0 {'x2': -0.0}
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.sqrt(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -809,6 +937,13 @@ class AD():
         """
         if base == 0 or not (isinstance(base, int) or isinstance(base,float)):
             raise Exception("Base Must be a constant integer or a float not equal to 0")
+
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.log(ele, base)
+            return new_x
+
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -841,7 +976,11 @@ class AD():
         >>> print(x2)
         0.0
         """
-
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.sinh(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -851,7 +990,6 @@ class AD():
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
             return np.sinh(x)
-
 
     @staticmethod
     def cosh(x):
@@ -875,6 +1013,11 @@ class AD():
         >>> print(x2)
         1.0
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.cosh(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -907,6 +1050,11 @@ class AD():
         >>> print(x2.round(1))
         1.0
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.tanh(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -941,7 +1089,6 @@ class AD():
         return np.e**x
     
     
-    
     @staticmethod
     def logistic(x, x_0=0, k=1, L=1):
         """A static method to calculate the logistic function of an AD instance or
@@ -970,6 +1117,27 @@ class AD():
         0.7310585786300049 ({'x1': 0.19661193324148188, 'x2': 0.19661193324148188})
         """
         return L/(1 + AD.exp(-k * (x - x_0)))
+
+    @staticmethod
+    def sum(a, axis=None):
+        """
+        A summation operation for AD instances array, it is the same as numpy.sum
+        """
+        return np.sum(np.array(a),axis=axis)
+
+    @staticmethod
+    def mean(a, axis=None):
+        """
+        An average operation for AD instances array, it is the same as numpy.mean
+        """
+        return np.mean(np.array(a), axis=axis)
+
+    @staticmethod
+    def dot(a, b):
+        """
+        An array(matrix) multiplication operation for AD instances array, it is the same as numpy.dot
+        """
+        return np.dot(np.array(a), np.array(b))
 
 if __name__ == '__main__':
     import doctest
