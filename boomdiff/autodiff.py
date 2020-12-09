@@ -255,6 +255,9 @@ class AD():
         >>> print(f2.func_val, f2.partial_dict)
         12.4 {'x1': 2, 'x2': 1.5}
         """
+        if isinstance(other, np.ndarray):
+            return np.array(self) + other
+
         try:
             # First try as other is an AD class instance
             # Combine the partial_dict of self and other, for common keys, add the value; else, append the dictionary
@@ -316,6 +319,8 @@ class AD():
         >>> print(f2.func_val, f2.partial_dict)
         1.6 {'x1': 1, 'x2': -3.4}
         """
+        if isinstance(other, np.ndarray):
+            return np.array(self) - other
         try:
             # First try as other is an AD class instance
             # Combine the partial_dict of self and other, for common keys, subtract the value; else, append the dictionary
@@ -388,6 +393,9 @@ class AD():
         >>> print(f4.func_val, f4.partial_dict)
         32 {'a': 16, 'b': 16}
         """
+        if isinstance(other, np.ndarray):
+            return np.array(self) * other
+
         try:
             # First try as other is an AD class instance
             new_der_dict = {}
@@ -466,6 +474,8 @@ class AD():
         >>> print(f3.func_val, f3.partial_dict)
         0.5 {'a': 0.25, 'b': -0.125}
         """
+        if isinstance(other, np.ndarray):
+            return np.array(self)/other 
         try:
             # first try as other is an ad class instance
             new_der_dict = {}
@@ -543,6 +553,9 @@ class AD():
         >>> print(f3.func_val, f3.partial_dict)
         16 {'a': 32.0, 'b': 11.090354888959125}
         """
+        if isinstance(other, np.ndarray):
+            return np.array(self) ** other
+
         try:
             # First try as other is an AD class instance
             new_der_dict = {}
