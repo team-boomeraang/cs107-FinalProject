@@ -68,24 +68,30 @@ class Momentum(Optimizer):
             # If no history before, initialize one
             new_update_dict = {}
             for var in var_list:
-                new_update_dict[var.name()[0]] = 0.
+                try:
+                    new_update_dict[var.name()[0]] = 0.
+                except:
+                    raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
             self.last_update = new_update_dict
 
         assert isinstance(self.last_update, dict), "last update should be a dictionary!"
 
         new_update_dict = {}
         for var in var_list:
-            grad = grad_dict[var.name()[0]]
-            if abs(grad) > abs(var.func_val) * 10**6:
-                warnings.warn("Gradient is too large: potential numerical instability")
-            v_tm1 = self.last_update[var.name()[0]]
-            v_t = self.gamma * v_tm1 + self.lr * grad
-            
-            # update the variable value
-            var.func_val -= v_t
+            try:
+                grad = grad_dict[var.name()[0]]
+                if abs(grad) > abs(var.func_val) * 10**6:
+                    warnings.warn("Gradient is too large: potential numerical instability")
+                v_tm1 = self.last_update[var.name()[0]]
+                v_t = self.gamma * v_tm1 + self.lr * grad
+                
+                # update the variable value
+                var.func_val -= v_t
 
-            # update the last_update dictionary
-            new_update_dict[var.name()[0]] = v_t
+                # update the last_update dictionary
+                new_update_dict[var.name()[0]] = v_t
+            except:
+                raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
 
         self.last_update = new_update_dict
 

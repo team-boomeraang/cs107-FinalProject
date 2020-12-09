@@ -84,14 +84,20 @@ class Adam(Optimizer):
             # If no first moment history before, initialize one
             new_mt_dict = {}
             for var in var_list:
-                new_mt_dict[var.name()[0]] = 0.
+                try:
+                    new_mt_dict[var.name()[0]] = 0.
+                except:
+                    raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
             self._mt = new_mt_dict
 
         if not hasattr(self,'_vt'):
             # If no second moment history before, initialize one
             new_vt_dict = {}
             for var in var_list:
-                new_vt_dict[var.name()[0]] = 0.
+                try:
+                    new_vt_dict[var.name()[0]] = 0.
+                except:
+                    raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
             self._vt = new_vt_dict
 
         assert isinstance(self._mt, dict), "_mt attribute should be a dictionary!"
@@ -100,25 +106,28 @@ class Adam(Optimizer):
         new_mt_dict = {}
         new_vt_dict = {}
         for var in var_list:
-            grad = grad_dict[var.name()[0]]
-            
-            if abs(grad) > abs(var.func_val) * 10**6:
-                warnings.warn("Gradient is too large: potential numerical instability")
+            try:
+                grad = grad_dict[var.name()[0]]
+                
+                if abs(grad) > abs(var.func_val) * 10**6:
+                    warnings.warn("Gradient is too large: potential numerical instability")
 
-            # Step1: compute the decaying averages of past and past squared gradients
-            new_mt = self.beta1 * self._mt[var.name()[0]] + (1-self.beta1) * grad
-            new_vt = self.beta2 * self._vt[var.name()[0]] + (1-self.beta2) * grad**2
+                # Step1: compute the decaying averages of past and past squared gradients
+                new_mt = self.beta1 * self._mt[var.name()[0]] + (1-self.beta1) * grad
+                new_vt = self.beta2 * self._vt[var.name()[0]] + (1-self.beta2) * grad**2
 
-            # Step2: compute bias-corrected first and second moment estimates
-            new_m_hat = new_mt / (1-self.beta1)
-            new_v_hat = new_vt / (1-self.beta2)
+                # Step2: compute bias-corrected first and second moment estimates
+                new_m_hat = new_mt / (1-self.beta1)
+                new_v_hat = new_vt / (1-self.beta2)
 
-            # Step3: update the variable
-            var.func_val -= self.lr * new_m_hat / (np.sqrt(new_v_hat) + self.eps)
+                # Step3: update the variable
+                var.func_val -= self.lr * new_m_hat / (np.sqrt(new_v_hat) + self.eps)
 
-            # Store the new mt, vt
-            new_mt_dict[var.name()[0]] = new_mt
-            new_vt_dict[var.name()[0]] = new_vt
+                # Store the new mt, vt
+                new_mt_dict[var.name()[0]] = new_mt
+                new_vt_dict[var.name()[0]] = new_vt
+            except:
+                raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
 
         self._mt = new_mt_dict
         self._vt = new_vt_dict

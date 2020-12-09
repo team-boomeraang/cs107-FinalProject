@@ -59,8 +59,9 @@ class Optimizer():
 
         assert callable(loss), "loss should be a callable function!"
         assert isinstance(var_list, (np.ndarray,list)), "var_list should be a variable list or array!"
-        for var in var_list:
-            assert isinstance(var, AD), "Elements in var_list should be AD variables! Or make your var_list 1D!"
+        # Change to duck-typing check in each subclass, for performance consideration
+        #for var in var_list:
+        #    assert isinstance(var, AD), "Elements in var_list should be AD variables! Or make your var_list 1D!"
 
         current_loss = loss()
         assert isinstance(current_loss, AD), "The output of loss callable should be an AD instance!"

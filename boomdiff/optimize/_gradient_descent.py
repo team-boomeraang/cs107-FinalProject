@@ -61,10 +61,13 @@ class GD(Optimizer):
         x_i = x_i - learning_rate * grad(loss(x_i))
         """
         for var in var_list:
-            grad = grad_dict[var.name()[0]]
-            #print("grad: ", grad)
-            if abs(grad) > abs(var.func_val) * 10**6:
-                warnings.warn("Gradient is too large: potential numerical instability")
-            var.func_val -= self.lr * grad
+            try:
+                grad = grad_dict[var.name()[0]]
+                #print("grad: ", grad)
+                if abs(grad) > abs(var.func_val) * 10**6:
+                    warnings.warn("Gradient is too large: potential numerical instability")
+                var.func_val -= self.lr * grad
+            except:
+                raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
             #print("var.func_val: ", var.func_val)
 
