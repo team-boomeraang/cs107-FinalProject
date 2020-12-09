@@ -64,7 +64,7 @@ class GD(Optimizer):
             try:
                 grad = grad_dict[var.name()[0]]
                 #print("grad: ", grad)
-                if abs(grad) > abs(var.func_val) * 10**6:
+                if abs(grad) >  10**8:
                     warnings.warn("Gradient is too large: potential numerical instability")
                 var.func_val -= self.lr * grad
             except:

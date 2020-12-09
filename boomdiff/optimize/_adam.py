@@ -109,7 +109,7 @@ class Adam(Optimizer):
             try:
                 grad = grad_dict[var.name()[0]]
                 
-                if abs(grad) > abs(var.func_val) * 10**6:
+                if abs(grad) > 10**8:
                     warnings.warn("Gradient is too large: potential numerical instability")
 
                 # Step1: compute the decaying averages of past and past squared gradients

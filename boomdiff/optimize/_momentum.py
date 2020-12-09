@@ -80,7 +80,7 @@ class Momentum(Optimizer):
         for var in var_list:
             try:
                 grad = grad_dict[var.name()[0]]
-                if abs(grad) > abs(var.func_val) * 10**6:
+                if abs(grad) > 10**8:
                     warnings.warn("Gradient is too large: potential numerical instability")
                 v_tm1 = self.last_update[var.name()[0]]
                 v_t = self.gamma * v_tm1 + self.lr * grad
