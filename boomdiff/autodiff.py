@@ -656,9 +656,9 @@ class AD():
         >>> print(x2)
         1.2246467991473532e-16
         """
-        if isinstance(x,np.ndarray):
-            new_x = np.zeros(x.shape, dtype=AD)
-            for idx, ele in np.ndenumerate(x):
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
                 new_x[idx] = AD.sin(ele)
             return new_x
         try:
@@ -694,6 +694,11 @@ class AD():
         >>> print(x2)
         -1.0
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.cos(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -726,6 +731,11 @@ class AD():
         >>> print(x2.round(1))
         -0.0
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.tan(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
