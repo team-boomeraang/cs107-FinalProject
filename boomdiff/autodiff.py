@@ -766,6 +766,11 @@ class AD():
         >>> print(AD.arcsin(0.25))
         0.25268025514207865
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.arcsin(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -796,6 +801,11 @@ class AD():
         >>> print(AD.arccos(0.25))
         1.318116071652818
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.arccos(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -826,6 +836,11 @@ class AD():
         >>> print(AD.arctan(0.25))
         0.24497866312686414
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.arctan(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
@@ -863,6 +878,11 @@ class AD():
         >>> print(f3.func_val, f3.partial_dict)
         1.0 {'x2': -0.0}
         """
+        if isinstance(x,(np.ndarray,list)):
+            new_x = np.zeros(np.array(x).shape, dtype=AD)
+            for idx, ele in np.ndenumerate(np.array(x)):
+                new_x[idx] = AD.sqrt(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
