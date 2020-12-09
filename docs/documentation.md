@@ -319,6 +319,31 @@ class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers.
 	
 - `plot_loss_func()`: If `loss_track` has been stored by `record = True`, then this will quickly plot the loss function over each iteration taken.
 
+##### Optimization example with gradient descent: $f(x, y) = x^2 + y^2$
+Intuitively, we know that this function will be minimized at $x = 0$, $y=0$, but we can begin at an arbitrary $(x, y) = (100, 1)$ and try optimization. First, we will use the `step()` method to make a single update, and then we will optimize the function.
+```python
+>>> # Instantiate a GD optimizer
+>>> opt = GD(learning_rate=0.1)
+>>> # loss is the objective function that we want to minimize
+>>> # 'loss' should be a callable that takes no arguments and output an AD instance. Should only use operations supported by AD class
+>>> loss = lambda: x**2 + y**2
+>>> # initialize the variables for the objective function
+>>> # make sure the name string in the dict is corresponding with the variable name
+>>> x = AD(100, {'x': 1})
+>>> y = AD(1, {'y': 1})
+ >>> # Call step method, update the variables for one step, to minimize the loss value
+>>> # var_list are the variable lists that you want to update
+>>> # It can be part of the variables in loss callable.
+>>> # The step method will update the variables defined before
+>>> opt.step(loss, var_list=[var1, var2])
+>>> # The var1 and var2 will be updated by -learning_rate * grad(loss)
+>>> print(x, y)
+80.0 ({'x': 1}) 0.8 ({'y': 1})
+>>> # Call minimize method, to update multiple steps
+>>> opt.minimize(loss, [var1, var2], steps=100)
+>>> print(x.round().value(), y.round().value())
+0.0 0.0
+```
 ---
 ### Optimization methods (Optimizer subclasses)
 class `GD`: Implements gradient descent optimization. Because the base case assumed here does not necesarily have a 'data' element, this is not inherently stochastic gradient descent. This would need to be separately implemented separately. For each variable in `var_list`, will be minimized according to the following equation:
