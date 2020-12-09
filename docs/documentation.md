@@ -27,7 +27,7 @@ As briefly described in the introduction, nearly all scientific and social scien
 
 This procedure is continued until the parameters are optimized, which will intuitively occur when the gradient with respect to the parameter is equal to zero. Algorithmically, when the gradient is zero, the magnitude will be as well, and the parameters will terminate updates. Speaking mathematically, this occurs exactly when the stationarity condition has been satisfied (i.e. the first derivative, or gradient) is equal to zero.
 
-This methodology, however, is quite [generalizable and flexible](https://ruder.io/optimizing-gradient-descent/). Two particular problems faced in practice revolve around computational cost and saddle points. When optimization involves significant quantities of data -- as is often the case for MLE or MAP procedures -- the [log-likelihood function](https://en.wikipedia.org/wiki/Likelihood_function), which we hope to minimize, may have hundreds or thousands of data points to be summed over. Doing so can be computationally overwhelming and expensive. To account for this, many techniques randomly select some subset of data, and iteratively optimize over each subset of data. In doing so, the optimization proceeds with smaller magnitude updates, but may more quickly realize the appropriate direction. This technique is commonly known as Stochastic Gradient Descent (SGD) or Mini-Batch Gradient Descent (MBGD) (see [here](https://developers.google.com/machine-learning/crash-course/reducing-loss/stochastic-gradient-descent) for more information). 
+This methodology, however, is quite [generalizable and flexible](https://ruder.io/optimizing-gradient-descent/). Two particular problems faced in practice revolve around computational cost and saddle points. When optimization involves significant quantities of data -- as is often the case for MLE or MAP procedures -- the [log-likelihood function](https://en.wikipedia.org/wiki/Likelihood_function), which we hope to minimize, may have hundreds or thousands of data points to be summed over. Doing so can be computationally overwhelming and expensive. To account for this, many techniques randomly select some subset of data, and iteratively optimize over each subset of data. In doing so, the optimization proceeds with smaller magnitude updates, but may more quickly realize the appropriate direction. This technique is commonly known as Stochastic Gradient Descent (SGD) or Mini-Batch Gradient Descent (MBGD) (see [here](https://developers.google.com/machine-learning/crash-course/reducing-loss/stochastic-gradient-descent) for more information).
 
 Second, for highly complex and non-convex functions, the gradient descent may become 'stuck' at a specific point, or a local minimum, rather than the desired global minimum. Overcoming this challenge once again requires the introduction of randomness. While SGD may be able to eventually overcome this challenge via selecting a subset of data with a gradient with sufficient magnitude to escape the point, a second general approach is to update the parameters using not only the single previous estimate, but many previous estimates. This concept is often referred to as 'momentum' (see [here](https://distill.pub/2017/momentum/) for a more detailed tutorial on the specific mechanics underlying momentum-based gradient descent algorithms).
 
@@ -56,39 +56,39 @@ Note: this is the preferred method for installing the most up-to-date release of
 
 ** Method #2: Installation via GitHub**
 If installation via PyPi is insufficient, we have provided the instructions below, desgined to download and install the development version of *boomdiff*, available through our GitHub repository.
-1. **Download package**: 
+1. **Download package**:
 
     The boomdiff package is available at the GitHub address (https://github.com/team-boomeraang/cs107-FinalProject). To download, navigate on the command line to the desired installation location and run:
 
     `git clone https://github.com/team-boomeraang/cs107-FinalProject.git`
-    
-2. **Installation of dependencies**: 
+
+2. **Installation of dependencies**:
 
     There are two ways to install dependencies, depending on the package manager used. If using `pip`, then run:
 
     `pip install -r requirements.txt`
-    
+
     Else, if using Conda or Miniconda for package management, run:
-    
+
     `conda install --file requirements.txt`
-    
+
     Finally, if the desired use is to use `pip` to install the package through Conda or Miniconda, run the following sequence of commands:
-    
+
     `conda install pip`
-    
+
     `which pip`
-    
+
     Ensure that the directory of pip to be used falls below 'anaconda' or 'miniconda' in the directory structure.
-    
+
     `pip install -r requirements.txt`
-    
-3. **Set-up and install packages**: 
-   
+
+3. **Set-up and install packages**:
+
     Next, the `setup.py` file must be run to install boomdiff [boomdiff_optimizer not currently available, see Future Features section below]. Navigate to the newly cloned directory and run:
 
     `python setup.py install`
-    
-    
+
+
 
 <a id='installation_py'></a>
 
@@ -105,7 +105,7 @@ We recommend two possible methods for installation of Python.
 ### Generalized autodifferentiation
 In order to take advantage of the ability of *boomdiff*, all objects for optimization must be instantiated as automatic differentiation objects. This section provides a brief introduction and example to instantiation of AD objects. The following section, on objective functions, details how to combine these AD objects into an objective function.
 
-#### Example 0: Instantiate a variable 
+#### Example 0: Instantiate a variable
 
 As a forward AD mode, we mostly have to instantiate input variables with value and derivative values as a starting point. This process can be easily done with `x1 = AD(*value,**derivate_dict)`. Value is a necessary argument and derivative dictionary are defaulted to be `{'x1': 1}`, you can set as you like. Currently, we only support single input, single scalar output.
 
@@ -158,7 +158,7 @@ The value of the function will be stored in an attribute `func_val` and the part
 ```
 
 #### Example 2: Static method functions, $f(x) = \sin(x^2)$
-We use this example as a demonstration of static method primary functions in our package. Currently, we support `AD.sin()`(sine), `AD.cos()`(cosine), `AD.tan()`(tangent), `AD.log()`(natural log) and `AD.exp()`(exponential). 
+We use this example as a demonstration of static method primary functions in our package. Currently, we support `AD.sin()`(sine), `AD.cos()`(cosine), `AD.tan()`(tangent), `AD.log()`(natural log) and `AD.exp()`(exponential).
 
 We will evaluate this function and its derivative at the value 3. Analytically, the derivative of this function, $f'(x) = 2x \cos(2x)$. Unlike the first function, this one is not so easily evaluated simply by inspection. For *boomdiff*, however, this remains computationally easy. Additionally, in this example, we directly instantiate the function. Note that this functionality assumes that there is only one variable, and thus, $x + y$ will be treated as $x1 + x1$.
 
@@ -177,18 +177,18 @@ We will evaluate this function and its derivative at the value 3. Analytically, 
 #### Example 3: Functions of many variables
 ```python
 >>> from boomdiff import AD
-  
+
 >>> # Step1: instantiate multiple variables, x1, x2 here
 >>> x1 = AD(10, {'x1': 1})
 >>> x2 = AD(4.9, {'x2': 1})
-    
+
 >>> # Step2: Define a multivariant function, f = x1+x2
 >>> f = x1 + x2
-    
+
 >>> # Step3: Show the information of f
 >>> f.func_val
 14.9   
-    
+
 >>> # Now we have multiple partial derivatives in the dictionary
 >>> f.partial_dict
 {'x1': 1, 'x2': 1}
@@ -262,11 +262,12 @@ cs107-FinalProject/
         test_suite.py
 ```
 
-There are two main modules, both of which sit within the *boomdiff* package structure. The main functionality is encapsulated in the `optimize` subpackage, as this provides full access to our suite of optimization tools. Those tools, which are described in detail above and through the details on implementation below,, will not be reviewed here.  Additonally, the implemented module, `autodiff.py` provides support for automatic differentiation of a scalar functions of a many variables of elementary functions and operations (detailed in the 'Implementation' section below). 
+There are two main modules, both of which sit within the *boomdiff* package structure. The main functionality is encapsulated in the `optimize` subpackage, as this provides full access to our suite of optimization tools. Those tools, which are described in detail above and through the details on implementation below,, will not be reviewed here.  Additonally, the implemented module, `autodiff.py` provides support for automatic differentiation of a scalar functions of a many variables of elementary functions and operations (detailed in the 'Implementation' section below).
 
 Our test suite lives in the `tests` directory of the main directory structure. These unit tests currently cover 99% of the *boomdiff* functionality. Additionally, each of the overloaded operations and static methods implemented in the AD class have docstring tests to support additional testing and usability. Our repository is currently being tracked by Travis CI, integrated with CodeCov, to provide support for continuous integration of our library.
 
-As described above, our package is distributed through two separate avenues. First, the package is installable via PyPi. Second, our packaging is distributed via a clone of this GitHub repository. We’re not planning to use the framework since our package is not going to be a web application. Also, the package should be basic enough and contain all required documentation. 
+As described above, our package is distributed through two separate avenues. First, the package is installable via PyPi. Second, our packaging is distributed via a clone of this GitHub repository. We’re not planning to use the framework since our package is not going to be a web application. Also, the package should be basic enough and contain all required documentation.
+
 
 ## Implementation
 #### optimize
@@ -323,13 +324,13 @@ The methods for this class can be broadly grouped into three subsets: helper met
 **Helper instance methods**
 
 - `name()`: This function returns the name of all variables contained within the AD object. Equivalent to returning the keys of the partial dictionary
-	
+
 - ` value()`: Returns the current function value of an AD object.
-	
+
 - `ders()`:  Returns the partial derivative dictionary of the specified object.
-	
+
 - `evaluate()`: Returns the function value and derivative dictionary as a tuple, in that order.
-	
+
 - `set_params(att, val)`: Set a given attribute for the AD object. May be used to reset the partial derivative dictionary to zero or to otherwise clear the function.
 
 | Arguments | Type             | Status   | Description                                                  |
@@ -345,13 +346,17 @@ The methods for this class can be broadly grouped into three subsets: helper met
 >>> print(AD(3.0, {'x1':1}) + AD(2.0, {'x2':1}))
 5.0 ({'x1': 1, 'x2': 1''})
 ```
+
 - `__radd__(self, other)`: See documentation for `__add__`.
+
 - `__sub__(self, other)`: Like addition, if both objects are AD objects, will subtract function values arithmetically, and will substract partial derivatives for elements of each `partial_dict` with the same key.
 ```python
 >>> print(AD(3.0, {'x1':1}) - AD(2.0, {'x2':1}))
 1.0 ({'x1': 1, 'x2': -1''})
 ```
+
 - `__rsubb__(self, other)`: See documentation for `__sub__`.
+
 - `__mul__(self, other)`: Overload multiplication operation (`*`). For AD objects, multiplies function values and applies product rule to partial derivatives. Thus, for each key, the new partial derivative is:
 	- `self.partial_dict[key]*other.func_val + other.partial_dict[key]*self.func_val`
 ```python
@@ -359,13 +364,15 @@ The methods for this class can be broadly grouped into three subsets: helper met
 4.0 ({'x1': 1, 'x2': 1''})
 ```
 -`__rmul__(self, other)`: See documentation for `__mul__`.
+
 - `__truediv__(self, other)`: Operation overloading for (`/`). Divides function values and applies quotient rule within a partial dictionary key. Note that if function_val for `other` is zero, will raise a `DivideZeroError`. If `other` not an AD object, will treat value as function value, dividing function value for self as well as partial dictionary entries.
 ```python
 >>> print(AD(6.0, {'x1':2}) / AD(2.0, {'x1':1}))
 3.0 ({'x1': -0.5})
 ```
 - `__rtruediv__(self, other)`: See documentatio for `__truediv__`.
-- `__pow__(self, other)`: Implements operator overloading for power symbol (`**`). For `other` AD objects, will apply power within `func_val`. Partial derivatives will be calculated according to the [generalized power rule](https://en.wikipedia.org/wiki/Differentiation_rules#Generalized_power_rule). If `other` int or float, will apply simple power rule, though this is implemented as special case of generalized rule. 
+
+- `__pow__(self, other)`: Implements operator overloading for power symbol (`**`). For `other` AD objects, will apply power within `func_val`. Partial derivatives will be calculated according to the [generalized power rule](https://en.wikipedia.org/wiki/Differentiation_rules#Generalized_power_rule). If `other` int or float, will apply simple power rule, though this is implemented as special case of generalized rule.
 ```python
 >>> a = AD(2, {'a': 1})
 >>> b = AD(4, {'b': 1})
@@ -420,7 +427,8 @@ The methods for this class can be broadly grouped into three subsets: helper met
 >>> print(f1.func_val, f1.partial_dict)
 1.0 {'x1': 0.5}
 ```
--`log(x, base-numpy.e)`: Applies logarithm of `base` to `x`. Note that by default, will apply natural logarithm. If `x` is not an AD object, will perform similarly to `numpy.log`.
+
+-`log(x, base=numpy.e)`: Applies logarithm of `base` to `x`. Note that by default, will apply natural logarithm. If `x` is not an AD object, will perform similarly to `numpy.log`.
 ```python
 >>> x1 = AD(np.e**2, {'x1': 1.})
 >>> f0 = AD.log(x1)
@@ -460,6 +468,7 @@ The methods for this class can be broadly grouped into three subsets: helper met
 | `x_0`     | float, int  | optional, default 0 | Value of the midpoint of the logistic function, which will be set to zero by default. In the case of regression tasks, this is commonly set to be the center of the distribution for a certain set of predictors. |
 | `k`       | float, int, | optional; default 1 | Logistic growth rate of curve. Lower values of `k` imply a steeper curve. |
 | `L`       | float, int  | optional, default 0 | Maximum value for the entirety of the logistic function.     |
+
 ```python
 >>> x = AD(1.5)
 >>> print(AD.logistic(x))
@@ -473,3 +482,9 @@ The methods for this class can be broadly grouped into three subsets: helper met
 We see two primary directions for continued development on this project: implementing a user-friendly approach and/or targeting a specific scientific community.  While these directions are not necessarily mutually exclusive (both could be built on the same optimization package), the next steps and direction of the development process are likely fairly separate. In terms of usability, we believe that one promising direction would be to include a class or set of functions meant to parse string versions of common functions, which would likely significantly increase the accessibility of our package. We believe this could be a particular comaprative advantage of our package to currently existing optimization libraries, namely the general functionality of major libraries such as PyTorch and TensorFlow. As a small team without any specialists in either automatic differentiation or optimization, our package will likely not compete with the performance of a PyTorch or TensorFlow. That being said, one particular weakness of those packages is that the optimized performance and object-oriented structure may be confusing to users less familiar with Python. Less familiarity with Python should not stop users from efficiently performing optimization, though -- these tasks are too central to too much reasearch for that.
 
 A second direction our package could plausibly go would be to adapt the first proposal into a subfield-specific optimization library. This may go hand-in-hand with the user-friendly nature of the package, but would likely be more targeted in terms of application and functionality. For example, there may be less utility in adapting the package to address the needs of machine learning practitioners, as most are likely comfortable with an existing optimization library. For social and physical sciences less traditionally connected to computing, however, we believe that this could be a promising direction. One example of a feature that we might add if, for example, our package was targeted at  statiscians is the ability to perform importance sampling within the application of a gradient. For mode-finding algorithms that feature intractable integrals which cannot be discarded. To optimize complex likelihood and posterior distributions, this functionality may facilitate ease of use for that particular 'client'. As noted, one advantage of our object-oriented structure is modularity, which may allow us to pursue both of these avenues. In the interest of limited resources, though, they may not both be feasible over the medium-term.
+
+#### Broader Impact Statement
+This AD package has a function of usability that is user-friendly, allowing groups with little to moderate experience to operate this library with ease, thanks to the extensive documentation. The simplicity in defining variables and their derivatives allows the methods and functions of autodiff to differentiate both complex functions and basic functions alike.
+With this automatic differentiation package, one can easily ascertain both the value and derivatives of a given function. What makes our library impactful is the ability to easily create one’s own functions inheriting instances of variables using the AD library.
+To make contributions to this library, users must import AD from *boomdiff.autodiff*, then create a closure inheriting a variable defined with the AD library. This lessens the inclusivity as a moderate level of skill in Python is required to accomplish this. However, it allows for nearly endless functions to be created for user-specific uses. One example of this use is creating a user-supplied loss function for broad ethical Machine Learning projects. Due to the ability to create user-specific functions, the range of this package’s inclusivity is far wider than that of other packages. The greatest impact would potentially occur with groups seeking an easy way to create their own methods and functions making use of automatic differentiation, as this package is specifically user-friendly in that area compared to others of its kind. While it may not be as efficient or as specialized as other libraries, this ability to create new methods allows this library to have a more widespread range of use than others of its kind and ensures that the process is fair and welcoming to nearly all groups with experience in Python.
+
