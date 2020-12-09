@@ -62,6 +62,44 @@ class AD():
         as separate objects. Returned in order func_val, partial_dict"""
         return self.func_val, self.partial_dict
 
+    def round(self, decimal_number=2, decimal_number_optional=None):
+        """Return a new AD instance with the func_val and value in partial_dict rounded to
+        a given number of decimals. It will not overwrite the self instance
+        Parameters
+        ----------
+        decimal_number: Int, non-negative, default to be 2
+            Number of decimals you want to round to. If decimal_number_optional is not given,
+            It will apply to both func_val and value in partial_dict; Or it will only apply to func_val
+
+        decimal_number_optional: None, Non-negative int
+            Number of decimals you want to round value in partial_dict to. If not given, 
+            decimal_number will apply to both func_val and value in partial_dict.
+
+        Returns
+        -------
+        A new AD instance with rounded value
+
+        Examples
+        --------
+        >>> a = AD(1.45789,{'a': 3.4564})
+        >>> a.round()
+        1.46 ({'a': 3.46})
+        >>> a.round(3)
+        1.458 ({'a': 3.456})
+        >>> a.round(1,2)
+        1.5 ({'a': 3.46})
+        """
+        assert isinstance(decimal_number, int) and (decimal_number >= 0), "decimal_number should be non-negative integer!"
+        if decimal_number_optional is None:
+            decimal_number_optional = decimal_number
+        else:
+            assert isinstance(decimal_number_optional, int) and (decimal_number_optional >= 0), "decimal_number_optional should be non-negative integer!"
+        
+        new_der_dict = {}
+        for key, value in self.partial_dict.items():
+            new_der_dict[key] = np.round(value, decimal_number_optional)
+        return AD(np.round(self.func_val, decimal_number), new_der_dict)
+
     def set_params(self, att, val):
         """Set parameters for class; to be used in selective cases only
         Parameters
@@ -911,15 +949,11 @@ class AD():
         Parameters
         ----------
         x: AD class instance of float
-            Elements to be used as base of logistic function. Can be an AD class instance,
-            which will update both the function value and partial derivative dictionary; or
-            a constant, which will return a constant output
+            Elements to be used as base of logistic function.
         x_0: int or float 
-            This represents the center of logistic function; default set to zero, i.e.
-            logistic function centered at zero 0.
+            This represents the center of logistic function; default set to zero.
         k: int or float
-            Logistic growth rate of function; default set to 1. Larger values of k imply
-            steeper logistic growth rate
+            Logistic growth rate of function; default set to 1. 
         L: int or float
             Maximum value of logistic function; default set to 1.
         Returns

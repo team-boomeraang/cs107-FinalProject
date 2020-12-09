@@ -268,6 +268,7 @@ Our test suite lives in the `tests` directory of the main directory structure. T
 
 As described above, our package is distributed through two separate avenues. First, the package is installable via PyPi. Second, our packaging is distributed via a clone of this GitHub repository. We’re not planning to use the framework since our package is not going to be a web application. Also, the package should be basic enough and contain all required documentation.
 
+
 ## Implementation
 #### optimize
 *Summary*: The *optimize* subpackage of *boomdiff* performs optimization of arbitrary objective functions, according to the user's specifications. This section reviews the superclass, `Optimizer`, as well as the important methods. Following that, we review the subclasses, which inherit from this `Optimizer` superclass. Unless users wish to implement additional optimization methods not included at this time in *boomdiff*, these subclasses will provide full functionality to optimize the objective function. Developers who wish to create additional methods should inherit from the superclass. Please contact Team Boomeraang if you wish to contibute additional optimizations or have suggestions for additional methodologies! The landscape of optimization algorithms is ever-changing, and we would love your feedback and contributions.
@@ -345,13 +346,17 @@ The methods for this class can be broadly grouped into three subsets: helper met
 >>> print(AD(3.0, {'x1':1}) + AD(2.0, {'x2':1}))
 5.0 ({'x1': 1, 'x2': 1''})
 ```
+
 - `__radd__(self, other)`: See documentation for `__add__`.
+
 - `__sub__(self, other)`: Like addition, if both objects are AD objects, will subtract function values arithmetically, and will substract partial derivatives for elements of each `partial_dict` with the same key.
 ```python
 >>> print(AD(3.0, {'x1':1}) - AD(2.0, {'x2':1}))
 1.0 ({'x1': 1, 'x2': -1''})
 ```
+
 - `__rsubb__(self, other)`: See documentation for `__sub__`.
+
 - `__mul__(self, other)`: Overload multiplication operation (`*`). For AD objects, multiplies function values and applies product rule to partial derivatives. Thus, for each key, the new partial derivative is:
 	- `self.partial_dict[key]*other.func_val + other.partial_dict[key]*self.func_val`
 ```python
@@ -359,12 +364,14 @@ The methods for this class can be broadly grouped into three subsets: helper met
 4.0 ({'x1': 1, 'x2': 1''})
 ```
 -`__rmul__(self, other)`: See documentation for `__mul__`.
+
 - `__truediv__(self, other)`: Operation overloading for (`/`). Divides function values and applies quotient rule within a partial dictionary key. Note that if function_val for `other` is zero, will raise a `DivideZeroError`. If `other` not an AD object, will treat value as function value, dividing function value for self as well as partial dictionary entries.
 ```python
 >>> print(AD(6.0, {'x1':2}) / AD(2.0, {'x1':1}))
 3.0 ({'x1': -0.5})
 ```
 - `__rtruediv__(self, other)`: See documentatio for `__truediv__`.
+
 - `__pow__(self, other)`: Implements operator overloading for power symbol (`**`). For `other` AD objects, will apply power within `func_val`. Partial derivatives will be calculated according to the [generalized power rule](https://en.wikipedia.org/wiki/Differentiation_rules#Generalized_power_rule). If `other` int or float, will apply simple power rule, though this is implemented as special case of generalized rule.
 ```python
 >>> a = AD(2, {'a': 1})
@@ -420,6 +427,7 @@ The methods for this class can be broadly grouped into three subsets: helper met
 >>> print(f1.func_val, f1.partial_dict)
 1.0 {'x1': 0.5}
 ```
+
 -`log(x, base=numpy.e)`: Applies logarithm of `base` to `x`. Note that by default, will apply natural logarithm. If `x` is not an AD object, will perform similarly to `numpy.log`.
 ```python
 >>> x1 = AD(np.e**2, {'x1': 1.})
@@ -460,6 +468,7 @@ The methods for this class can be broadly grouped into three subsets: helper met
 | `x_0`     | float, int  | optional, default 0 | Value of the midpoint of the logistic function, which will be set to zero by default. In the case of regression tasks, this is commonly set to be the center of the distribution for a certain set of predictors. |
 | `k`       | float, int, | optional; default 1 | Logistic growth rate of curve. Lower values of `k` imply a steeper curve. |
 | `L`       | float, int  | optional, default 0 | Maximum value for the entirety of the logistic function.     |
+
 ```python
 >>> x = AD(1.5)
 >>> print(AD.logistic(x))
@@ -478,3 +487,4 @@ A second direction our package could plausibly go would be to adapt the first pr
 This AD package has a function of usability that is user-friendly, allowing groups with little to moderate experience to operate this library with ease, thanks to the extensive documentation. The simplicity in defining variables and their derivatives allows the methods and functions of autodiff to differentiate both complex functions and basic functions alike.
 With this automatic differentiation package, one can easily ascertain both the value and derivatives of a given function. What makes our library impactful is the ability to easily create one’s own functions inheriting instances of variables using the AD library.
 To make contributions to this library, users must import AD from *boomdiff.autodiff*, then create a closure inheriting a variable defined with the AD library. This lessens the inclusivity as a moderate level of skill in Python is required to accomplish this. However, it allows for nearly endless functions to be created for user-specific uses. One example of this use is creating a user-supplied loss function for broad ethical Machine Learning projects. Due to the ability to create user-specific functions, the range of this package’s inclusivity is far wider than that of other packages. The greatest impact would potentially occur with groups seeking an easy way to create their own methods and functions making use of automatic differentiation, as this package is specifically user-friendly in that area compared to others of its kind. While it may not be as efficient or as specialized as other libraries, this ability to create new methods allows this library to have a more widespread range of use than others of its kind and ensures that the process is fair and welcoming to nearly all groups with experience in Python.
+
