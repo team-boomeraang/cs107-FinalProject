@@ -27,7 +27,7 @@ As briefly described in the introduction, nearly all scientific and social scien
 
 This procedure is continued until the parameters are optimized, which will intuitively occur when the gradient with respect to the parameter is equal to zero. Algorithmically, when the gradient is zero, the magnitude will be as well, and the parameters will terminate updates. Speaking mathematically, this occurs exactly when the stationarity condition has been satisfied (i.e. the first derivative, or gradient) is equal to zero.
 
-This methodology, however, is quite [generalizable and flexible](https://ruder.io/optimizing-gradient-descent/). Two particular problems faced in practice revolve around computational cost and saddle points. When optimization involves significant quantities of data -- as is often the case for MLE or MAP procedures -- the [log-likelihood function](https://en.wikipedia.org/wiki/Likelihood_function), which we hope to minimize, may have hundreds or thousands of data points to be summed over. Doing so can be computationally overwhelming and expensive. To account for this, many techniques randomly select some subset of data, and iteratively optimize over each subset of data. In doing so, the optimization proceeds with smaller magnitude updates, but may more quickly realize the appropriate direction. This technique is commonly known as Stochastic Gradient Descent (SGD) or Mini-Batch Gradient Descent (MBGD) (see [here](https://developers.google.com/machine-learning/crash-course/reducing-loss/stochastic-gradient-descent) for more information).
+This methodology, however, is quite [generalizable and flexible](https://ruder.io/optimizing-gradient-descent/). Two particular problems faced in practice revolve around computational cost and saddle points. When optimization involves significant quantities of data -- as is often the case for MLE or MAP procedures -- the [log-likelihood function](https://en.wikipedia.org/wiki/Likelihood_function), which we hope to minimize, may have hundreds or thousands of data points to be summed over. Doing so can be computationally overwhelming and expensive. To account for this, many techniques randomly select some subset of data, and iteratively optimize over each subset of data. In doing so, the optimization proceeds with smaller magnitude updates, but may more quickly realize the appropriate direction. This technique is commonly known as Stochastic Gradient Descent (SGD) or Mini-Batch Gradient Descent (MBGD) (see [here](https://developers.google.com/machine-learning/crash-course/reducing-loss/stochastic-gradient-descent) for more information). 
 
 Second, for highly complex and non-convex functions, the gradient descent may become 'stuck' at a specific point, or a local minimum, rather than the desired global minimum. Overcoming this challenge once again requires the introduction of randomness. While SGD may be able to eventually overcome this challenge via selecting a subset of data with a gradient with sufficient magnitude to escape the point, a second general approach is to update the parameters using not only the single previous estimate, but many previous estimates. This concept is often referred to as 'momentum' (see [here](https://distill.pub/2017/momentum/) for a more detailed tutorial on the specific mechanics underlying momentum-based gradient descent algorithms).
 
@@ -56,41 +56,42 @@ Note: this is the preferred method for installing the most up-to-date release of
 
 ** Method #2: Installation via GitHub**
 If installation via PyPi is insufficient, we have provided the instructions below, desgined to download and install the development version of *boomdiff*, available through our GitHub repository.
-1. **Download package**:
+1. **Download package**: 
 
     The boomdiff package is available at the GitHub address (https://github.com/team-boomeraang/cs107-FinalProject). To download, navigate on the command line to the desired installation location and run:
 
     `git clone https://github.com/team-boomeraang/cs107-FinalProject.git`
-
-2. **Installation of dependencies**:
+    
+2. **Installation of dependencies**: 
 
     There are two ways to install dependencies, depending on the package manager used. If using `pip`, then run:
 
     `pip install -r requirements.txt`
-
+    
     Else, if using Conda or Miniconda for package management, run:
-
+    
     `conda install --file requirements.txt`
-
+    
     Finally, if the desired use is to use `pip` to install the package through Conda or Miniconda, run the following sequence of commands:
-
+    
     `conda install pip`
-
+    
     `which pip`
-
+    
     Ensure that the directory of pip to be used falls below 'anaconda' or 'miniconda' in the directory structure.
-
+    
     `pip install -r requirements.txt`
-
-3. **Set-up and install packages**:
-
+    
+3. **Set-up and install packages**: 
+   
     Next, the `setup.py` file must be run to install boomdiff [boomdiff_optimizer not currently available, see Future Features section below]. Navigate to the newly cloned directory and run:
 
     `python setup.py install`
-
-
+    
+    
 
 <a id='installation_py'></a>
+
 #### Installation of Python
 We recommend two possible methods for installation of Python.
 
@@ -104,7 +105,7 @@ We recommend two possible methods for installation of Python.
 ### Generalized autodifferentiation
 In order to take advantage of the ability of *boomdiff*, all objects for optimization must be instantiated as automatic differentiation objects. This section provides a brief introduction and example to instantiation of AD objects. The following section, on objective functions, details how to combine these AD objects into an objective function.
 
-#### Example 0: Instantiate a variable
+#### Example 0: Instantiate a variable 
 
 As a forward AD mode, we mostly have to instantiate input variables with value and derivative values as a starting point. This process can be easily done with `x1 = AD(*value,**derivate_dict)`. Value is a necessary argument and derivative dictionary are defaulted to be `{'x1': 1}`, you can set as you like. Currently, we only support single input, single scalar output.
 
@@ -157,7 +158,7 @@ The value of the function will be stored in an attribute `func_val` and the part
 ```
 
 #### Example 2: Static method functions, $f(x) = \sin(x^2)$
-We use this example as a demonstration of static method primary functions in our package. Currently, we support `AD.sin()`(sine), `AD.cos()`(cosine), `AD.tan()`(tangent), `AD.log()`(natural log) and `AD.exp()`(exponential).
+We use this example as a demonstration of static method primary functions in our package. Currently, we support `AD.sin()`(sine), `AD.cos()`(cosine), `AD.tan()`(tangent), `AD.log()`(natural log) and `AD.exp()`(exponential). 
 
 We will evaluate this function and its derivative at the value 3. Analytically, the derivative of this function, $f'(x) = 2x \cos(2x)$. Unlike the first function, this one is not so easily evaluated simply by inspection. For *boomdiff*, however, this remains computationally easy. Additionally, in this example, we directly instantiate the function. Note that this functionality assumes that there is only one variable, and thus, $x + y$ will be treated as $x1 + x1$.
 
@@ -176,18 +177,18 @@ We will evaluate this function and its derivative at the value 3. Analytically, 
 #### Example 3: Functions of many variables
 ```python
 >>> from boomdiff import AD
-
+  
 >>> # Step1: instantiate multiple variables, x1, x2 here
 >>> x1 = AD(10, {'x1': 1})
 >>> x2 = AD(4.9, {'x2': 1})
-
+    
 >>> # Step2: Define a multivariant function, f = x1+x2
 >>> f = x1 + x2
-
+    
 >>> # Step3: Show the information of f
 >>> f.func_val
 14.9   
-
+    
 >>> # Now we have multiple partial derivatives in the dictionary
 >>> f.partial_dict
 {'x1': 1, 'x2': 1}
@@ -196,17 +197,42 @@ We will evaluate this function and its derivative at the value 3. Analytically, 
 ### Optimization of objective functions
 From these objects, users may instantiate more complex and arbitrary functions. Using the *boomdiff.optimize* framework, those functions can be efficiently minimzied to machine precision. In terms of structure, *boomdiff* relies on an `Optimizer()` superclass structure, with each gradient descent method taking being a subclass. More details regarding implementation and use can be found in the Implementation section below. In this section, we demonstrate the optimization of two functions: first, an arbirary function, $-x$, and second, an objective function given some data.
 
-#### Example 1: Minimize $f(x) = -x^2$
-We will minimize this function via Batch Gradient Descent
+#### Example 1: Minimize $f(x_1, x_2) = x_1^2 + x_2^2$
+Example:
 ```python
->>> from boomdiff import AD, BGD
->>> import numpy as np
->>> x = AD(10, 'x')
->>> f = lambda: -(x **2)
->>> opt = BGD(learning_rate=0.1)
->>> opt.minimize(f, [x], steps=100)
->>> x.evaluate()
-0.0 ({'x': 0.0})
+>>> # Instantiate an SGD optimizer
+>>> opt = boomdiff.optimize.SGD(learning_rate=0.1)
+```
+In this case, `loss` should be a callable that takes no arguments and output an AD instance that only uses operations supported by AD class
+```python
+>>> loss = lambda: var1**2 + var2**2
+```
+Initialize the variables for the objective function. Make sure the name string in the dict is corresponds to the variable names instantiated in the lamda function.
+```python
+>>> var1 = AD(1, {'var1': 1})
+>>> var2 = AD(2, {'var2': 1})
+```
+Call step method, update the variables for one step, to minimize the loss value. `var_list` are the variable lists to update, which can be part of the variables in the callable loss function defined above. This step method will update the underlying variables previously defined.
+```python
+>>> opt.step(loss, var_list=[var1, var2])
+```
+For each step, `var1` and `var2` will be updated. the magnitude of the update will be `learning_rate * grad` where `grad` corresponds to the multi-dimensional gradient (i.e. the partial derivative of `var1` and `var2` found in the `partial_dict` attribute of `loss`).
+```python
+>>> var1
+0.8 ({'var1': 1})
+>>> var2
+1.6 ({'var2': 1})
+```
+Alternatively, a user can call the `minimize()` method to update multiple steps. As specified in the documentation for `minimize()`, the user may specify a series of learning rates to vary with each step.
+```python
+>>> opt.miminize(loss, var_list[var1, var2], learning_rates=np.linspace(0.1,0.01,100), steps=100)
+```
+If converged after `steps` steps, this will yield the optimziation results. If this has not converged, a warning will be raised to the user.
+```python
+>>> var1
+0.0 ({'var1': 1})
+>>> var2
+0.0 ({'var2': 1})
 ```
 
 #### Example 2: Optimization for regression
@@ -236,55 +262,220 @@ cs107-FinalProject/
         test_suite.py
 ```
 
-There are two main modules, both of which sit within the *boomdiff* package structure. The main functionality is encapsulated in the `optimize` subpackage, as this provides full access to our suite of optimization tools. Those tools, which are described in detail above and through the details on implementation below,, will not be reviewed here.  Additonally, the implemented module, `autodiff.py` provides support for automatic differentiation of a scalar functions of a many variables of elementary functions and operations (detailed in the 'Implementation' section below).
+There are two main modules, both of which sit within the *boomdiff* package structure. The main functionality is encapsulated in the `optimize` subpackage, as this provides full access to our suite of optimization tools. Those tools, which are described in detail above and through the details on implementation below,, will not be reviewed here.  Additonally, the implemented module, `autodiff.py` provides support for automatic differentiation of a scalar functions of a many variables of elementary functions and operations (detailed in the 'Implementation' section below). 
 
 Our test suite lives in the `tests` directory of the main directory structure. These unit tests currently cover 99% of the *boomdiff* functionality. Additionally, each of the overloaded operations and static methods implemented in the AD class have docstring tests to support additional testing and usability. Our repository is currently being tracked by Travis CI, integrated with CodeCov, to provide support for continuous integration of our library.
 
-As described above, our package is distributed through two separate avenues. First, the package is installable via PyPi. Second, our packaging is distributed via a clone of this GitHub repository. We’re not planning to use the framework since our package is not going to be a web application. Also, the package should be basic enough and contain all required documentation.
+As described above, our package is distributed through two separate avenues. First, the package is installable via PyPi. Second, our packaging is distributed via a clone of this GitHub repository. We’re not planning to use the framework since our package is not going to be a web application. Also, the package should be basic enough and contain all required documentation. 
 
 ## Implementation
+#### optimize
+*Summary*: The *optimize* subpackage of *boomdiff* performs optimization of arbitrary objective functions, according to the user's specifications. This section reviews the superclass, `Optimizer`, as well as the important methods. Following that, we review the subclasses, which inherit from this `Optimizer` superclass. Unless users wish to implement additional optimization methods not included at this time in *boomdiff*, these subclasses will provide full functionality to optimize the objective function. Developers who wish to create additional methods should inherit from the superclass. Please contact Team Boomeraang if you wish to contibute additional optimizations or have suggestions for additional methodologies! The landscape of optimization algorithms is ever-changing, and we would love your feedback and contributions.
+
+
+
+
+class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers. *This class should only be called by developers who wish to implement optimization algorithms not included in boomdiff*. Instead of instantiating this class directly, users should call specific subclasses, e.g. `boomdiff.optimize.SGD` or `boomdiff.optimize.BGD`.
+
+| Arguments | Type        | Status              | Description                                                  |
+| --------- | ----------- | ------------------- | ------------------------------------------------------------ |
+| `learning_rate`     | float, int  | optional, default 0.1| Learning rate of the optimizer, controlling the step size. Smaller learning rates imply smaller steps in each direction |
+
+| Attribute      | Type  | Description                                                  |
+| -------------- | ----- | ------------------------------------------------------------ |
+| `lr`     | float | Learning rate at current step; comes from constructor method              |
+| `iterations` | dict  | Number of iterations of the optimization algorithm. Please note that this attribute has been left public, but is not intended to be widely used. The primary intended use is developers who encounter issues with the package and wish to debug the specific algorithm |
+
+- `step(loss, var_list, learning_rate=None)`: Implements a single step of the optimization algorithm. Since each methodology included here is an iterative method, this will be called within the application of the gradient. *Developer note: this function may be used for debugging purposes, especially as it relates to application of a pre-specified gradient. Second, if the gradient is calculated outside of the optimization library, this step method may be useful for singular updates*.
+| Arguments | Type        | Status              | Description                                                  |
+| --------- | ----------- | ------------------- | ------------------------------------------------------------ |
+| `loss` | callable   | required | Objective function to be optimized, takes no arguments and must output an AD object. |
+| `var_list` | list       | required | List of variables to be updated. Each element in list must be a pre-instantiated AD instance. Prevents accidental, nonsensical calls as non-AD objects cannot be optimized. |
+| `learning_rate` | int; float | optional | Learning rate can be re-specified here; alternatively, advanced users can specify a learning rate schedule as a sequence structure. |
+
+- `minimize(loss, var_list, steps=100, learning_rates=None)`: Minimizes the supplied loss function relative to the user-designated `var_list`. At default, optimization will be performed over a maximum of 100 steps. This can be changed by the user, but is set relatively low to avoid unintentional computational time without specific direction from the user.
+
+| Arguments | Type        | Status              | Description                                                  |
+| --------- | ----------- | ------------------- | ------------------------------------------------------------ |
+| `loss` | callable   | required | Objective function to be optimized, takes no arguments and must output an AD object. |
+| `var_list` | list       | required | List of variables to be updated. Each element in list must be a pre-instantiated AD instance. Prevents accidental, nonsensical calls as non-AD objects cannot be optimized. |
+| `steps` | int | optional; default 100 | Number of gradient steps to apply within optimization algorithm |
+|`learning_rate` | int; float | optional | Learning rate can be re-specified here; alternatively, advanced users can specify a learning rate schedule as a sequence structure. |
 
 #### autodiff
-- Core data structures:
-    - *boomdiff*'s automatic differentiation' is primarily implemented through an object-oriented class, AD. This class is essentially the object or function to be evaluated and differentiated.
-    - While the actual object must be separately called (e.g. AD(2)), this can be wrapped into a single function line, as the class will be returned and operated on by other methods of the AD class.
-- Core classes:
-    - AD class: `AD(eval_pt, der_dict)`
-        - Constructor arguments:
-            - `eval_pt`: Point to evaluate function at. Expected behavior as float or int; required.
-            - `der_dict`: Optional. If supplied, must be either a string or dictionary. If string, the default seed vector will be set to 1. If specifying multiple variables in constructor, user must pass a dictionary, though this can be the arbitrary dictionary with each partial derivative assumed to be the default seed vector. Default behavior (if not passed at all) will be to assume that function is one variable (i.e. x1) and that its derivative is 1. Currently does not support multiple variables, though variable name passed to `der_dict` could, in theory, be any string.
-        - Attributes:
-            - `func_val`: value of function as a float; this will initally be the `eval_pt` passed at class initialization.
-            - `partial_dict`: dictionary. This dictionary will store the partial derivatives. Each key corresponds to the variable (in a multiple variable function). Note that the multiple variable functionality has not been fully implemented and tested.
-         - Elementary functions:
-             - These methods are executed in two manners, depending on the function type. Functions which have Python built-ins have been overloaded. Other elementary functions have been implemented as class static methods. Please see below for greater details.
-             - Overloaded:
-                 - Addition (`+`)
-                 - Subtraction (`-`)
-                 - Multiplication (`*`)
-                 - Power (`**`)
-                 - Division (`/`)
-                 - Negation (`-x`), where x is an instance of AD.
+*Summary*: The automatic differentiation module for *boomdiff* is implemented through an object oriented class, AD. This class represents the object to be differentiated, and can be combined in functions. While the actual object must be called separately, e.g. AD(2.0), this can be wrapped into a single line characterized by either a function or lambda function in Python. The remainder of this section reviews the attributes and methods associated with this class. Please note, while we have added all operations that work for this class via operator overloading, those methods have not been entirely enumerated here. For more information, please see the [Python Data Model](https://docs.python.org/3/reference/datamodel.html), which describes the desired function of each of these operations.
 
-             - Static methods:
-                 - Sine (`AD.sin()`)
-                 - Cosine (`AD.cos()`)
-                 - Tangent (`AD.tan()`)
-                 - Natural logarithm (`AD.log()`)
-                 - Exponential (base e) (`AD.exp()`)
+class `AD(eval_pt, der_dict)`:
 
-        - Other methods:
-            - `set_params(att, val)`: Sets parameter values outside of initializer. Note that if this is done after operations have been performed, may not be backwards compatible; preferable to set parameters with constructor. `att` argument must be one of `func_val` or `partial_dict` and must mirror behavior of `eval_pt` and `der_dict` arguments to constructor.
-            - `name()`: This function returns the names of all variables in a given AD object. This is primarily used in *boomdiff.optimize*, but may be of interest to the user as well.
-            - `value()`:  Returns the function value for an AD object. Equivalent to calling `x.func_val` attribute, but returnable.
-            - `ders()`: Returns partial derivative dictionary. Similar to `name()` and `value()` in terms of intended functionaliy.
-            - `evaluate()`: Combines `value()` and `ders()`, returning both the function value and partial derivative dictionary as a tupe (in that order).
+| Arguments  | Type       | Status   | Description                                                  |
+| ---------- | ---------- | -------- | ------------------------------------------------------------ |
+| `eval_pt`  | float, int | Required | Point to evaluate the object at; raises error if not float or int. |
+| `der_dict` | str, dict  | Optional | f string, this should be the name of the variable for the associated `eval_pt`. Otherwise, should be a dictionary in format `{'x1': 2.0}` where 'x1' is the name of the variable and 2.0 is the partial derivative. Default behavior for string is to set partial derivative seed vector to be 1. If not passed at all, sets variable to 'x1' and partial derivative to one. |
+The attributes and methods associated with the class are as follows:
 
+| Attribute      | Type  | Description                                                  |
+| -------------- | ----- | ------------------------------------------------------------ |
+| `func_val`     | float | Current value of the AD object as a real number              |
+| `partial_dict` | dict  | This dictionary will store the partial derivatives. Each key corresponds to the variable (in a multiple variable function). Note that the multiple variable functionality has not been fully implemented and tested |
+
+The methods for this class can be broadly grouped into three subsets: helper methods, operator overloading, and static methods.
+
+**Helper instance methods**
+
+- `name()`: This function returns the name of all variables contained within the AD object. Equivalent to returning the keys of the partial dictionary
+	
+- ` value()`: Returns the current function value of an AD object.
+	
+- `ders()`:  Returns the partial derivative dictionary of the specified object.
+	
+- `evaluate()`: Returns the function value and derivative dictionary as a tuple, in that order.
+	
+- `set_params(att, val)`: Set a given attribute for the AD object. May be used to reset the partial derivative dictionary to zero or to otherwise clear the function.
+
+| Arguments | Type             | Status   | Description                                                  |
+| --------- | ---------------- | -------- | ------------------------------------------------------------ |
+| `att`     | string           | required | Must be one of 'func_val' or a dictionary. If `func_val`, will reset the function value at a given time. Otherwise will overwrite the partial derivative dictionary. |
+| `val`     | float, int, dict | required | If `func_val`, must be one of float or int. Otherwise must be dictionary specified according to conditions in constructor. |
+
+**Overloaded operations**
+- `__add__(self, other)`: Performs addition between AD objects and AD object and non-AD object (must be int or float).
+	- `func_val` for `self` and `other` are added. If `other` not an AD object, float or int added to `func_val`.
+	- `partial_dict`: Partial derivatives are added within a common key. If one key does not exist in the other dictionary, the returned object will contain both.
+```python
+>>> print(AD(3.0, {'x1':1}) + AD(2.0, {'x2':1}))
+5.0 ({'x1': 1, 'x2': 1''})
+```
+- `__radd__(self, other)`: See documentation for `__add__`.
+- `__sub__(self, other)`: Like addition, if both objects are AD objects, will subtract function values arithmetically, and will substract partial derivatives for elements of each `partial_dict` with the same key.
+```python
+>>> print(AD(3.0, {'x1':1}) - AD(2.0, {'x2':1}))
+1.0 ({'x1': 1, 'x2': -1''})
+```
+- `__rsubb__(self, other)`: See documentation for `__sub__`.
+- `__mul__(self, other)`: Overload multiplication operation (`*`). For AD objects, multiplies function values and applies product rule to partial derivatives. Thus, for each key, the new partial derivative is:
+	- `self.partial_dict[key]*other.func_val + other.partial_dict[key]*self.func_val`
+```python
+>>> print(AD(2.0, {'x1':1}) * AD(2.0, {'x2':1}))
+4.0 ({'x1': 1, 'x2': 1''})
+```
+-`__rmul__(self, other)`: See documentation for `__mul__`.
+- `__truediv__(self, other)`: Operation overloading for (`/`). Divides function values and applies quotient rule within a partial dictionary key. Note that if function_val for `other` is zero, will raise a `DivideZeroError`. If `other` not an AD object, will treat value as function value, dividing function value for self as well as partial dictionary entries.
+```python
+>>> print(AD(6.0, {'x1':2}) / AD(2.0, {'x1':1}))
+3.0 ({'x1': -0.5})
+```
+- `__rtruediv__(self, other)`: See documentatio for `__truediv__`.
+- `__pow__(self, other)`: Implements operator overloading for power symbol (`**`). For `other` AD objects, will apply power within `func_val`. Partial derivatives will be calculated according to the [generalized power rule](https://en.wikipedia.org/wiki/Differentiation_rules#Generalized_power_rule). If `other` int or float, will apply simple power rule, though this is implemented as special case of generalized rule. 
+```python
+>>> a = AD(2, {'a': 1})
+>>> b = AD(4, {'b': 1})
+>>> f3 = a**b
+>>> print(f3.func_val, f3.partial_dict)
+16 {'a': 32.0, 'b': 11.090354888959125}
+```
+- `__rpow__(self, other)`: See documentation for `__pow__`.
+- `__neg__(self)`: Applies negation to AD objects. Calls `-1*self`.
+
+**Static methods**
+-`sin(x)`: Accessed via `AD.sin(x)`. Calls sine function on `x`. If `x` is AD object, will apply sine to function value and return partial derivative of `cos(x)`. Otherwise, performs similarly to `numpy.sin` for int and float types.
+```python
+>>> x2 = AD.sin(np.pi)
+>>> print(x2)
+1.2246467991473532e-16
+```
+-`cos(x)`: Accessed via `AD.cos(x)`. Calls cosine function on `x`. Like `sin(x)`, if `x` is an AD object, will apply cosine to function value and `-sin(p)` to each partial derivative `p`. If `x` not an AD object, will perform similarly to `numpy.cos()`.
+```python
+>>> x = AD.cos(np.pi)
+>>> print(x)
+-1.0
+```
+- `tan(x)`: Accessed via `AD.tan(x)`. Calls tangent function on `x`, applying to function value and partial derivative of tangent fuction. If `x` not an AD object, will perform similarly to `numpy.tan(x)`.
+```python
+>>> y = AD.tan(np.pi)
+>>> print(y.round(1))
+-0.0
+```
+- `arcsin(x)`: Accessed via `AD.arcsin(x)`. Applies inverse sine function to `x` function value and partial derivatives. See [here](https://ocw.mit.edu/courses/mathematics/18-01sc-single-variable-calculus-fall-2010/1.-differentiation/part-b-implicit-differentiation-and-inverse-functions/session-15-implicit-differentiation-and-inverse-functions/MIT18_01SCF10_Ses15c.pdf) for more information.
+```python
+>>> x = AD(0.25, {'x1': 1.})
+>>> print(AD.arcsin(x))
+0.25268025514207865 ({'x1': 1.0327955589886444})
+```
+-`arccos(x)`: Accessed via `AD.arccos(x)`. Applies inverse cosine function to `x` function value and partial derivatives. See [here](https://math.berkeley.edu/~peyam/Math1AFa10/Arccos.pdf) for more information.
+```python
+>>> x = AD(0.25, {'x1': 1.})
+>>> print(AD.arccos(x))
+1.318116071652818 ({'x1': -1.0327955589886444})
+```
+-`arctan(x)`: Accessed via `AD.arctan(x)`. Applies inverse tangent function to `x` function value and partial derivatives. See [here](https://math.berkeley.edu/~peyam/Math1AFa10/Arccos.pdf) for more information on calculation of partial derivatives. If `x` not an AD object, performs operation as `numpy.arctan(x)`.
+```python
+>>> x = AD(0.25, {'x1': 1.})
+>>> print(AD.arctan(x))
+0.24497866312686414 ({'x1': 0.9411764705882353})
+```
+-`sqrt(x)`: Applies square root to `x` object. Please note that this is not a fully flexible operation and thus cannot take any root. For other roots, `r`, please apply via `** (1/r)`.
+```python
+>>> x1 = AD(1.0, {'x1': 1.0})
+>>> f1 = AD.sqrt(x1)
+>>> print(f1.func_val, f1.partial_dict)
+1.0 {'x1': 0.5}
+```
+-`log(x, base-numpy.e)`: Applies logarithm of `base` to `x`. Note that by default, will apply natural logarithm. If `x` is not an AD object, will perform similarly to `numpy.log`.
+```python
+>>> x1 = AD(np.e**2, {'x1': 1.})
+>>> f0 = AD.log(x1)
+>>> print(f0)
+2.0 ({'x1': 0.1353352832366127})
+```
+- `sinh(x)`: Applies hyperbolic sine function to `x`. If `x` not an AD object, then performs similarly to `numpy.sinh`. For more information on derivative of `sinh(x)`, see [here](https://www.math24.net/derivatives-hyperbolic-functions/).
+```python
+>>> x1 = AD(0.0, {'x1': 1.0})
+>>> f1 = AD.sinh(x1)
+>>> print(f1)
+0.0 ({'x1': 1.0})
+```
+-`cosh(x)`: Applies hyperbolic cosine transformation to `x`. If `x` is not an AD object, then performs similarly to `numpy.cosh`. For more information on the calculation of partial derivatives of `sinh(x)`, please see [here](https://www.math24.net/derivatives-hyperbolic-functions/).
+```python
+>>> x1 = AD(0.0, {'x1': 1.0})
+>>> f1 = AD.cosh(x1)
+>>> print(f1)
+1.0 ({'x1': -0.0})
+```
+-`tanh(x)`: Applies hyperbolic tangent transformation to `x`. If `x` is not an AD object, performs similarly to `numpy.tanh`. For more information on the calculation of partial derivatives of `tanh(x)`, please see [here](https://www.math24.net/derivatives-hyperbolic-functions/).
+```python
+>>> x1 = AD(0.0, {'x1': 1.0})
+>>> f1 = AD.tanh(x1)
+>>> print(f1)
+0.0 ({'x1': 1.0})
+```
+- `exp(x)`: Applies exponential function to `x`, in a similar fashion to calling `numpy.e ** x`. Function constructed using `numpy.e` and `__rpow__`. Please see documentation of those functions for futher details.
+```python
+>>> x = AD(2, {'x1': 1.})
+>>> print(AD.exp(x))
+7.3890560989306495 ({'x1': 7.3890560989306495})
+```
+- `logistic(x, x_0=0, k=1, L=1)`: Calls logistic function (also known as sigmoid function) on x in the fully general case (see [here](https://en.wikipedia.org/wiki/Logistic_function) for distinction). Default values produce $\frac{1}{1+ e^{-x}}$, fully general case is: $\frac{L}{1+ e^{-k(x-x_0)}}$.
+| Arguments | Type        | Status              | Description                                                  |
+| --------- | ----------- | ------------------- | ------------------------------------------------------------ |
+| `x_0`     | float, int  | optional, default 0 | Value of the midpoint of the logistic function, which will be set to zero by default. In the case of regression tasks, this is commonly set to be the center of the distribution for a certain set of predictors. |
+| `k`       | float, int, | optional; default 1 | Logistic growth rate of curve. Lower values of `k` imply a steeper curve. |
+| `L`       | float, int  | optional, default 0 | Maximum value for the entirety of the logistic function.     |
+```python
+>>> x = AD(1.5)
+>>> print(AD.logistic(x))
+0.8175744761936437 ({'x1': 0.14914645207033284})
+```
 - External dependencies:
     - [NumPy](https://numpy.org/)
     - [itertools](https://docs.python.org/3/library/itertools.html)
 
+## Future
+We see two primary directions for continued development on this project: implementing a user-friendly approach and/or targeting a specific scientific community.  While these directions are not necessarily mutually exclusive (both could be built on the same optimization package), the next steps and direction of the development process are likely fairly separate. In terms of usability, we believe that one promising direction would be to include a class or set of functions meant to parse string versions of common functions, which would likely significantly increase the accessibility of our package. We believe this could be a particular comaprative advantage of our package to currently existing optimization libraries, namely the general functionality of major libraries such as PyTorch and TensorFlow. As a small team without any specialists in either automatic differentiation or optimization, our package will likely not compete with the performance of a PyTorch or TensorFlow. That being said, one particular weakness of those packages is that the optimized performance and object-oriented structure may be confusing to users less familiar with Python. Less familiarity with Python should not stop users from efficiently performing optimization, though -- these tasks are too central to too much reasearch for that.
+
+A second direction our package could plausibly go would be to adapt the first proposal into a subfield-specific optimization library. This may go hand-in-hand with the user-friendly nature of the package, but would likely be more targeted in terms of application and functionality. For example, there may be less utility in adapting the package to address the needs of machine learning practitioners, as most are likely comfortable with an existing optimization library. For social and physical sciences less traditionally connected to computing, however, we believe that this could be a promising direction. One example of a feature that we might add if, for example, our package was targeted at  statiscians is the ability to perform importance sampling within the application of a gradient. For mode-finding algorithms that feature intractable integrals which cannot be discarded. To optimize complex likelihood and posterior distributions, this functionality may facilitate ease of use for that particular 'client'. As noted, one advantage of our object-oriented structure is modularity, which may allow us to pursue both of these avenues. In the interest of limited resources, though, they may not both be feasible over the medium-term.
+
 #### Broader Impact Statement
-This AD package has a function of usability that is user-friendly, allowing groups with little to moderate experience to operate this library with ease, thanks to the extensive documentation. The simplicity in defining variables and their derivatives allows the methods and functions of autodiff to differentiate both complex functions and basic functions alike.
+This AD package has a function of usability that is user-friendly, allowing groups with little to moderate experience to operate this library with ease, thanks to the extensive documentation. The simplicity in defining variables and their derivatives allows the methods and functions of autodiff to differentiate both complex functions and basic functions alike. 
 With this automatic differentiation package, one can easily ascertain both the value and derivatives of a given function. What makes our library impactful is the ability to easily create one’s own functions inheriting instances of variables using the AD library.
 To make contributions to this library, users must import AD from *boomdiff.autodiff*, then create a closure inheriting a variable defined with the AD library. This lessens the inclusivity as a moderate level of skill in Python is required to accomplish this. However, it allows for nearly endless functions to be created for user-specific uses. One example of this use is creating a user-supplied loss function for broad ethical Machine Learning projects. Due to the ability to create user-specific functions, the range of this package’s inclusivity is far wider than that of other packages. The greatest impact would potentially occur with groups seeking an easy way to create their own methods and functions making use of automatic differentiation, as this package is specifically user-friendly in that area compared to others of its kind. While it may not be as efficient or as specialized as other libraries, this ability to create new methods allows this library to have a more widespread range of use than others of its kind and ensures that the process is fair and welcoming to nearly all groups with experience in Python. 
+
