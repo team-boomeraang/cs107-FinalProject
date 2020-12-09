@@ -35,7 +35,7 @@ class Optimizer():
         loss: callable
             objective function, takes no arguments and output an AD instance
 
-        var_list: list of AD instances (variables)
+        var_list: 1D list/array of AD instances (variables)
             the variable lists that you want to update. It can be part of the variables in loss callable.
 
         learning_rate: int or float
@@ -93,7 +93,7 @@ class Optimizer():
         loss: callable
             objective function, takes no arguments and output an AD instance.
 
-        var_list: list of AD instances (variables)
+        var_list: 1D list/array of AD instances (variables)
             the variable lists that you want to update. It can be part of the variables in loss callable.
 
         steps: positive int

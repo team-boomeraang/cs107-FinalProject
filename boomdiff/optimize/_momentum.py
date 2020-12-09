@@ -65,35 +65,41 @@ class Momentum(Optimizer):
         theta = theta - v_t
         """
         if not hasattr(self,'last_update'):
-            # If no history before, initialize one
+            # If no history before, initialize one empty dictionary
             new_update_dict = {}
-            for var in var_list:
-                try:
-                    new_update_dict[var.name()[0]] = 0.
-                except:
-                    raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
+            # for var in var_list:
+            #     try:
+            #         new_update_dict[var.name()[0]] = 0.
+            #     except:
+            #         raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
             self.last_update = new_update_dict
 
         assert isinstance(self.last_update, dict), "last update should be a dictionary!"
 
-        new_update_dict = {}
+        # new_update_dict = {}
         for var in var_list:
             try:
                 grad = grad_dict[var.name()[0]]
-                if abs(grad) > abs(var.func_val) * 10**6:
+                # Trivial numerical instability check
+                if abs(grad) > 10**8:
                     warnings.warn("Gradient is too large: potential numerical instability")
-                v_tm1 = self.last_update[var.name()[0]]
+                
+                try: 
+                    v_tm1 = self.last_update[var.name()[0]]
+                except KeyError:
+                    self.last_update[var.name()[0]] = 0.
+                    v_tm1 = self.last_update[var.name()[0]]
+
                 v_t = self.gamma * v_tm1 + self.lr * grad
                 
                 # update the variable value
                 var.func_val -= v_t
 
                 # update the last_update dictionary
-                new_update_dict[var.name()[0]] = v_t
+                self.last_update[var.name()[0]] = v_t
             except:
-                raise AttributeError("Elements in var_list should be AD variables! Or make your var_list 1D!")
+                raise AttributeError("Var_list should be 1D, with AD instances as elements, which are variables in loss!")
 
-        self.last_update = new_update_dict
 
 
 
