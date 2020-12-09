@@ -255,8 +255,8 @@ class AD():
         >>> print(f2.func_val, f2.partial_dict)
         12.4 {'x1': 2, 'x2': 1.5}
         """
-        if isinstance(other, np.ndarray):
-            return np.array(self) + other
+        if isinstance(other, (np.ndarray,list)):
+            return np.array(self) + np.array(other)
 
         try:
             # First try as other is an AD class instance
@@ -319,8 +319,8 @@ class AD():
         >>> print(f2.func_val, f2.partial_dict)
         1.6 {'x1': 1, 'x2': -3.4}
         """
-        if isinstance(other, np.ndarray):
-            return np.array(self) - other
+        if isinstance(other, (np.ndarray,list)):
+            return np.array(self) - np.array(other)
         try:
             # First try as other is an AD class instance
             # Combine the partial_dict of self and other, for common keys, subtract the value; else, append the dictionary
@@ -393,8 +393,8 @@ class AD():
         >>> print(f4.func_val, f4.partial_dict)
         32 {'a': 16, 'b': 16}
         """
-        if isinstance(other, np.ndarray):
-            return np.array(self) * other
+        if isinstance(other, (np.ndarray, list)):
+            return np.array(self) * np.array(other)
 
         try:
             # First try as other is an AD class instance
@@ -474,8 +474,8 @@ class AD():
         >>> print(f3.func_val, f3.partial_dict)
         0.5 {'a': 0.25, 'b': -0.125}
         """
-        if isinstance(other, np.ndarray):
-            return np.array(self)/other 
+        if isinstance(other, (np.ndarray,list)):
+            return np.array(self)/np.array(other) 
         try:
             # first try as other is an ad class instance
             new_der_dict = {}
@@ -553,8 +553,8 @@ class AD():
         >>> print(f3.func_val, f3.partial_dict)
         16 {'a': 32.0, 'b': 11.090354888959125}
         """
-        if isinstance(other, np.ndarray):
-            return np.array(self) ** other
+        if isinstance(other, (np.ndarray,list)):
+            return np.array(self) ** np.array(other)
 
         try:
             # First try as other is an AD class instance
@@ -656,6 +656,11 @@ class AD():
         >>> print(x2)
         1.2246467991473532e-16
         """
+        if isinstance(x,np.ndarray):
+            new_x = np.zeros(x.shape, dtype=AD)
+            for idx, ele in np.ndenumerate(x):
+                new_x[idx] = AD.sin(ele)
+            return new_x
         try:
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
