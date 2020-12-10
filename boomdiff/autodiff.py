@@ -50,13 +50,13 @@ class AD():
 
         Parameters
         ----------
-        array: numpy array or list, only support 1D or 2D at these moment. 
+        array: numpy array or list, only support 1D or 2D at these moment.
             But this can be easily reshaped afterwise
-            All elements should be float or int value. 
+            All elements should be float or int value.
             Those value will be kept as func_val in new AD instances
 
         prefix: string
-            Used for name in the AD instances' partial_dict. 
+            Used for name in the AD instances' partial_dict.
             Elements on ith row, jth column will have the name prefix_i_j
 
         Examples
@@ -83,7 +83,7 @@ class AD():
 
 
         AD_array = np.zeros(array_arr.shape, dtype=AD)
-        
+
         if array_arr.ndim == 1:
             for i in range(array_arr.shape[0]):
                 AD_array[i] = AD(array_arr[i], prefix+f"_{i}")
@@ -123,16 +123,16 @@ class AD():
         """Return the varaiable name string list of the instance
         Convinient for optimize use"""
         return list(self.partial_dict.keys())
-    
+
     def value(self):
         """Return the function value of the AD object"""
         return self.func_val
-    
+
     def ders(self):
-        """Return the partial derivative dictionary; equivalent to 
+        """Return the partial derivative dictionary; equivalent to
         x.partial_dict"""
         return self.partial_dict
-    
+
     def evaluate(self):
         """Returns function value and partial derivative dictionary
         as separate objects. Returned in order func_val, partial_dict"""
@@ -144,14 +144,14 @@ class AD():
         Parameters
         ----------
         decimal_number: Int, non-negative, default to be 2
-            Number of decimals you want to round to. 
+            Number of decimals you want to round to.
             If decimal_number_optional is not given,
-            It will apply to both func_val and value in partial_dict; 
+            It will apply to both func_val and value in partial_dict;
             Or it will only apply to func_val
 
         decimal_number_optional: None, Non-negative int
-            Number of decimals you want to round value in partial_dict to. 
-            If not given, decimal_number will apply to both 
+            Number of decimals you want to round value in partial_dict to.
+            If not given, decimal_number will apply to both
             func_val and value in partial_dict.
 
         Returns
@@ -173,7 +173,7 @@ class AD():
             decimal_number_optional = decimal_number
         else:
             assert isinstance(decimal_number_optional, int) and (decimal_number_optional >= 0), "decimal_number_optional should be non-negative integer!"
-        
+
         new_der_dict = {}
         for key, value in self.partial_dict.items():
             new_der_dict[key] = np.round(value, decimal_number_optional)
@@ -227,11 +227,11 @@ class AD():
         """
         if isinstance(other, AD):
             return (self.func_val == other.func_val) and (self.partial_dict == other.partial_dict)
-        else:   
+        else:
             return False
-    
+
     def __ne__(self, other):
-        """AD objects are never equal to non-AD objects; if other AD object, 
+        """AD objects are never equal to non-AD objects; if other AD object,
         will not be equal if either function value or partial derivatives are not equal
         """
         if isinstance(other, AD):
@@ -280,9 +280,9 @@ class AD():
         Parameters
         ----------
         other : AD class instance or float
-            Elements to be subtracted on the left, from self. 
-            Can be a AD class instance, which will update function value 
-            and partial derivative dictionary; Or a constant, 
+            Elements to be subtracted on the left, from self.
+            Can be a AD class instance, which will update function value
+            and partial derivative dictionary; Or a constant,
             which will only update function value.
         Returns
         -------
@@ -482,7 +482,7 @@ class AD():
         0.5 {'a': 0.25, 'b': -0.125}
         """
         if isinstance(other, (np.ndarray,list)):
-            return np.array(self)/np.array(other) 
+            return np.array(self)/np.array(other)
         try:
             # first try as other is an ad class instance
             new_der_dict = {}
@@ -902,15 +902,15 @@ class AD():
 
     @staticmethod
     def log(x,base = np.e):
-        """A static method to calculate the logrithmic function of a AD instance, 
-            or a float for multiple bases, with the default being e. 
+        """A static method to calculate the logrithmic function of a AD instance,
+            or a float for multiple bases, with the default being e.
         Parameters
         ----------
         x: AD class instance or float, in radians
            Elements to be operated on a logrithm. Can be an AD class instance, which
            will update function value and partial derivative dictionary; or a constant, whi-
-           -ch will give a constant output. 
-        Base : Constant integer or float to be used as base in logarithm. 
+           -ch will give a constant output.
+        Base : Constant integer or float to be used as base in logarithm.
             Base is a default of e, but can be changed by entering in after x in log
             method.
         Returns
@@ -1008,7 +1008,7 @@ class AD():
         >>> x1 = AD(0.0, {'x1': 1.0})
         >>> f1 = AD.cosh(x1)
         >>> print(f1.func_val.round(1), f1.partial_dict)
-        1.0 {'x1': -0.0}
+        1.0 {'x1': 0.0}
         >>> x2 = AD.cosh(0)
         >>> print(x2)
         1.0
@@ -1022,7 +1022,7 @@ class AD():
             # First try as x is an AD instance
             new_der_dict = x.partial_dict.copy()
             for var in new_der_dict.keys():
-                new_der_dict[var] = -np.sinh(x.func_val)*new_der_dict[var]
+                new_der_dict[var] = np.sinh(x.func_val)*new_der_dict[var]
             return AD(np.cosh(x.func_val), new_der_dict)
         except AttributeError:
             # if x is not an AD class instance, treat as a constant
@@ -1087,8 +1087,8 @@ class AD():
         7.3890560989306495
         """
         return np.e**x
-    
-    
+
+
     @staticmethod
     def logistic(x, x_0=0, k=1, L=1):
         """A static method to calculate the logistic function of an AD instance or
@@ -1097,16 +1097,16 @@ class AD():
         ----------
         x: AD class instance of float
             Elements to be used as base of logistic function.
-        x_0: int or float 
+        x_0: int or float
             This represents the center of logistic function; default set to zero.
         k: int or float
-            Logistic growth rate of function; default set to 1. 
+            Logistic growth rate of function; default set to 1.
         L: int or float
             Maximum value of logistic function; default set to 1.
         Returns
         -------
         A new AD class with updated information; otherwise a float value.
-        
+
         Examples
         --------
         >>> x = AD(1.5)
