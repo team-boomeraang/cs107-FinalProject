@@ -22,9 +22,9 @@ Below are instructions for the download and installation of the *boomdiff* packa
 Note: this is the preferred method for installing the most up-to-date release of *boomdiff*.
 1. In a command-line interface, run the following command:
 
-` pip install boomdiff`
+`pip install boomdiff`
 
-** Method #2: Installation via GitHub**
+**Method #2: Installation via GitHub**
 If installation via PyPi is insufficient, we have provided the instructions below, desgined to download and install the development version of *boomdiff*, available through our GitHub repository.
 1. **Download package**:
 
