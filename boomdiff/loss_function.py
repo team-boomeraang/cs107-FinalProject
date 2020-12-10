@@ -22,9 +22,9 @@ def _rowsums(data, var_list):
     -------
     length n array representing rows of data matrix as AD objects
     """
-    return np.sum(data * np.array(var_list).reshape(1,-1), axis=1)
+    return AD.sum(data * np.array(var_list).reshape(1,-1), axis=1)
 
-def mse(data, var_list, outcome_ind):
+def linear_mse(data, var_list, outcome_ind):
     """Calculates mean squared error for AD objects. All objects passed to var_list
     must be instantiated AD objects. Highly preferable for data to be input as numpy
     array with observations as rows and features as columns.
@@ -44,27 +44,34 @@ def mse(data, var_list, outcome_ind):
     >>> v1 = AD(0.0, 'v1')
     >>> v2 = AD(0.0, 'v2')
     >>> varlist = [v1, v2]
-    >>> mse(x, varlist, 0)
+    >>> linear_mse(x, varlist, 0)
     8.5 ({'v1': -22.0, 'v2': -27.0})
     """
     if not isinstance(outcome_ind, int):
         raise TypeError('outcome_ind should be an integer')
     try:
+        # Step 1: Convert data to array format and confirm it is 2-dimensional
+        # If not, could be converted by np.reshape(n,p) to get to n x p matrix
         data_arr = np.array(data)
         assert data_arr.ndim == 2, 'data must be convertible to 2-D array!'
         
-        # Find column list and remove column for outcome index
-        feat_list = list(np.arange(data_arr.shape[1])) #.remove(outcome_ind)
+        # Step 2: Separate out feature and outcome data
+        # Note: Loss function could be constructed with data passed separately!
+        # Then skip this step
+        feat_list = list(np.arange(data_arr.shape[1]))
         feat_list.remove(outcome_ind)
         outcome_data = data_arr[:,outcome_ind]
         
-        sse = np.sum((outcome_data - _rowsums(data_arr[:,feat_list], var_list)) ** 2)
+        # Step 3: Calculate loss function - _rowsums() method can be used to
+        # make x, beta to x*beta step
+        sse = AD.sum((outcome_data - _rowsums(data_arr[:,feat_list], var_list)) ** 2)
+        # Note: Linear MSE could be calculated in one step
         return (1/len(outcome_data))*sse
     
     except:
         raise IndexError('outcome_ind is not a valid column index in data')
 
-def cross_entropy(data, var_list, outcome_ind):
+def logistic_cross_entropy(data, var_list, outcome_ind):
     """Calculates the binary cross-entropy between true_label and predictions
     
     Parameters
@@ -86,46 +93,41 @@ def cross_entropy(data, var_list, outcome_ind):
     >>> v1 = AD(0.0, 'v1')
     >>> v2 = AD(0.0, 'v2')
     >>> varlist = [v1, v2]
-    >>> cross_entropy(x, varlist, 0)
+    >>> logistic_cross_entropy(x, varlist, 0)
     0.6931471805599453 ({'v1': 0.75, 'v2': 0.75})
-    >>> assert type(cross_entropy(x, varlist, 0)) == AD
+    >>> assert type(logistic_cross_entropy(x, varlist, 0)) == AD
     """
     if not isinstance(outcome_ind, int):
         raise TypeError('outcome_ind should be an integer')
     try:
+        # Step 1: Convert data to array format and confirm it is 2-dimensional
+        # If not, could be converted by np.reshape(n,p) to get to n x p matrix
         data_arr = np.array(data)
         assert data_arr.ndim == 2, 'data must be convertible to 2-D array!'
         
-        # Find column list and remove column for outcome index
-        feat_list = list(np.arange(data_arr.shape[1])) #.remove(outcome_ind)
+        # Step 2: Separate out feature and outcome data
+        # Note: Loss function could be constructed with data passed separately!
+        # Then skip this step
+        feat_list = list(np.arange(data_arr.shape[1]))
         feat_list.remove(outcome_ind)
         outcome_data = data_arr[:,outcome_ind]
+        
+        # Step 2A (optional): Validate data. Because this is a logistic regression
+        # output, we check that all data is zero or one
         for x in outcome_data:
             assert x in [0, 1], 'All outcomes must be 0 or 1!'
             
-        # Use logistic function to get prediction probabilities
+        # Step 3: Calculate loss function
+        # Note: Because this is a logistic cross_entropy function,
+        # we use AD.logisitc() to convert our linear row sums to probabilities
         pred_probs = AD.logistic(_rowsums(data_arr[:,feat_list], var_list))
-        log_probs = [AD.log(p) for p in pred_probs]
-        log_1_probs = [AD.log(1 - p) for p in pred_probs]
+        # Note: Factors are calculated separately to present information cleanly,
+        # could be combined
+        log_probs = AD.log(pred_probs)
+        log_1_probs = AD.log(1 - pred_probs)
         mf = -(1/len(outcome_data))
         return mf*np.sum((outcome_data*log_probs) + (1 - outcome_data)*log_1_probs)
     
     except:
         raise IndexError('outcome_ind is not a valid column index in data')
 
-"""
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
-
-    from sklearn.linear_model import LinearRegression
-    x1 = np.array([[2, 3], [5, 6]])
-    x = np.array([[1, 2, 3], [4, 5, 6]])
-    y = np.array([1, 4])
-    l = LinearRegression(fit_intercept=False)
-    l.fit(x1, y)
-    v1 = AD(0.0, 'v1')
-    v2 = AD(0.0, 'v2')    
-    m = lambda: mse(x, [v1, v2], 0)
-    m2 = m()
-"""
