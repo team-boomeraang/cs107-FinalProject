@@ -21,7 +21,7 @@ class Optimizer():
     """
 
     def __init__(self, learning_rate=0.1):
-        assert isinstance(learning_rate, (float,int)), "learning_rate should be int or float!"
+        assert isinstance(learning_rate, (float,int, np.number)), "learning_rate should be int or float!"
         self.lr = learning_rate
 
         self.iterations = 0 # Record iteration number
@@ -50,7 +50,7 @@ class Optimizer():
 
         """
 
-        if isinstance(learning_rate, (int, float)):
+        if isinstance(learning_rate, (int, float, np.number)):
             self.lr = learning_rate
         elif learning_rate is None:
             pass
