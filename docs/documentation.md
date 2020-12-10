@@ -2,6 +2,23 @@
 
 **Authors**: Minhuan Li, Oksana Makarova, Timothy Williamson, Kevin Hare *(Group #19)*
 
+### Table of contents
+
+- [Overview](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#overview)
+- [Background](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#background)
+  - [Optimization](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#optimization)
+  - [Automatic Differentiation](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#automatic-differentiation)
+- [Installation](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#installation-of-boomdiff)
+- [How to use *boomdiff*](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#use-of-boomdiff)
+  - [Automatic differentiation (AD) objects](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#generalized-autodifferentiation)
+  - [Optimization of objective functions](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#optimization-of-objective-functions)
+- [Software organization](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#software-organization)
+- [API Reference](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#software-organization)
+  - [optimize](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#optimize)
+  - [autodiff](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#autodiff)
+- [Directions for future development](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#future)
+- [Broader Impact Statement](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#future)
+
 
 ## Introduction
 #### Overview
@@ -370,7 +387,7 @@ class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers.
 | `iterations` | dict  | Number of iterations of the optimization algorithm. Please note that this attribute has been left public, but is not intended to be widely used. The primary intended use is developers who encounter issues with the package and wish to debug the specific algorithm |
 
 - `step(loss, var_list, learning_rate=None)`: Implements a single step of the optimization algorithm. Since each methodology included here is an iterative method, this will be called within the application of the gradient. *Developer note: this function may be used for debugging purposes, especially as it relates to application of a pre-specified gradient. Second, if the gradient is calculated outside of the optimization library, this step method may be useful for singular updates*.
-    
+  
     | Arguments | Type        | Status              | Description                                                  |
     | --------- | ----------- | ------------------- | ------------------------------------------------------------ |
     | `loss` | callable   | required | Objective function to be optimized, takes no arguments and must output an AD object. |
