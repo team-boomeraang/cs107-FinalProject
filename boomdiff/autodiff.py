@@ -34,7 +34,7 @@ class AD():
             raise ValueError('der_dict must be type dict or str!')
         try:
             for key, val in der_dict.items():
-                assert isinstance(der_dict[key], (int, float，np.number))
+                assert isinstance(der_dict[key], (int, float, np.number))
             self.partial_dict = der_dict
         except(AttributeError):
             # If string, set name and default seed vector (non-str example
