@@ -106,26 +106,26 @@ def test_array_ops_numpy_ar_list(ar_x):
     assert (ar_x / ar)[0].partial_dict['x_0'] == -1
 
 def test_trig(ar_pi):
-    assert  [AD.sin(ar_pi)[0].func_val, AD.sin(ar_pi)[1].func_val] == [1.0, 0.7071067811865476]
-    assert AD.sin(ar_pi)[0].partial_dict['p_0'] ==  6.123233995736766e-17
+    assert  [AD.sin(ar_pi)[0].func_val, np.round(AD.sin(ar_pi)[1].func_val, 7)] == [1.0, np.round(0.7071067811865476, 7)]
+    assert np.round(AD.sin(ar_pi)[0].partial_dict['p_0'], 7) ==  np.round(6.123233995736766e-17, 7)
 
-    assert  [AD.cos(ar_pi)[0].func_val, AD.cos(ar_pi)[1].func_val] == [6.123233995736766e-17, 0.7071067811865476]
+    assert  [np.round(AD.cos(ar_pi)[0].func_val, 7), np.round(AD.cos(ar_pi)[1].func_val, 7)] == [np.round(6.123233995736766e-17, 7), np.round(0.7071067811865476, 7)]
     assert AD.cos(ar_pi)[0].partial_dict['p_0'] ==  -1.0
 
-    assert  AD.tan(ar_pi)[1].func_val ==  0.9999999999999999
-    assert AD.tan(ar_pi)[1].partial_dict['p_1'] == 1.9999999999999996
+    assert  np.round(AD.tan(ar_pi)[1].func_val, 7) ==  np.round(0.9999999999999999, 7)
+    assert np.round(AD.tan(ar_pi)[1].partial_dict['p_1'], 7) == np.round(1.9999999999999996, 7)
 
 def test_invtrig():
     x = np.array([0.25, 0.5])
     inv_ar = AD.from_array(x,'p')
 
-    assert  [AD.arcsin(inv_ar)[0].func_val, AD.arcsin(inv_ar)[1].func_val] == [0.25268025514207865, 0.5235987755982989]
-    assert AD.arcsin(inv_ar)[0].partial_dict['p_0'] ==  1.0327955589886444
+    assert  [np.round(AD.arcsin(inv_ar)[0].func_val, 7), np.round(AD.arcsin(inv_ar)[1].func_val, 7)] == [np.round(0.25268025514207865, 7), np.round(0.5235987755982989, 7)]
+    assert np.round(AD.arcsin(inv_ar)[0].partial_dict['p_0'], 7) ==  np.round(1.0327955589886444, 7)
 
-    assert  [AD.arccos(inv_ar)[0].func_val, AD.arccos(inv_ar)[1].func_val] == [1.318116071652818, 1.0471975511965979 ]
-    assert AD.arccos(inv_ar)[0].partial_dict['p_0'] ==  -1.0327955589886444
+    assert  [np.round(AD.arccos(inv_ar)[0].func_val, 7), np.round(AD.arccos(inv_ar)[1].func_val, 7)] == [np.round(1.318116071652818, 7), np.round(1.0471975511965979, 7)]
+    assert np.round(AD.arccos(inv_ar)[0].partial_dict['p_0'], 7) ==  np.round(-1.0327955589886444, 7)
 
-    assert  AD.arctan(inv_ar)[1].func_val ==  0.4636476090008061
+    assert  np.round(AD.arctan(inv_ar)[1].func_val, 7) ==  np.round(0.4636476090008061, 7)
     assert AD.arctan(inv_ar)[1].partial_dict['p_1'] == 0.8
 
 def test_misc_funcs():
@@ -137,12 +137,13 @@ def test_misc_funcs():
     assert AD.log(ar_f)[0].func_val == 0
     assert AD.log(ar_f)[1].partial_dict['f_1'] == 0.25
 
-    assert AD.sinh(ar_f)[0].func_val == 1.1752011936438014
-    assert AD.sinh(ar_f)[1].partial_dict['f_1'] == 27.308232836016487
+    assert np.round(AD.sinh(ar_f)[0].func_val, 7) == np.round(1.1752011936438014, 7)
+    assert np.round(AD.sinh(ar_f)[1].partial_dict['f_1'], 7) == np.round(27.308232836016487, 7)
 
-    assert AD.cosh(ar_f)[0].func_val == 1.5430806348152437
-    assert AD.cosh(ar_f)[1].partial_dict['f_1'] == 27.289917197127753
-    assert AD.cosh(1) == 1.5430806348152437
 
-    assert AD.tanh(ar_f)[0].func_val == 0.7615941559557649
-    assert AD.tanh(ar_f)[1].partial_dict['f_1'] ==  0.001340950683025897
+    assert np.round(AD.cosh(ar_f)[0].func_val, 7) == np.round(1.5430806348152437, 7)
+    assert np.round(AD.cosh(ar_f)[1].partial_dict['f_1'], 7) == np.round(27.289917197127753, 7)
+    assert np.round(AD.cosh(1), 7) == np.round(1.5430806348152437, 7)
+
+    assert np.round(AD.tanh(ar_f)[0].func_val, 7) == np.round(0.7615941559557649, 7)
+    assert np.round(AD.tanh(ar_f)[1].partial_dict['f_1'], 7) ==  np.round(0.001340950683025897, 7)
