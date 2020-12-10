@@ -236,8 +236,80 @@ If converged after `steps` steps, this will yield the optimziation results. If t
 0.0 ({'var2': 1})
 ```
 
-#### Example 2: Optimization for regression
+#### Example 2: Optimization for regression 
 
+#### Example 3: Diving deeper - Neural networks
+
+#### Example 4: Loss function creation
+Customized loss functions are a critical part of the scientific workflow. In Example 2 above, we relied on the customized loss function in the `loss_function` module. The goal of this particular module is educational. We hope that it sets a guide for creating user-specified loss functions. In particular, we have included the API for two common loss functions: mean squared error in the context of a linear model (`linear_mse()`) and binary cross-entropy for a logistic model (`logistic_cross_entropy`). Importantly, these two loss functions make fairly strong assumptions regarding the functional form of the data. Thus, we have titled the functions to inform the user of their purpose. 
+
+For users desiring to extend these functional forms or to create customized loss functions, the guide below demonstrates contrsuction of the `linear_mse()` function, including a basic example, which can serve as a guide. As a note, the example below contains a docstring, as for methods to be accepted for contribution, the docstring must be provided. We welcome any additional contributions that you might have! The world of loss functions is vast and we would be happy to work with you to bring your use cases to light.
+
+As a review of [mean squared error](https://en.wikipedia.org/wiki/Mean_squared_error), the loss function takes the form:
+
+$$\sum_{i=1}^n (y_i - \hat{y_i})^2$$
+
+for some observed outcome, $y_i$ and prediction of an arbitrary model, $\hat{y_i}$. In this case, we will restrict the functional form of the model to be linear, as is the case of linear regression (and hence the name `linear_mse()`). That is, we assume:
+
+$$y_i = \beta_1 x_1 + ... + \beta_p x_p + \epsilon_i$$
+
+where $\epsilon_i$ is assumed to be Gaussian noise. Please also note that we will not be estimating an intercept in this case. For that to be included, the row of value 1 will be needed to be added to the design matrix for use in this function. With this in mind, our loss function takes the form:
+
+$$f(\beta_1, ... \beta_p) = \sum_{i=1}^n (y_i - (\beta_1x_1 + ... + \beta_p x_p))^2$$.
+
+Our loss function, in Python code, is defined below. Please see comments for direct step information
+
+```python
+def linear_mse(inputs, outputs, var_list):
+    """Calculates mean squared error for AD objects. All objects passed to var_list
+    must be instantiated AD objects. Highly preferable for data to be input as numpy
+    array with observations as rows and features as columns.
+    
+    Parameters
+    ----------
+    inputs: np.array
+        Input data. This will be the X matrix, without the outcome variables considered.
+    outputs:
+	Numpy array of output data. Should be ordered according to rows of input data
+    var_list: list; AD object
+        list of AD objects to be included in function
+    outputs:
+        index of outcome in data
+    """
+
+    # Step 1: Convert data to array format and confirm it is 2-dimensional
+    # If not, could be converted by np.reshape(n,p) to get to n x p matrix
+    inputs = np.array(inputs)
+    assert inputs.ndim == 2, 'data must be convertible to 2-D array!'        
+	
+    outputs = np.array(outputs)
+    if outputs.ndim == 2:
+        assert (outputs.shape[1] == 1) or (outputs.shape[0] == 1), 'Outputs cannot be multidimensional!'
+    else:
+        assert outputs.ndim == 1, 'Outputs cannot have more than 2 dimensions!'
+ 
+    # Step 1A: Check that size of data are compatible
+    outputs = outputs.reshape(-1)
+    assert _rowsums(inputs, var_list).shape[0] == outputs.shape[0], 'Input and output must be of same dimension'
+    
+    # Step 3: Calculate loss function - _rowsums() method can be used to
+    # make x, beta to x*beta step
+    sse = AD.sum((outputs - _rowsums(inputs, var_list)) ** 2)
+    # Note: Linear MSE could be calculated in one step
+    return (1/len(outputs))*sse
+```
+
+Now, implementing this function in a test might work as follows:
+
+```python
+>>> x = np.array([[2, 3], [5, 6]])
+>>> y = np.array([1, 4])
+>>> v1 = AD(0.0, 'v1')
+>>> v2 = AD(0.0, 'v2')
+>>> varlist = [v1, v2]
+>>> linear_mse(x, y, varlist)
+8.5 ({'v1': -22.0, 'v2': -27.0})
+```
 
 ## Software organization
 The software implementation for Version 2.0 of our software is presented below.  Thus, this organization is subject to change in future released versions of *boomdiff*.
