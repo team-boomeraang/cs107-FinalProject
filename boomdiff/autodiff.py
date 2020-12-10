@@ -23,7 +23,7 @@ class AD():
         {'x1': 1}
         """
         # Set function value if int or float; else raise error
-        if isinstance(eval_pt, (int, float)):
+        if isinstance(eval_pt, (int, float, np.number)):
             self.func_val = eval_pt
         else:
             raise ValueError('All valuess should be real float or integer numbers!')
@@ -34,7 +34,7 @@ class AD():
             raise ValueError('der_dict must be type dict or str!')
         try:
             for key, val in der_dict.items():
-                assert isinstance(der_dict[key], (int, float))
+                assert isinstance(der_dict[key], (int, float, np.number))
             self.partial_dict = der_dict
         except(AttributeError):
             # If string, set name and default seed vector (non-str example
@@ -201,7 +201,7 @@ class AD():
         """
         if att == 'func_val':
             # Implement same check as constructor
-            if not isinstance(val, (float, int)):
+            if not isinstance(val, (float, int, np.number)):
                 raise ValueError("val must be type float or int")
             self.func_val = val
         elif att == 'partial_dict':
@@ -210,7 +210,7 @@ class AD():
             # Check that all values of passed dictionary are integers or floats
             try:
                 for k, v in val.items():
-                    assert isinstance(val[k], (int, float))
+                    assert isinstance(val[k], (int, float, np.number))
                 self.partial_dict = val
             except:
                 raise ValueError('All values of partial_dict must be int or float')
@@ -298,7 +298,7 @@ class AD():
         >>> print(f1.func_val, f1.partial_dict)
         13.6 {'x1': 1, 'x2': 4}
         """
-        assert isinstance(other,(int, float)), "All values should be real float or int values!"
+        assert isinstance(other,(int, float, np.number)), "All values should be real float or int values!"
         # treat as a constant
         # just return the partial dictionary of the self instance
         new_der_dict = dict(self.partial_dict)
@@ -361,7 +361,7 @@ class AD():
         >>> print(f1.func_val, f1.partial_dict)
         6.4 {'x1': -1, 'x2': -3}
         """
-        assert isinstance(other,(int, float)), "All values should be real float or int values!"
+        assert isinstance(other,(int, float, np.number)), "All values should be real float or int values!"
         # If other is not an AD class instance, treat as a constant
         new_der_dict = {}
         for key, value in self.partial_dict.items():
@@ -447,7 +447,7 @@ class AD():
         >>> print(f3.func_val, f3.partial_dict)
         64 {'a': 40, 'b': 12}
         """
-        assert isinstance(other,(int, float)), "All values should be real float or int values!"
+        assert isinstance(other,(int, float, np.number)), "All values should be real float or int values!"
         # if other is not an AD class instance, treat as a constant
         new_der_dict = {}
         for key, value in self.partial_dict.items():
@@ -523,7 +523,7 @@ class AD():
         >>> print(f3.func_val, f3.partial_dict)
         2.0 {'a': -1.0, 'b': -0.5}
         """
-        assert isinstance(other,(int, float)), "All values should be real float or int values!"
+        assert isinstance(other,(int, float, np.number)), "All values should be real float or int values!"
         # if other is not an AD class instance, treat as a constant
         new_der_dict = {}
         for key, value in self.partial_dict.items():
@@ -605,7 +605,7 @@ class AD():
         >>> print(f2.func_val, f2.partial_dict)
         32 {'a': 22.18070977791825, 'b': 22.18070977791825}
         """
-        assert isinstance(other,(int, float)), "All values should be real float or int values!"
+        assert isinstance(other,(int, float, np.number)), "All values should be real float or int values!"
         # if other is not an AD class instance, treat as a constant
         new_der_dict = {}
         for key, value in self.partial_dict.items():
@@ -935,7 +935,7 @@ class AD():
         >>> print(x4.round(1))
         0.2
         """
-        if base == 0 or not (isinstance(base, int) or isinstance(base,float)):
+        if base == 0 or not (isinstance(base, (int, float, np.number))):
             raise Exception("Base Must be a constant integer or a float not equal to 0")
 
         if isinstance(x,(np.ndarray,list)):
