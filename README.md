@@ -70,7 +70,3 @@ We recommend two possible methods for installation of Python.
 
 
 2. Python can also be installed directly (see [here](https://www.python.org/downloads/)). This installation mode will require use of an outside text editor, but may offer more flexibility for installation. If installed via the Python documentation directly, please follow instructions for `pip`.
-
-## Use of *boomdiff*
-### Generalized autodifferentiation
-In order to take advantage of the ability of *boomdiff*, all objects for optimization must be instantiated as automatic differentiation objects. This section provides a brief introduction and example to instantiation of AD objects. The following section, on objective functions, details how to combine these AD objects into an objective function.
