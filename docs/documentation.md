@@ -14,6 +14,7 @@ Auto Differentiation (AD) is one highly effective method for calculation of the 
 While the provided description of *boomdiff* primarily concerns the case where the user has some set of data and wishes to optimize a model against that data, the functionality of this package is not limited to that setting. Rather, *boomdiff* will suffice as a general optimization tool as well for an arbitrary function defined by the user.
 
 #### Gradient-methods currently supported
+
 - Gradient descent (also known as batch gradient descent)
   - Stochastic gradient descent
   - Mini-batch gradient descent
@@ -358,6 +359,7 @@ As described above, our package is distributed through two separate avenues. Fir
 
 #### Base Optimizer class
 class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers. *This class should only be called by developers who wish to implement optimization algorithms not included in boomdiff*. Instead of instantiating this class directly, users should call specific subclasses, e.g. `boomdiff.optimize.GD` or `boomdiff.optimize.Adam`.
+
 | Arguments |Type|Status|Description|
 |-|-|-|-|
 |`learning_rate`| float, int  | optional, default 0.1| Learning rate of the optimizer, controlling the step size. Smaller learning rates imply smaller steps in each direction |
@@ -368,6 +370,7 @@ class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers.
 | `iterations` | dict  | Number of iterations of the optimization algorithm. Please note that this attribute has been left public, but is not intended to be widely used. The primary intended use is developers who encounter issues with the package and wish to debug the specific algorithm |
 
 - `step(loss, var_list, learning_rate=None)`: Implements a single step of the optimization algorithm. Since each methodology included here is an iterative method, this will be called within the application of the gradient. *Developer note: this function may be used for debugging purposes, especially as it relates to application of a pre-specified gradient. Second, if the gradient is calculated outside of the optimization library, this step method may be useful for singular updates*.
+    
     | Arguments | Type        | Status              | Description                                                  |
     | --------- | ----------- | ------------------- | ------------------------------------------------------------ |
     | `loss` | callable   | required | Objective function to be optimized, takes no arguments and must output an AD object. |
@@ -387,7 +390,7 @@ class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers.
 
 - `_apply_gradient(loss, var_list, grad_dict)`: Function implemented by each optimization subclass to apply the gradient. Called in each step (thus called iteratively in `minimize()`). Raises Error if superclass instantiated directly.
 	
-	- *Developer's note: If you are interested in developing or implementing additional optimization methods, this is done via subclassing the `Optimizer` class and implementing `_apply_gradient()` in the subclass. If you implement a method not included in the package at this time, please let us know! We would love to incorporate it into the next release of boomdiff!*
+  - *Developer's note: If you are interested in developing or implementing additional optimization methods, this is done via subclassing the `Optimizer` class and implementing `_apply_gradient()` in the subclass. If you implement a method not included in the package at this time, please let us know! We would love to incorporate it into the next release of boomdiff!*
 	
 - `plot_loss_func()`: If `loss_track` has been stored by `record = True`, then this will quickly plot the loss function over each iteration taken.
 
@@ -421,6 +424,7 @@ Intuitively, we know that this function will be minimized at $x = 0$, $y=0$, but
 class `GD`: Implements gradient descent optimization. Because the base case assumed here does not necesarily have a 'data' element, this is not inherently stochastic gradient descent. This would need to be separately implemented separately. For each variable in `var_list`, will be minimized according to the following equation:
 $$x_i^{t+1} = x_i^{t} - \alpha*\frac{\partial f(x)}{\partial x_i}(x_i^{t})$$
 where $f(x)$ is the loss function to be minimized, and $x_i^t$ represents the current value of the variable. Note that in in this case, each $x_i$ must be instantiated as a separate `AD` object.
+
 | Arguments | Type        | Status              | Description                                                  |
 | --------- | ----------- | ------------------- | ------------------------------------------------------------ |
 | `learning_rate` | float   | optional | Learning rate for optimization, i.e. $\alpha$. Default value is 0.1. |
@@ -429,6 +433,7 @@ where $f(x)$ is the loss function to be minimized, and $x_i^t$ represents the cu
 class `Momentum`: Implements momentum-accelerated gradient descent. Once again, because the Optimizer class lacks a notion of data at the moment, this class does not implement a stochastic gradient descent. Momentum may help the typical gradient descent escape certain saddle points. To accomplish that, the algorithm keeps a moving average of the gradient and makes moves in the direction of the moving average. To keep track of momentum, algorithm updates the two following equations for each $x_i$ to optimize:
 $$v_i^{t+1} = \gamma v_i^{t} + \alpha \frac{\partial f(x)}{\partial x_i}(x_i^{t})$$
 $$x_i^{t+1} = x_i^{t} - v_i^{t-1}$$
+
 | Arguments | Type        | Status              | Description                                                  |
 | --------- | ----------- | ------------------- | ------------------------------------------------------------ |
 | `learning_rate` | float   | optional | Learning rate for optimization, i.e. $\alpha$. Default value is 0.1. |
@@ -445,6 +450,7 @@ $$\hat{v_i^{t+1}}  = \frac{v_i^{t+1}}{1-\beta_2^{(t+1)}}$$
 Finally, the variable of interest, $x_i$, is updated in the following way:
 $$x_i^{t+1} = x_i^{t} - \frac{\alpha}{\sqrt{\hat{v_i^{t+1}}} + \epsilon}\hat{m_i^{t+1}} $$
 where $\alpha$ is the learning rate and $\epsilon$ is some small constant, by default $1e^{-8}$
+
 | Arguments | Type        | Status              | Description                                                  |
 | --------- | ----------- | ------------------- | ------------------------------------------------------------ |
 | `learning_rate` | float   | optional | Learning rate for optimization, i.e. $\alpha$. Default value is 0.001. |
@@ -463,6 +469,7 @@ class `AD(eval_pt, der_dict)`:
 | ---------- | ----------- | -------- | ------------------------------------------------------------ |
 | `eval_pt`  | float, int, | Required | Point to evaluate the object at; raises error if not float or int. To use with list or array, please see `from_array()` below. |
 | `der_dict` | str, dict   | Optional | f string, this should be the name of the variable for the associated `eval_pt`. Otherwise, should be a dictionary in format `{'x1': 2.0}` where 'x1' is the name of the variable and 2.0 is the partial derivative. Default behavior for string is to set partial derivative seed vector to be 1. If not passed at all, sets variable to 'x1' and partial derivative to one. |
+
 The attributes and methods associated with the class are as follows:
 
 | Attribute      | Type  | Description                                                  |
@@ -484,6 +491,7 @@ The methods for this class can be broadly grouped into three subsets: helper met
 
 - `evaluate()`: Returns the function value and derivative dictionary as a tuple, in that order.
 -  `round(decimal_number=2, decimal_number_optional=None)`: Returns a new AD instance with function value and partial derivatives rounded to the user-supplied decimal number. Will not overwrite current AD instance (unless re-assigned).
+
 	| Arguments | Type             | Status   | Description                                                  |
 	| --------- | ---------------- | -------- | ------------------------------------------------------------ |
 	| `decimal_number`     | int           | optional | Number of decimals to round to for function value and partial derivatives. Must be integer and may not be negative. |
@@ -506,6 +514,7 @@ The methods for this class can be broadly grouped into three subsets: helper met
 ##### Alternate constructor class methods
 
 - `from_array(array, prefix=x)`: Creates an array of AD objects from a NumPy array or list structure. If list or 1-D array, will return with prefix (by default `x`) in the form of `x_1`, ..., `x_n` for an array of length `n`. If the array is 2-D (and is dimension `n x m`, then will return an array of same dimension with prefixes `x_0_0`, ..., `x_0_n`, `x_1_0`, ..., `x_m_n`. Importantly, each element of the array will be treated as if it pertains to a separate underlying variable. This allows for easy matrix-like computation.
+
 	| Arguments | Type             | Status   | Description                                                  |
 	| --------- | ---------------- | -------- | ------------------------------------------------------------ |
 	| `array`     | array or str           | required | Array-like structure of floats or ints to be converted to an array (of same dimension) of AD objects with default seed vector. Maximum of 2-D arrays accepted |
@@ -662,6 +671,7 @@ The methods for this class can be broadly grouped into three subsets: helper met
     7.3890560989306495 ({'x1': 7.3890560989306495})
     ```
 - `logistic(x, x_0=0, k=1, L=1)`: Calls logistic function (also known as sigmoid function) on x in the fully general case (see [here](https://en.wikipedia.org/wiki/Logistic_function) for distinction). Default values produce $\frac{1}{1+ e^{-x}}$, fully general case is: $\frac{L}{1+ e^{-k(x-x_0)}}$.
+
     | Arguments | Type        | Status              | Description                                                  |
     | --------- | ----------- | ------------------- | ------------------------------------------------------------ |
     | `x_0`     | float, int  | optional, default 0 | Value of the midpoint of the logistic function, which will be set to zero by default. In the case of regression tasks, this is commonly set to be the center of the distribution for a certain set of predictors. |
