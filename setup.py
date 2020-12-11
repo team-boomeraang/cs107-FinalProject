@@ -7,6 +7,5 @@ setup(name="boomdiff",
     url="https://github.com/team-boomeraang/cs107-FinalProject",
     packages=find_packages(), 
     install_requires=['numpy',
-                      'matplotlib',
-                      'sklearn', 
+                      'matplotlib', 
                       'tqdm'])
