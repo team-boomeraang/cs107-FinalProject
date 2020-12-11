@@ -2,6 +2,23 @@
 
 **Authors**: Minhuan Li, Oksana Makarova, Timothy Williamson, Kevin Hare *(Group #19)*
 
+### Table of contents
+
+- [Overview](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#overview)
+- [Background](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#background)
+  - [Optimization](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#optimization)
+  - [Automatic Differentiation](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#automatic-differentiation)
+- [Installation](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#installation-of-boomdiff)
+- [How to use *boomdiff*](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#use-of-boomdiff)
+  - [Automatic differentiation (AD) objects](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#generalized-autodifferentiation)
+  - [Optimization of objective functions](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#optimization-of-objective-functions)
+- [Software organization](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#software-organization)
+- [API Reference](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#software-organization)
+  - [optimize](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#optimize)
+  - [autodiff](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#autodiff)
+- [Directions for future development](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#future)
+- [Broader Impact Statement](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md#future)
+
 
 ## Introduction
 #### Overview
@@ -42,7 +59,7 @@ $$ \frac{dz}{dx} = \frac{dz}{dy} \frac{dy}{dx} $$
 
 Importantly, because $z(y)$ will be an elementary function (e.g. addition, subtraction, sine, cosine), its derivative can be easily calculated. As we have begun at the innermost derivative, that function $\frac{dy}{dx}$ is known and can be used to iteratively calculate the derivative of the composition. For the simple example above, there are only two elementary operations, but this method can be extended to cover many elementary operations. One only needs to keep track of the derivative of each ‘running’ piece.
 
-The method can be implemented through a graph structure (see below for a simple example), with each node in the graph, which represents a single elementary operation. This computational graph is especially important when the function of interest relies on multiple elements (e.g. $f(x,y) = x^2 + \sin(y)$). One particular advantage of the elementary operations in this method is that each type of operation has a known derivative that can be calculated systematically and efficiently. At each step in the forward mode, the algorithm only needs to maintain the status of the derivative (potentially multiple partial derivatives in the case of multiple elements) as well as the current value of the function.
+The method can be implemented through a graph structure, with each node in the graph, which represents a single elementary operation. This computational graph is especially important when the function of interest relies on multiple elements (e.g. $f(x,y) = x^2 + \sin(y)$). One particular advantage of the elementary operations in this method is that each type of operation has a known derivative that can be calculated systematically and efficiently. At each step in the forward mode, the algorithm only needs to maintain the status of the derivative (potentially multiple partial derivatives in the case of multiple elements) as well as the current value of the function.
 
 These storage requirements and iterative nature take advantage of a computer’s ability to store many values and perform many simple operations very quickly. One challenge for computers in calculating complex, symbolic derivatives is that symbolic differentiation may lead to enormous equations and syntactical rules that are highly complex to apply. For humans with a pen and paper, the AD approach may take too much time. The number of calculations, albeit simple, would certainly overwhelm the ability of most people to simply calculate the symbolic derivatives and implement a single evaluation. That concern is severely attenuated by computers. Additionally, AD is superior to the finite differences method of differentiation due to the fact that it is able to keep track of derivatives and functions at the level of machine precision. In scientific applications, this feature is incredibly important, as the sensitive systems measured or engineered will not be successful with only generalities.
 
@@ -116,6 +133,7 @@ The value of the variable will be stored in an attribute `func_val` and the part
 ```python
 >>> from boomdiff import AD
 >>> # Step1: Instantiate a variable called x1, with value 10, derivative to be default 1
+>>> # AD(function value, partial derivatives (optional))
 >>> x1 = AD(10)
 >>> # Step2: Demonstrate the information
 >>> print(x1)
@@ -370,7 +388,7 @@ class `Optimizer(learning_rate=0.1)`: This is the base class for all optimizers.
 | `iterations` | dict  | Number of iterations of the optimization algorithm. Please note that this attribute has been left public, but is not intended to be widely used. The primary intended use is developers who encounter issues with the package and wish to debug the specific algorithm |
 
 - `step(loss, var_list, learning_rate=None)`: Implements a single step of the optimization algorithm. Since each methodology included here is an iterative method, this will be called within the application of the gradient. *Developer note: this function may be used for debugging purposes, especially as it relates to application of a pre-specified gradient. Second, if the gradient is calculated outside of the optimization library, this step method may be useful for singular updates*.
-    
+  
     | Arguments | Type        | Status              | Description                                                  |
     | --------- | ----------- | ------------------- | ------------------------------------------------------------ |
     | `loss` | callable   | required | Objective function to be optimized, takes no arguments and must output an AD object. |
@@ -689,9 +707,9 @@ The methods for this class can be broadly grouped into three subsets: helper met
     - [matplotlib](https://matplotlib.org/3.3.1/index.html)
 
 ## Future
-We see two primary directions for continued development on this project: implementing a user-friendly approach and/or targeting a specific scientific community.  While these directions are not necessarily mutually exclusive (both could be built on the same optimization package), the next steps and direction of the development process are likely fairly separate. In terms of usability, we believe that one promising direction would be to include a class or set of functions meant to parse string versions of common functions, which would likely significantly increase the accessibility of our package. We believe this could be a particular comaprative advantage of our package to currently existing optimization libraries, namely the general functionality of major libraries such as PyTorch and TensorFlow. As a small team without any specialists in either automatic differentiation or optimization, our package will likely not compete with the performance of a PyTorch or TensorFlow. That being said, one particular weakness of those packages is that the optimized performance and object-oriented structure may be confusing to users less familiar with Python. Less familiarity with Python should not stop users from efficiently performing optimization, though -- these tasks are too central to too much reasearch for that.
+We see two primary directions for continued development on this project: implementing a user-friendly approach and/or targeting a specific scientific community.  While these directions are not necessarily mutually exclusive (both could be built on the same optimization package), the next steps and direction of the development process are likely fairly separate. In terms of usability, we believe that one promising direction would be to include a class or set of functions meant to parse string versions of common functions, which would likely significantly increase the accessibility of our package. We believe this could be a particular comparative advantage of our package to currently existing optimization libraries, namely the general functionality of major libraries such as PyTorch and TensorFlow. As a small team without any specialists in either automatic differentiation or optimization, our package will likely not compete with the performance of a PyTorch or TensorFlow. That being said, one particular weakness of those packages is that the optimized performance and object-oriented structure may be confusing to users less familiar with Python. Less familiarity with Python should not stop users from efficiently performing optimization, though -- these tasks are too central to too much research for that.
 
-A second direction our package could plausibly go would be to adapt the first proposal into a subfield-specific optimization library. This may go hand-in-hand with the user-friendly nature of the package, but would likely be more targeted in terms of application and functionality. For example, there may be less utility in adapting the package to address the needs of machine learning practitioners, as most are likely comfortable with an existing optimization library. For social and physical sciences less traditionally connected to computing, however, we believe that this could be a promising direction. One example of a feature that we might add if, for example, our package was targeted at  statiscians is the ability to perform importance sampling within the application of a gradient. For mode-finding algorithms that feature intractable integrals which cannot be discarded. To optimize complex likelihood and posterior distributions, this functionality may facilitate ease of use for that particular 'client'. As noted, one advantage of our object-oriented structure is modularity, which may allow us to pursue both of these avenues. In the interest of limited resources, though, they may not both be feasible over the medium-term.
+A second direction our package could plausibly go would be to adapt the first proposal into a subfield-specific optimization library. This may go hand-in-hand with the user-friendly nature of the package, but would likely be more targeted in terms of application and functionality. For example, there may be less utility in adapting the package to address the needs of machine learning practitioners, as most are likely comfortable with an existing optimization library. For social and physical sciences less traditionally connected to computing, however, we believe that this could be a promising direction. One example of a feature that we might add if, for example, our package was targeted at  statisticians is the ability to perform importance sampling within the application of a gradient. For mode-finding algorithms that feature intractable integrals which cannot be discarded. To optimize complex likelihood and posterior distributions, this functionality may facilitate ease of use for that particular 'client'. As noted, one advantage of our object-oriented structure is modularity, which may allow us to pursue both of these avenues. In the interest of limited resources, though, they may not both be feasible over the medium-term.
 
 #### Broader Impact Statement
 This AD package has a function of usability that is user-friendly, allowing groups with little to moderate experience to operate this library with ease, thanks to the extensive documentation. The simplicity in defining variables and their derivatives allows the methods and functions of autodiff to differentiate both complex functions and basic functions alike.
