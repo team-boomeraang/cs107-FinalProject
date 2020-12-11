@@ -15,6 +15,14 @@ This AD package has a function of usability that is user-friendly, allowing grou
 With this automatic differentiation package, one can easily ascertain both the value and derivatives of a given function. What makes our library impactful is the ability to easily create one’s own functions inheriting instances of variables using the AD library.
 To make contributions to this library, users must import AD from *boomdiff.autodiff*, then create a closure inheriting a variable defined with the AD library. This lessens the inclusivity as a moderate level of skill in Python is required to accomplish this. However, it allows for nearly endless functions to be created for user-specific uses. One example of this use is creating a user-supplied loss function for broad ethical Machine Learning projects. Due to the ability to create user-specific functions, the range of this package’s inclusivity is far wider than that of other packages. The greatest impact would potentially occur with groups seeking an easy way to create their own methods and functions making use of automatic differentiation, as this package is specifically user-friendly in that area compared to others of its kind. While it may not be as efficient or as specialized as other libraries, this ability to create new methods allows this library to have a more widespread range of use than others of its kind and ensures that the process is fair and welcoming to nearly all groups with experience in Python.
 
+## Helpful links
+
+- [Complete documentation & API Reference](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/documentation.md)
+- [Tutorials](https://github.com/team-boomeraang/cs107-FinalProject/tree/master/docs/examples) (Getting Started, Optimization Loss, Linear Regression, Logistic Regression, Neural Networks)
+- [Installation](https://github.com/team-boomeraang/cs107-FinalProject#installation-of-boomdiff) (see below)
+
+
+
 ## Installation of boomdiff
 Below are instructions for the download and installation of the *boomdiff* package. The instructions below are all designed to be run on a command-line interface (Windows, macOS, Linux). Please note that steps (2) and (3) assume that the user has installed [Python](https://www.python.org/). If the user has not installed Python, please see instructions [below](#installation_py)
 
