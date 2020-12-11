@@ -257,7 +257,12 @@ If converged after `steps` steps, this will yield the optimziation results. If t
 
 #### Example 2: Optimization for regression 
 
+- See [Linear Regression tutorial](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/examples/3_Case_LinearRegressionModel.ipynb).
+- See [Logistic Regression tutorial](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/examples/4_Case_LogisticRegressionModel.ipynb).
+
 #### Example 3: Diving deeper - Neural networks
+
+- See [Neural Network tutorial](https://github.com/team-boomeraang/cs107-FinalProject/blob/master/docs/examples/5_Case_Neural_Network.ipynb).
 
 #### Example 4: Loss function creation
 Customized loss functions are a critical part of the scientific workflow. In Example 2 above, we relied on the customized loss function in the `loss_function` module. The goal of this particular module is educational. We hope that it sets a guide for creating user-specified loss functions. In particular, we have included the API for two common loss functions: mean squared error in the context of a linear model (`linear_mse()`) and binary cross-entropy for a logistic model (`logistic_cross_entropy`). Importantly, these two loss functions make fairly strong assumptions regarding the functional form of the data. Thus, we have titled the functions to inform the user of their purpose. 
@@ -350,7 +355,11 @@ cs107-FinalProject/
             _optimizer.py
 	docs/
 		examples/
-			
+			1_Getting_Started.ipynb
+			2_optimization_loss.ipynb
+			3_Case_LinearRegressionModel.ipynb
+			4_Case_LogisticRegressionModel.ipynb
+			5_Case_Neural_Network.ipynb
 	    milestone1.ipynb
 	    milestone2.ipynb
 	    documentation.md
